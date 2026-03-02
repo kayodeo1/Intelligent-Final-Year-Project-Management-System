@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.kayode.ifymp.model;
+package com.kayode.ifypm.model;
 
 
 import javax.persistence.Entity;
@@ -14,7 +14,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import com.kayode.ifymp.model.AbstractEntity;
+import com.kayode.ifypm.model.AbstractEntity;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

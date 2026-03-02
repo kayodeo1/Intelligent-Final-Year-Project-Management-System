@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.kayode.ifymp.lazymodel;
+package com.kayode.ifypm.lazymodel;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,12 +13,12 @@ import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kayode.ifymp.constants.QueryType;
-import com.kayode.ifymp.model.Project;
-import com.kayode.ifymp.model.PagedList;
-import com.kayode.ifymp.model.State;
-import com.kayode.ifymp.model.Status;
-import com.kayode.ifymp.service.ProjectService;
+import com.kayode.ifypm.constants.QueryType;
+import com.kayode.ifypm.model.Project;
+import com.kayode.ifypm.model.PagedList;
+import com.kayode.ifypm.model.State;
+import com.kayode.ifypm.model.Status;
+import com.kayode.ifypm.service.ProjectService;
 
 /**
  * @author AAfolayan

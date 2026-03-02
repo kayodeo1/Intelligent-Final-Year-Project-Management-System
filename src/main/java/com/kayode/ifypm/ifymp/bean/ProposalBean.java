@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.kayode.ifymp.bean;
+package com.kayode.ifypm.bean;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,14 +38,14 @@ import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kayode.ifymp.constants.QueryType;
-import com.kayode.ifymp.model.Constants;
-import com.kayode.ifymp.lazymodel.ProposalLazyDataModel;
-import com.kayode.ifymp.model.Proposal;
-import com.kayode.ifymp.model.Role;
-import com.kayode.ifymp.model.User;
-import com.kayode.ifymp.service.ProposalService;
-import com.kayode.ifymp.service.UserService;
+import com.kayode.ifypm.constants.QueryType;
+import com.kayode.ifypm.model.Constants;
+import com.kayode.ifypm.lazymodel.ProposalLazyDataModel;
+import com.kayode.ifypm.model.Proposal;
+import com.kayode.ifypm.model.Role;
+import com.kayode.ifypm.model.User;
+import com.kayode.ifypm.service.ProposalService;
+import com.kayode.ifypm.service.UserService;
 
 /**
  * @author AAfolayan

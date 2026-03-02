@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.kayode.ifymp.service;
+package com.kayode.ifypm.service;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -26,8 +26,8 @@ import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.kayode.ifymp.model.Project;
-import com.kayode.ifymp.model.PagedList;
+import com.kayode.ifypm.model.Project;
+import com.kayode.ifypm.model.PagedList;
 
 /**
  * @author AAfolayan
