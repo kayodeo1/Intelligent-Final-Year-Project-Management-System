@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+<h:body>
+
+	<ui:composition template="/ie_template2.xhtml">
+		<ui:define name="body_title">
+			<strong>Create</strong> New Project
+    </ui:define>
+
+		<ui:define name="body_">
+			<o:importConstants type="com.kayode.ifymp.model.Role" />
+			<h:form prependId="false" rendered="true">
+				<p:ajaxStatus onstart="PF('status').show()"
+					oncomplete="PF('status').hide()" />
+				<p:dialog widgetVar="status" modal="true" closable="false">
+					<p:graphicImage library="img" name="load4.jpg" />
+				</p:dialog>
+				<div class="box box-primary">
+					<div class="box-header with-border">
+						<h:panelGrid columns="3" cellpadding="5" id="grid" border="0">
+							<f:facet name="header" id="notification_header">
+								<p:messages id="global_message" globalOnly="true" />
+							</f:facet>
+
+							
+							<p:outputLabel
+								for="proposalId" value="proposalId:" /> <p:inputText id="proposalId"
+								value="#{projectBean.entry.proposalId}" required="true"
+								requiredMessage="proposalId must be supplied" size="70">
+							</p:inputText> <p:message id="m_proposalId" for="proposalId" />
+							
+							<p:outputLabel
+								for="supervisorId" value="supervisorId:" /> <p:inputText id="supervisorId"
+								value="#{projectBean.entry.supervisorId}" required="true"
+								requiredMessage="supervisorId must be supplied" size="70">
+							</p:inputText> <p:message id="m_supervisorId" for="supervisorId" />
+								<p:outputLabel for="startDate" value="startDate:" />
+										<p:calendar 
+											title="startDate" id="startDate" required="true"
+											pattern="dd-MM-yyyy" navigator="true" yearRange="c-120:c"
+											value="#{projectBean.entry.startDate}"
+											requiredMessage="startDate must be supplied" size="70">
+											<p:tooltip id="tp_startDate" for="startDate"
+												showEvent="focus" hideEvent="blur" position="top" />
+										</p:calendar>
+										<p:message id="m_startDate" for="startDate" />
+							
+								<p:outputLabel for="endDate" value="endDate:" />
+										<p:calendar 
+											title="endDate" id="endDate" required="true"
+											pattern="dd-MM-yyyy" navigator="true" yearRange="c-120:c"
+											value="#{projectBean.entry.endDate}"
+											requiredMessage="endDate must be supplied" size="70">
+											<p:tooltip id="tp_endDate" for="endDate"
+												showEvent="focus" hideEvent="blur" position="top" />
+										</p:calendar>
+										<p:message id="m_endDate" for="endDate" />
+							
+							
+							<p:outputLabel
+								for="progressStatus" value="progressStatus:" /> <p:inputText id="progressStatus"
+								value="#{projectBean.entry.progressStatus}" required="true"
+								requiredMessage="progressStatus must be supplied" size="70">
+							</p:inputText> <p:message id="m_progressStatus" for="progressStatus" />
+
+							<p:commandButton id="submitButton"
+								action="#{projectBean.createProject}" ajax="false"
+								value="Submit" update="grid" />
+							<p:spacer />
+							<p:spacer />
+						</h:panelGrid>
+					</div>
+				</div>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+
+</html>

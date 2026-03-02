@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<h:head>
+	<f:metadata>
+		<f:viewAction action="#{projectBean.listProject()}" />
+	</f:metadata>
+</h:head>
+
+<h:body>
+
+	<ui:composition template="/ie_template2.xhtml">
+		<ui:define name="body_title">
+			<strong>Manage Project Entries</strong>
+		</ui:define>
+
+		<ui:define name="body_">
+			<h:form prependId="false" rendered="true">
+				<p:ajaxStatus onstart="PF('status').show()"
+					oncomplete="PF('status').hide()" />
+				<p:dialog widgetVar="status" modal="true" closable="false">
+					<p:graphicImage library="img" name="load4.jpg" />
+				</p:dialog>
+				<p:messages id="global_msg" />
+				<div class="box box-primary">
+					<div class="box-header with-border">
+
+						<p:outputPanel id="viewProject"
+							style="text-align:center;">
+
+							<p:dataTable id="projectList"
+								var="entry" value="#{projectBean.lazyModel}" paginator="true"
+								rows="5" paginatorPosition="bottom"
+								currentPageReportTemplate="Showing {startRecord}-{endRecord} out of {totalRecords}"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+								rowsPerPageTemplate="5,10,15" selectionMode="single"
+								selection="#{projectBean.entry}" lazy="true"
+								rowKey="#{entry.id}">
+								<f:facet name="header">
+									<hr />
+									<p:spacer></p:spacer>
+									<b></b>
+									<strong>Project</strong> Entries Details </f:facet>
+
+
+								 
+								 <p:column headerText="proposalId"
+									style="text-align:center;">
+									<h:outputText value="NA" rendered="#{entry.proposalId==null} " />
+									<h:outputText value="#{entry.proposalId}"/>
+								</p:column> 
+								 <p:column headerText="supervisorId"
+									style="text-align:center;">
+									<h:outputText value="NA" rendered="#{entry.supervisorId==null} " />
+									<h:outputText value="#{entry.supervisorId}"/>
+								</p:column> 
+								 <p:column
+									headerText="startDate" style="text-align:center;">
+									<h:outputText value="NA" rendered="#{entry.startDate==null} " />
+									<h:outputText value="#{entry.startDate}">
+										<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+									</h:outputText>
+								</p:column>  
+								 <p:column
+									headerText="endDate" style="text-align:center;">
+									<h:outputText value="NA" rendered="#{entry.endDate==null} " />
+									<h:outputText value="#{entry.endDate}">
+										<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+									</h:outputText>
+								</p:column>  
+								 <p:column headerText="progressStatus"
+									style="text-align:center;">
+									<h:outputText value="NA" rendered="#{entry.progressStatus==null} " />
+									<h:outputText value="#{entry.progressStatus}"/>
+								</p:column>
+								<p:column headerText="">
+									<p:menuButton value="Action">
+										<p:menuitem value="Edit" icon="ui-icon-arrowrefresh-1-w"
+											style="font-size:1em!important;" process="@this"
+											actionListener="#{projectBean.displayProjectDialog(entry)}"
+									update="projectView,global_msg"
+											immediate="true"
+											oncomplete="PF('projectDialog').show()">
+											<p:resetInput target="projectView" />
+										</p:menuitem>
+								</p:menuButton>
+								</p:column>
+							</p:dataTable>
+							<p:commandButton id="submitButton" immediate="true"
+								rendered="true" action="#{projectBean.createNewProjectView}"
+								oncomplete="PF('projectDialog').show()"
+								update="projectView,global_msg"
+								value="Create New Project">
+								<p:resetInput target="projectView" />
+							</p:commandButton>
+
+						</p:outputPanel>
+					</div>
+				</div>
+
+
+				<p:dialog header="Project"
+					widgetVar="projectDialog"
+					id="projectDialog" modal="true"
+					showEffect="fade" hideEffect="fade" resizable="true">
+
+					<p:outputPanel id="projectView"
+						style="text-align:center;">
+						<p:messages id="view_equip" severity="info,error"
+							globalOnly="true" />
+						<p:panelGrid columns="3" id="grid3" rendered="#{not empty projectBean.entry}">
+							<f:facet name="header">
+								<p:graphicImage name="img/user_groups_admin.png" /> #{projectBean.entry.id}
+							</f:facet>
+
+							   <p:outputLabel for="proposalId" 
+							  value="proposalId:" /> <p:inputText id="proposalId" value="#{projectBean.entry.proposalId}" required="true"
+								requiredMessage="proposalId must be supplied"
+								validatorMessage="Invalid value supplied!" size="70">
+								<f:validateLongRange></f:validateLongRange>
+							</p:inputText> <p:message id="m_proposalId" for="proposalId" />    <p:outputLabel for="supervisorId" 
+							  value="supervisorId:" /> <p:inputText id="supervisorId" value="#{projectBean.entry.supervisorId}" required="true"
+								requiredMessage="supervisorId must be supplied"
+								validatorMessage="Invalid value supplied!" size="70">
+								<f:validateLongRange></f:validateLongRange>
+							</p:inputText> <p:message id="m_supervisorId" for="supervisorId" />    <p:outputLabel
+								for="startDate" value="startDate:" /> <p:inputText id="startDate" value="#{projectBean.entry.startDate}" required="true"
+								requiredMessage="startDate must be supplied" size="70">
+							</p:inputText> <p:message id="m_startDate" for="startDate" />   <p:outputLabel
+								for="endDate" value="endDate:" /> <p:inputText id="endDate" value="#{projectBean.entry.endDate}" required="true"
+								requiredMessage="endDate must be supplied" size="70">
+							</p:inputText> <p:message id="m_endDate" for="endDate" />   <p:outputLabel
+								for="progressStatus" value="progressStatus:" /> <p:inputText id="progressStatus" value="#{projectBean.entry.progressStatus}" required="true"
+								requiredMessage="progressStatus must be supplied" size="70">
+							</p:inputText> <p:message id="m_progressStatus" for="progressStatus" />
+
+							<p:commandButton rendered="#{projectBean.entry.id==null}"
+								id="submitButton2" ajax="true"
+								process="projectView"
+								actionListener="#{projectBean.createProject}"
+								value="Create Project"
+								update="projectView,global_msg" />
+
+							<p:commandButton rendered="#{projectBean.entry.id!=null}"
+								id="submitButton3" ajax="true"
+								process="projectView"
+								actionListener="#{projectBean.updateProject}"
+								value="Update Project"
+								update="projectView,global_msg" />
+							<p:spacer />
+							<p:spacer />
+
+						</p:panelGrid>
+					</p:outputPanel>
+
+				</p:dialog>
+
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>
