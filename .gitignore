@@ -1,0 +1,27 @@
+# Design & planning docs
+CRUDPOTTER_GUIDE.md
+fyp_system_schema.md
+
+# Build output
+build/
+target/
+*.class
+*.war
+*.ear
+*.jar
+
+# Eclipse IDE files
+.classpath
+.project
+.settings/
+.metadata/
+
+# Dependency jars (managed manually or by build tool)
+src/main/webapp/WEB-INF/lib/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
