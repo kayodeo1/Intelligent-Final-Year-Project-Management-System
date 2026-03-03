@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import com.kayode.ifypm.constants.QueryType;
 import com.kayode.ifypm.model.Project;
 import com.kayode.ifypm.model.PagedList;
-import com.kayode.ifypm.model.State;
 import com.kayode.ifypm.model.Status;
 import com.kayode.ifypm.service.ProjectService;
 

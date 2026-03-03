@@ -34,7 +34,7 @@ private String title;
 private String problemStatement;
 private String objectives;
 private String methodology;
-private status status;
+private Status status;
 private String supervisorComment;
 private String similarityScore;
 private Long mostSimilarProposalId;
@@ -155,13 +155,13 @@ public void setMethodology(String methodology) {
 }/**
  * @return the status
  */
-public enum getStatus(){
+public Status getStatus(){
 	return status;
 }
 /**
  * @param status the status to set
  */
-public void setStatus(enum status) {
+public void setStatus(Status status) {
 	this.status = status;
 }/**
  * @return the similarityScore

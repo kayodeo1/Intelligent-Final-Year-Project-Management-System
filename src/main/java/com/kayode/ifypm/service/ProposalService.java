@@ -20,8 +20,8 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.crypto.hash.Sha256Hash;
+//import org.apache.shiro.SecurityUtils;
+//import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
@@ -42,13 +42,11 @@ public class ProposalService {
 
 	private static Logger LOG = LoggerFactory.getLogger(ProposalService.class);
 
-	@AuditLog
 	public void createProposal(Proposal e){
 		em.persist(e);
 		em.flush();
 	}
 
-	@AuditLog
 	public Proposal updateProposal(Proposal e){
 		return em.merge(e);
 	}

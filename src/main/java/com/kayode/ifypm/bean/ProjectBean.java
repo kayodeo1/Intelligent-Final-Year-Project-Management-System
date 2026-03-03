@@ -24,9 +24,9 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
+//
+//import org.apache.shiro.SecurityUtils;
+//import org.apache.shiro.subject.Subject;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
 import org.primefaces.event.FileUploadEvent;
@@ -42,10 +42,10 @@ import com.kayode.ifypm.constants.QueryType;
 import com.kayode.ifypm.model.Constants;
 import com.kayode.ifypm.lazymodel.ProjectLazyDataModel;
 import com.kayode.ifypm.model.Project;
-import com.kayode.ifypm.model.Role;
-import com.kayode.ifypm.model.User;
+//import com.kayode.ifypm.model.Role;
+//import com.kayode.ifypm.model.User;
 import com.kayode.ifypm.service.ProjectService;
-import com.kayode.ifypm.service.UserService;
+//import com.kayode.ifypm.service.UserService;
 
 /**
  * @author AAfolayan
@@ -57,8 +57,8 @@ public class ProjectBean implements Serializable {
 
     public static final String APP_BASE_NAME = Constants.APP_BASE_NAME;
 	private static Logger LOG = LoggerFactory.getLogger(ProjectBean.class);
-	@Inject
-	private UserService userService;
+//	@Inject
+//	private UserService userService;
 	@Inject
 	private ProjectService projectService;
 	private Project entry = new Project();
@@ -70,7 +70,7 @@ public class ProjectBean implements Serializable {
 	private List<Project> entries = new ArrayList<>();
 																		
 	
-	private User user = new User();
+//	private User user = new User();
 
 	@PostConstruct
 	public void init() {
@@ -149,11 +149,11 @@ public class ProjectBean implements Serializable {
 		LOG.info("selected Project retrieved >>> " + entry);
 	}
 	
-		private User getCurrentUser() {
-		Subject subject = SecurityUtils.getSubject();
-		String username = String.valueOf(subject.getPrincipal());
-		return userService.findByUsername(username);
-	}
+//		private User getCurrentUser() {
+//		Subject subject = SecurityUtils.getSubject();
+//		String username = String.valueOf(subject.getPrincipal());
+//		return userService.findByUsername(username);
+//	}
 	
 	
 		/**

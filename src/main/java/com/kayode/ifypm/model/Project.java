@@ -32,7 +32,7 @@ private Long proposalId;
 private Long supervisorId;
 private String startDate;
 private String endDate;
-private progressStatus progressStatus;
+private ProgressStatus progressStatus;
 
 
 /**
@@ -49,13 +49,13 @@ public void setEndDate(String endDate) {
 }/**
  * @return the progressStatus
  */
-public enum getProgressStatus(){
+public ProgressStatus getProgressStatus(){
 	return progressStatus;
 }
 /**
  * @param progressStatus the progressStatus to set
  */
-public void setProgressStatus(enum progressStatus) {
+public void setProgressStatus(ProgressStatus progressStatus) {
 	this.progressStatus = progressStatus;
 }/**
  * @return the supervisorId
