@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPMS — Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy-deep:    #0A1628;
+            --navy-primary: #1B3A6B;
+            --navy-mid:     #2E5399;
+            --navy-light:   #D6E4F7;
+            --gold:         #C9A84C;
+            --gold-light:   #F0D080;
+            --gold-muted:   #E8D5A3;
+            --white:        #FFFFFF;
+            --off-white:    #F7F8FC;
+            --grey-light:   #E5E9F0;
+            --grey-mid:     #9AA3B2;
+            --grey-dark:    #4A5568;
+            --black:        #1A202C;
+            --success:      #2E7D52;
+            --warning:      #B45309;
+            --danger:       #C0392B;
+            --info:         #2E5399;
+            --sidebar-w:    250px;
+            --navbar-h:     64px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--off-white);
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--navbar-h);
+            background: var(--navy-deep);
+            border-bottom: 2.5px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem 0 calc(var(--sidebar-w) + 1.5rem);
+            z-index: 100;
+            transition: padding 0.3s;
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 1px;
+            display: none;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .navbar-greeting {
+            font-size: 0.85rem;
+            color: var(--navy-light);
+            font-weight: 300;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            padding: 0.4rem 0.75rem;
+            border-radius: 40px;
+            transition: background 0.2s;
+        }
+
+        .navbar-user:hover { background: rgba(201,168,76,0.12); }
+
+        .avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--navy-mid), var(--gold));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            border: 2px solid var(--gold);
+        }
+
+        .user-name {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--white);
+        }
+
+        .chevron {
+            color: var(--gold);
+            font-size: 0.7rem;
+            transition: transform 0.2s;
+        }
+
+        .navbar-user:hover .chevron { transform: rotate(180deg); }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 22px; height: 2px;
+            background: var(--gold);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            position: fixed;
+            top: var(--navbar-h);
+            left: 0;
+            width: var(--sidebar-w);
+            height: calc(100vh - var(--navbar-h));
+            background: var(--navy-primary);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 0;
+            z-index: 90;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sidebar-section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--gold-muted);
+            padding: 0.5rem 1.5rem 0.4rem;
+            opacity: 0.7;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.75rem 1.5rem;
+            color: #B8C8E0;
+            font-size: 0.88rem;
+            font-weight: 400;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255,255,255,0.06);
+            color: var(--white);
+            border-left-color: rgba(201,168,76,0.5);
+        }
+
+        .sidebar-item.active {
+            background: rgba(201,168,76,0.1);
+            color: var(--white);
+            border-left-color: var(--gold);
+            font-weight: 500;
+        }
+
+        .sidebar-item.active .s-icon { color: var(--gold); }
+
+        .s-icon {
+            font-size: 1rem;
+            width: 18px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+            margin: 0.75rem 1.5rem;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 1rem;
+        }
+
+        .sidebar-item.logout {
+            color: #E07070;
+        }
+
+        .sidebar-item.logout:hover {
+            background: rgba(192,57,43,0.1);
+            border-left-color: var(--danger);
+            color: #FF8A80;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            margin-left: var(--sidebar-w);
+            margin-top: var(--navbar-h);
+            padding: 2rem 2.5rem;
+            min-height: calc(100vh - var(--navbar-h));
+            transition: margin 0.3s;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .welcome-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--navy-primary);
+            line-height: 1.2;
+        }
+
+        .welcome-title span {
+            color: var(--gold);
+        }
+
+        .welcome-date {
+            font-size: 0.82rem;
+            color: var(--grey-mid);
+            font-weight: 300;
+        }
+
+        /* ── STAT CARDS ROW ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--grey-light);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(10,22,40,0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(10,22,40,0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gold);
+        }
+
+        .stat-card.green::before  { background: var(--success); }
+        .stat-card.orange::before { background: var(--warning); }
+        .stat-card.red::before    { background: var(--danger); }
+        .stat-card.navy::before   { background: var(--navy-mid); }
+
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--grey-mid);
+            margin-bottom: 0.6rem;
+        }
+
+        .stat-icon {
+            position: absolute;
+            top: 1.1rem; right: 1.25rem;
+            font-size: 1.5rem;
+            opacity: 0.12;
+        }
+
+        .stat-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--navy-primary);
+            margin-bottom: 0.35rem;
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 0.78rem;
+            color: var(--grey-mid);
+            font-weight: 300;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-submitted  { background: #D6E4F7; color: #1B3A6B; }
+        .badge-approved   { background: #D4EDDA; color: #2E7D52; }
+        .badge-rejected   { background: #FDECEA; color: #C0392B; }
+        .badge-draft      { background: #E5E9F0; color: #4A5568; }
+        .badge-progress   { background: #FEF3CD; color: #B45309; }
+
+        /* Similarity bar */
+        .sim-wrap { margin-top: 0.4rem; }
+
+        .sim-bar {
+            height: 5px;
+            border-radius: 3px;
+            background: var(--grey-light);
+            overflow: hidden;
+            margin-top: 0.35rem;
+        }
+
+        .sim-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--success);
+        }
+
+        .sim-fill.medium { background: var(--warning); }
+        .sim-fill.high   { background: var(--danger); }
+
+        /* ── DETAIL CARDS ROW ── */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--grey-light);
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(10,22,40,0.06);
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--grey-light);
+            background: var(--white);
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title-icon {
+            color: var(--gold);
+            font-size: 1rem;
+        }
+
+        .card-body { padding: 1.25rem 1.5rem; }
+
+        /* Chapter list */
+        .chapter-list { display: flex; flex-direction: column; gap: 0.65rem; }
+
+        .chapter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.85rem;
+            border-radius: 6px;
+            background: var(--off-white);
+            border: 1px solid var(--grey-light);
+            font-size: 0.85rem;
+            transition: background 0.15s;
+        }
+
+        .chapter-row:hover { background: var(--navy-light); }
+
+        .chapter-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chapter-num {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: var(--navy-primary);
+            color: var(--white);
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .chapter-name {
+            color: var(--grey-dark);
+            font-weight: 400;
+        }
+
+        /* Activity feed */
+        .activity-feed { display: flex; flex-direction: column; gap: 0; }
+
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid var(--grey-light);
+            position: relative;
+        }
+
+        .activity-item:last-child { border-bottom: none; }
+
+        .activity-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--gold);
+            flex-shrink: 0;
+            margin-top: 5px;
+            position: relative;
+        }
+
+        .activity-dot::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: calc(100% + 1rem);
+            background: var(--grey-light);
+        }
+
+        .activity-item:last-child .activity-dot::after { display: none; }
+
+        .activity-dot.green  { background: var(--success); }
+        .activity-dot.orange { background: var(--warning); }
+        .activity-dot.red    { background: var(--danger); }
+
+        .activity-text {
+            font-size: 0.84rem;
+            color: var(--grey-dark);
+            line-height: 1.4;
+        }
+
+        .activity-text strong { color: var(--navy-primary); font-weight: 500; }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--grey-mid);
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        /* Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,22,40,0.5);
+            z-index: 80;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1100px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .navbar { padding-left: 1rem; }
+            .navbar-brand { display: block; }
+            .hamburger { display: flex; }
+            .navbar-greeting { display: none; }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 4px 0 24px rgba(10,22,40,0.25);
+            }
+
+            .sidebar-overlay.open { display: block; }
+
+            .main { margin-left: 0; padding: 1.5rem 1.25rem; }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .welcome-title { font-size: 1.4rem; }
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card  { animation: fadeUp 0.4s ease both; }
+        .stat-card:nth-child(1) { animation-delay: 0.05s; }
+        .stat-card:nth-child(2) { animation-delay: 0.10s; }
+        .stat-card:nth-child(3) { animation-delay: 0.15s; }
+        .stat-card:nth-child(4) { animation-delay: 0.20s; }
+        .card { animation: fadeUp 0.4s ease 0.25s both; }
+    </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+    </button>
+    <span class="navbar-brand">FPMS</span>
+
+    <div class="navbar-right">
+        <span class="navbar-greeting">Good morning,</span>
+        <div class="navbar-user" id="userMenu">
+            <div class="avatar">AO</div>
+            <span class="user-name">Aisha Okonkwo</span>
+            <span class="chevron">▾</span>
+        </div>
+    </div>
+</nav>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+    <span class="sidebar-section-label">Main</span>
+
+    <a href="#" class="sidebar-item active">
+        <span class="s-icon">⊞</span> Dashboard
+    </a>
+    <a href="#" class="sidebar-item">
+        <span class="s-icon">📄</span> My Proposal
+    </a>
+    <a href="#" class="sidebar-item">
+        <span class="s-icon">📁</span> My Project
+    </a>
+    <a href="#" class="sidebar-item">
+        <span class="s-icon">📚</span> Chapters
+    </a>
+
+    <div class="sidebar-divider"></div>
+    <span class="sidebar-section-label">Account</span>
+
+    <a href="#" class="sidebar-item">
+        <span class="s-icon">👤</span> Profile
+    </a>
+    <a href="#" class="sidebar-item">
+        <span class="s-icon">🔔</span> Notifications
+    </a>
+
+    <div class="sidebar-bottom">
+        <div class="sidebar-divider"></div>
+        <a href="#" class="sidebar-item logout">
+            <span class="s-icon">⎋</span> Logout
+        </a>
+    </div>
+</aside>
+
+<!-- Overlay for mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div>
+            <h1 class="welcome-title">Welcome back, <span>Aisha</span> 👋</h1>
+            <p class="welcome-date">Tuesday, 3 March 2026 &nbsp;·&nbsp; Academic Year 2025/2026</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+
+        <!-- Proposal Status -->
+        <div class="stat-card navy">
+            <div class="stat-label">Proposal Status</div>
+            <div class="stat-icon">📄</div>
+            <div class="stat-value">
+                <span class="badge badge-submitted">Submitted</span>
+            </div>
+            <div class="stat-sub">Awaiting supervisor review</div>
+        </div>
+
+        <!-- Supervisor -->
+        <div class="stat-card green">
+            <div class="stat-label">Supervisor</div>
+            <div class="stat-icon">👨‍🏫</div>
+            <div class="stat-value" style="font-size:1.1rem; margin-top:0.2rem;">Dr. Emeka Nwosu</div>
+            <div class="stat-sub">Dept. of Computer Science</div>
+        </div>
+
+        <!-- Project Status -->
+        <div class="stat-card orange">
+            <div class="stat-label">Project Status</div>
+            <div class="stat-icon">📁</div>
+            <div class="stat-value">
+                <span class="badge badge-progress">In Progress</span>
+            </div>
+            <div class="stat-sub">3 of 6 chapters submitted</div>
+        </div>
+
+        <!-- Similarity Score -->
+        <div class="stat-card red">
+            <div class="stat-label">Similarity Score</div>
+            <div class="stat-icon">🔍</div>
+            <div class="stat-value" style="color: var(--success);">42%</div>
+            <div class="sim-wrap">
+                <div class="sim-bar">
+                    <div class="sim-fill" style="width: 42%;"></div>
+                </div>
+            </div>
+            <div class="stat-sub" style="margin-top:0.3rem;">✅ No similarity concern</div>
+        </div>
+
+    </div>
+
+    <!-- Detail Cards -->
+    <div class="detail-grid">
+
+        <!-- Chapter Progress -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-title-icon">📚</span> Chapter Progress
+                </div>
+                <span class="badge badge-progress">3 / 6 Done</span>
+            </div>
+            <div class="card-body">
+                <div class="chapter-list">
+                    <div class="chapter-row">
+                        <div class="chapter-left">
+                            <div class="chapter-num">1</div>
+                            <span class="chapter-name">Introduction</span>
+                        </div>
+                        <span class="badge badge-approved">Approved</span>
+                    </div>
+                    <div class="chapter-row">
+                        <div class="chapter-left">
+                            <div class="chapter-num">2</div>
+                            <span class="chapter-name">Literature Review</span>
+                        </div>
+                        <span class="badge badge-approved">Approved</span>
+                    </div>
+                    <div class="chapter-row">
+                        <div class="chapter-left">
+                            <div class="chapter-num">3</div>
+                            <span class="chapter-name">Methodology</span>
+                        </div>
+                        <span class="badge badge-submitted">Submitted</span>
+                    </div>
+                    <div class="chapter-row">
+                        <div class="chapter-left">
+                            <div class="chapter-num">4</div>
+                            <span class="chapter-name">System Design & Implementation</span>
+                        </div>
+                        <span class="badge badge-draft">Not Submitted</span>
+                    </div>
+                    <div class="chapter-row">
+                        <div class="chapter-left">
+                            <div class="chapter-num">5</div>
+                            <span class="chapter-name">Testing & Evaluation</span>
+                        </div>
+                        <span class="badge badge-draft">Not Submitted</span>
+                    </div>
+                    <div class="chapter-row">
+                        <div class="chapter-left">
+                            <div class="chapter-num">6</div>
+                            <span class="chapter-name">Conclusion & Recommendations</span>
+                        </div>
+                        <span class="badge badge-draft">Not Submitted</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-title-icon">🕐</span> Recent Activity
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="activity-feed">
+                    <div class="activity-item">
+                        <div class="activity-dot green"></div>
+                        <div>
+                            <div class="activity-text"><strong>Chapter 2</strong> was approved by Dr. Emeka Nwosu</div>
+                            <span class="activity-time">Today, 9:14 AM</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div>
+                            <div class="activity-text"><strong>Chapter 3</strong> submitted for review</div>
+                            <span class="activity-time">Yesterday, 4:32 PM</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot orange"></div>
+                        <div>
+                            <div class="activity-text">Supervisor left feedback on <strong>Chapter 1</strong> — "Strengthen your objectives section"</div>
+                            <span class="activity-time">Feb 28, 11:05 AM</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot green"></div>
+                        <div>
+                            <div class="activity-text"><strong>Proposal approved</strong> — project officially started</div>
+                            <span class="activity-time">Feb 25, 2:00 PM</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div>
+                            <div class="activity-text"><strong>Proposal submitted</strong> — similarity score: 42%</div>
+                            <span class="activity-time">Feb 24, 10:18 AM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script>
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    hamburgerBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+    });
+
+    // Sidebar nav active state
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (this.classList.contains('logout')) return;
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            // Close sidebar on mobile after click
+            if (window.innerWidth <= 900) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+            }
+        });
+    });
+</script>
+</body>
+</html>
