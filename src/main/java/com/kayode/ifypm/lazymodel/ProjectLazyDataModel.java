@@ -8,7 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,7 @@ public class ProjectLazyDataModel extends LazyDataModel<Project> {
 
 	private static Logger LOG = LoggerFactory.getLogger(ProjectLazyDataModel.class);
 
-	public ProjectLazyDataModel(ProjectService service,QueryType query) {
+	public ProjectLazyDataModel(ProjectService service, QueryType query) {
 		this.service = service;
 		this.query = query;
 	}
@@ -49,14 +51,12 @@ public class ProjectLazyDataModel extends LazyDataModel<Project> {
 	}
 
 	@Override
-	public Object getRowKey(Project r) {
-		// LOG.info("getRowKey method invoked! " + cdt);
-		return r.getId();
+	public Object getRowKey(Project object) {
+		return object.getId();
 	}
 
 	@Override
-	public List<Project> load(int first, int pageSize, String sortField, SortOrder sortOrder,
-			Map<String, Object> filters) {
+	public List<Project> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
 		try {
 			LOG.info("query invoked >>> " + query);
 			List<Project> data = new ArrayList<>();

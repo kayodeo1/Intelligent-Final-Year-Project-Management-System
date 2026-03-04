@@ -17,13 +17,14 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.context.Flash;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.context.Flash;
+import jakarta.faces.event.ValueChangeEvent;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 //import org.apache.shiro.SecurityUtils;
 //import org.apache.shiro.subject.Subject;
@@ -34,7 +35,6 @@ import org.primefaces.event.FlowEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
-import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +46,10 @@ import com.kayode.ifypm.model.Proposal;
 //import com.kayode.ifypm.model.User;
 import com.kayode.ifypm.service.ProposalService;
 //import com.kayode.ifypm.service.UserService;
+
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
 
 /**
  * @author AAfolayan
@@ -80,6 +84,12 @@ public class ProposalBean implements Serializable {
 	private String objective1;
 	private String objective2;
 	private String objective3;
+	EmbeddingModel model = OllamaEmbeddingModel.builder()
+            .baseUrl("http://localhost:11434")
+            .modelName("embeddinggemma")
+            .build();
+	
+	
 
 //	private User user = new User();
 
@@ -94,6 +104,8 @@ public class ProposalBean implements Serializable {
 				+ objective1 + "\n\n" + "Objective 2: " + objective2 + "\n\n" + "Objective 3: " + objective3;
 		
 		System.out.println("proposal -> " + proposal);
+		 Embedding embedding = model.embed(proposal).content();
+		 System.out.println("Embedding generated: " + embedding);
 
 	}
 
@@ -162,7 +174,7 @@ public class ProposalBean implements Serializable {
 
 	public void prepare() {
 		LOG.info("prepare method invoked!");
-		Flash flash = Faces.getFlash();// FacesContext.getCurrentInstance().getExternalContext().getFlash();
+		Flash flash = FacesContext.getCurrentInstance().getExternalContext().getFlash();
 		this.entry = (Proposal) flash.get("entry");
 		LOG.info("selected Proposal retrieved >>> " + entry);
 	}
