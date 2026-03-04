@@ -55,7 +55,11 @@ import com.kayode.ifypm.service.ProposalService;
 @ViewScoped
 public class ProposalBean implements Serializable {
 
-    public static final String APP_BASE_NAME = Constants.APP_BASE_NAME;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public static final String APP_BASE_NAME = Constants.APP_BASE_NAME;
 	private static Logger LOG = LoggerFactory.getLogger(ProposalBean.class);
 //	@Inject
 //	private UserService userService;
@@ -63,24 +67,40 @@ public class ProposalBean implements Serializable {
 	private ProposalService proposalService;
 	private Proposal entry = new Proposal();
 	private LazyDataModel<Proposal> lazyModel;
-	
+
 	private static final String PROPOSAL_MGT_URL = APP_BASE_NAME + "/online/proposal/list.xhtml?faces-redirect=true";
-	private static final String PROPOSAL_CREATION_URL = APP_BASE_NAME + "/online/proposal/create.xhtml?faces-redirect=true";
+	private static final String PROPOSAL_CREATION_URL = APP_BASE_NAME
+			+ "/online/proposal/create.xhtml?faces-redirect=true";
 
 	private List<Proposal> entries = new ArrayList<>();
-																		
-	
+	private String title;
+	private String methodology;
+	private String problemStatement;
+	private String aimsAndObjectives;
+	private String objective1;
+	private String objective2;
+	private String objective3;
+
 //	private User user = new User();
 
 	@PostConstruct
 	public void init() {
 		LOG.info("ProposalBean init!");
 	}
-	
+
+	public void submit() {
+		String proposal = "Title: " + title + "\n\n" + "Methodology: " + methodology + "\n\n" + "Problem Statement: "
+				+ problemStatement + "\n\n" + "Aims and Objectives: " + aimsAndObjectives + "\n\n" + "Objective 1: "
+				+ objective1 + "\n\n" + "Objective 2: " + objective2 + "\n\n" + "Objective 3: " + objective3;
+		
+		System.out.println("proposal -> " + proposal);
+
+	}
+
 	public void listProposal() {
 		LOG.info("listProposal invoked!!!");
 		try {
-			//SecurityUtils.getSubject().checkRole("MDOPS");
+			// SecurityUtils.getSubject().checkRole("MDOPS");
 			lazyModel = new ProposalLazyDataModel(proposalService, QueryType.GET_ALL_PROPOSAL);
 		} catch (Exception e) {
 			Messages.addGlobalError("oops error encountered while fetching entries!");
@@ -89,11 +109,10 @@ public class ProposalBean implements Serializable {
 		}
 	}
 
-
 	public void updateProposal() {
 		LOG.info("updateProposal invoked!!!");
 		try {
-			//SecurityUtils.getSubject().checkRole("MDOPS");
+			// SecurityUtils.getSubject().checkRole("MDOPS");
 			LOG.info("entry -> " + entry);
 			proposalService.updateProposal(entry);
 			Messages.addFlashGlobalInfo("Proposal update request processed successfully!");
@@ -106,12 +125,11 @@ public class ProposalBean implements Serializable {
 			// return null;
 		}
 	}
-	
-	
-		public void createProposal() {
+
+	public void createProposal() {
 		LOG.info("createProposal invoked!!!");
 		try {
-			//SecurityUtils.getSubject().checkRole("MDOPS");
+			// SecurityUtils.getSubject().checkRole("MDOPS");
 			LOG.info("entry -> " + entry);
 			proposalService.createProposal(entry);
 			Messages.addFlashGlobalInfo("Proposal creation request processed successfully!");
@@ -124,39 +142,38 @@ public class ProposalBean implements Serializable {
 			// return null;
 		}
 	}
-	
+
 	public void createNewProposalView() throws IOException {
 		LOG.info("createNewProposalView invoked");
-		this.entry=new Proposal();
+		this.entry = new Proposal();
 	}
-	
-  public void createProposalView() throws IOException {
+
+	public void createProposalView() throws IOException {
 		LOG.info("createProposalView invoked");
 		Faces.redirect(PROPOSAL_CREATION_URL);
 	}
-	
-		public void displayProposalDialog(Proposal e) {
+
+	public void displayProposalDialog(Proposal e) {
 		LOG.info("displayProposalDialog invoked!");
 		this.entry = e;
 		LOG.info("entry selected:  id -> " + this.entry.getId());
 
 	}
-	
-		public void prepare() {
+
+	public void prepare() {
 		LOG.info("prepare method invoked!");
 		Flash flash = Faces.getFlash();// FacesContext.getCurrentInstance().getExternalContext().getFlash();
 		this.entry = (Proposal) flash.get("entry");
 		LOG.info("selected Proposal retrieved >>> " + entry);
 	}
-	
+
 //		private User getCurrentUser() {
 //		Subject subject = SecurityUtils.getSubject();
 //		String username = String.valueOf(subject.getPrincipal());
 //		return userService.findByUsername(username);
 //	}
-	
-	
-		/**
+
+	/**
 	 * @return the entry
 	 */
 	public Proposal getEntry() {
@@ -169,8 +186,8 @@ public class ProposalBean implements Serializable {
 	public void setEntry(Proposal entry) {
 		this.entry = entry;
 	}
-	
-		/**
+
+	/**
 	 * @return the entries
 	 */
 	public List<Proposal> getEntries() {
@@ -183,8 +200,8 @@ public class ProposalBean implements Serializable {
 	public void setEntries(List<Proposal> entries) {
 		this.entries = entries;
 	}
-	
-		/**
+
+	/**
 	 * @return the lazyModel
 	 */
 	public LazyDataModel<Proposal> getLazyModel() {
@@ -197,7 +214,85 @@ public class ProposalBean implements Serializable {
 	public void setLazyModel(LazyDataModel<Proposal> lazyModel) {
 		this.lazyModel = lazyModel;
 	}
-	
-	
+
+	/**
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * @param title the title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	/**
+	 * @return the methodology
+	 */
+	public String getMethodology() {
+		return methodology;
+	}
+
+	/**
+	 * @param methodology the methodology to set
+	 */
+	public void setMethodology(String methodology) {
+		this.methodology = methodology;
+	}
+
+	/**
+	 * @return the problemStatement
+	 */
+	public String getProblemStatement() {
+		return problemStatement;
+	}
+
+	/**
+	 * @param problemStatement the problemStatement to set
+	 */
+	public void setProblemStatement(String problemStatement) {
+		this.problemStatement = problemStatement;
+	}
+
+	public String getObjective1() {
+		return objective1;
+	}
+
+	public void setObjective1(String objective1) {
+		this.objective1 = objective1;
+	}
+
+	public String getObjective2() {
+		return objective2;
+	}
+
+	public void setObjective2(String objective2) {
+		this.objective2 = objective2;
+	}
+
+	public String getObjective3() {
+		return objective3;
+	}
+
+	public void setObjective3(String objective3) {
+		this.objective3 = objective3;
+	}
+
+	/**
+	 * @return the aimsAndObjectives
+	 */
+	public String getAimsAndObjectives() {
+		return aimsAndObjectives;
+	}
+
+	/**
+	 * @param aimsAndObjectives the aimsAndObjectives to set
+	 */
+	public void setAimsAndObjectives(String aimsAndObjectives) {
+		this.aimsAndObjectives = aimsAndObjectives;
+	}
 
 }
