@@ -6,6 +6,7 @@ package com.kayode.ifypm.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Index;
@@ -30,16 +31,25 @@ private Date createdDate;
 private Date lastModifiedDate;
 private Long studentId;
 private Long supervisorId;
+@Column(columnDefinition = "TEXT")
 private String title;
+@Column(columnDefinition = "TEXT")
 private String problemStatement;
+@Column(columnDefinition = "TEXT")
 private String objectives;
+@Column(columnDefinition = "TEXT")
 private String methodology;
 private Status status;
+@Column(columnDefinition = "TEXT")
 private String supervisorComment;
 private String similarityScore;
 private Long mostSimilarProposalId;
 private Long mostSimilarProjectId;
 private String submittedAt;
+
+@Column(name = "embedding", columnDefinition = "vector(768)")
+@Convert(converter = VectorConverter.class)
+private float[] embedding;
 
 
 /**
@@ -183,5 +193,19 @@ private void onCreate() {
 private void onUpdate() {
 	lastModifiedDate = new Date();
 }
+/**
+ * @return the embedding
+ */
+public float[] getEmbedding() {
+	return embedding;
+}
+/**
+ * @param embedding the embedding to set
+ */
+public void setEmbedding(float[] embedding) {
+	this.embedding = embedding;
+}
+
+
 
 }

@@ -6,6 +6,7 @@ package com.kayode.ifypm.service;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,26 +40,40 @@ public class ProposalService {
 	@PersistenceContext(unitName = "app")
 	private EntityManager em;
 
-
 	private static Logger LOG = LoggerFactory.getLogger(ProposalService.class);
+	
 
-	public void createProposal(Proposal e){
+
+	public void createProposal(Proposal e) {
 		em.persist(e);
 		em.flush();
+		
+		}
+	
+
+	public List<Long> findMostSimilar(Proposal e) {
+		float[] embedding = e.getEmbedding();
+	    String vectorLiteral = Arrays.toString(embedding);
+
+	    String sql = "SELECT p.id FROM proposal p " +
+	                 "ORDER BY embedding <=> CAST('" + vectorLiteral + "' AS vector) " +
+	                 "LIMIT 5";
+
+	    return em.createNativeQuery(sql, Proposal.class)
+	             .getResultList();
 	}
 
-	public Proposal updateProposal(Proposal e){
+	public Proposal updateProposal(Proposal e) {
 		return em.merge(e);
 	}
-	
-	public Proposal findProposal(Long id){
+
+	public Proposal findProposal(Long id) {
 		return em.find(Proposal.class, id);
 	}
-	
-	public PagedList<Proposal> fetchProposal(int first, int pageSize){
+
+	public PagedList<Proposal> fetchProposal(int first, int pageSize) {
 		PagedList<Proposal> list = new PagedList<Proposal>();
-		TypedQuery<Proposal> query = em.createQuery(
-				"select s from Proposal s order by s.createdDate desc",
+		TypedQuery<Proposal> query = em.createQuery("select s from Proposal s order by s.createdDate desc",
 				Proposal.class);
 		query.setFirstResult(first).setMaxResults(pageSize);
 		List<Proposal> res = query.getResultList();
@@ -69,12 +84,9 @@ public class ProposalService {
 
 		return list;
 	}
-	
-		public Number fetchProposalCount()
-			{
-		TypedQuery<Number> query = em.createQuery(
-				"select count(s.id) from Proposal s",
-				Number.class);
+
+	public Number fetchProposalCount() {
+		TypedQuery<Number> query = em.createQuery("select count(s.id) from Proposal s", Number.class);
 		Number res = query.getSingleResult();
 		return res;
 	}

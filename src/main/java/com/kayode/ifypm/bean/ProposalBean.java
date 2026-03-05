@@ -42,6 +42,7 @@ import com.kayode.ifypm.constants.QueryType;
 import com.kayode.ifypm.model.Constants;
 import com.kayode.ifypm.lazymodel.ProposalLazyDataModel;
 import com.kayode.ifypm.model.Proposal;
+import com.kayode.ifypm.model.Status;
 //import com.kayode.ifypm.model.Role;
 //import com.kayode.ifypm.model.User;
 import com.kayode.ifypm.service.ProposalService;
@@ -97,16 +98,32 @@ public class ProposalBean implements Serializable {
 	public void init() {
 		LOG.info("ProposalBean init!");
 	}
+	
 
-	public void submit() {
+	public void saveProposal() {
 		String proposal = "Title: " + title + "\n\n" + "Methodology: " + methodology + "\n\n" + "Problem Statement: "
-				+ problemStatement + "\n\n" + "Aims and Objectives: " + aimsAndObjectives + "\n\n" + "Objective 1: "
-				+ objective1 + "\n\n" + "Objective 2: " + objective2 + "\n\n" + "Objective 3: " + objective3;
-		
-		System.out.println("proposal -> " + proposal);
-		 Embedding embedding = model.embed(proposal).content();
-		 System.out.println("Embedding generated: " + embedding);
+				+ problemStatement + "\n\n" + "\n\n" + "Objective 1: " + objective1 + "\n\n" + "Objective 2: "
+				+ objective2 + "\n\n" + "Objective 3: " + objective3;
 
+		this.entry = new Proposal();
+		entry.setTitle(title);
+		entry.setMethodology(methodology);
+		entry.setProblemStatement(problemStatement);
+		entry.setObjectives(objective1 + "\n\n" + objective2 + "\n\n" + objective3);
+		Embedding embedding = model.embed(proposal).content();
+        entry.setEmbedding(embedding.vector());
+        entry.setStatus(Status.DRAFT);
+        proposalService.createProposal(entry);
+        Messages.addFlashGlobalInfo("Proposal saved as draft!");
+        Faces.redirect(PROPOSAL_MGT_URL);
+
+
+	}
+	
+	public void submit() {
+		saveProposal();
+		
+		
 	}
 
 	public void listProposal() {
