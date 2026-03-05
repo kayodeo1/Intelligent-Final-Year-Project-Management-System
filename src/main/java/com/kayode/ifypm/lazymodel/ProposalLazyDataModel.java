@@ -8,7 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,14 +51,13 @@ public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 	}
 
 	@Override
-	public Object getRowKey(Proposal r) {
+	public String getRowKey(Proposal r) {
 		// LOG.info("getRowKey method invoked! " + cdt);
-		return r.getId();
+	    return r.getId() != null ? r.getId().toString() : null;
 	}
 
 	@Override
-	public List<Proposal> load(int first, int pageSize, String sortField, SortOrder sortOrder,
-			Map<String, Object> filters) {
+	public List<Proposal> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
 		try {
 			LOG.info("query invoked >>> " + query);
 			List<Proposal> data = new ArrayList<>();
@@ -85,6 +86,12 @@ public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 			e.printStackTrace();
 			return new ArrayList<Proposal>();
 		}
+	}
+
+	@Override
+	public int count(Map<String, FilterMeta> arg0) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

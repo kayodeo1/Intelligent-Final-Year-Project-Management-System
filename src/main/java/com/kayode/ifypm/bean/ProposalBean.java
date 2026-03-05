@@ -51,6 +51,7 @@ import com.kayode.ifypm.service.ProposalService;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
+import dev.langchain4j.store.embedding.CosineSimilarity;
 
 /**
  * @author AAfolayan
@@ -121,7 +122,39 @@ public class ProposalBean implements Serializable {
 	}
 	
 	public void submit() {
-		saveProposal();
+		String proposal = "Title: " + title + "\n\n" + "Methodology: " + methodology + "\n\n" + "Problem Statement: "
+				+ problemStatement + "\n\n" + "\n\n" + "Objective 1: " + objective1 + "\n\n" + "Objective 2: "
+				+ objective2 + "\n\n" + "Objective 3: " + objective3;
+
+		this.entry = new Proposal();
+		entry.setTitle(title);
+		entry.setMethodology(methodology);
+		entry.setProblemStatement(problemStatement);
+		entry.setObjectives(objective1 + "\n\n" + objective2 + "\n\n" + objective3);
+		Embedding embedding = model.embed(proposal).content();
+        entry.setEmbedding(embedding.vector());
+        entry.setStatus(Status.DRAFT);
+        proposalService.createProposal(entry);
+        Messages.addFlashGlobalInfo("Proposal saved as draft!");
+//        Faces.redirect(PROPOSAL_MGT_URL);		
+        List<Proposal> similarProposals = proposalService.findSimilarProposals(entry);
+		if (similarProposals.isEmpty()) {
+			Messages.addFlashGlobalInfo("No similar proposals found.");
+			//TODO send to supervisor for review and approval.
+		} else {
+			Messages.addFlashGlobalInfo("Similar proposals found:");
+			Proposal similarProposal = similarProposals.get(0);
+			
+			
+			
+			Embedding emb1 = Embedding.from(entry.getEmbedding());
+			Embedding emb2 = Embedding.from(similarProposal.getEmbedding());
+
+			double sim = CosineSimilarity.between(emb1, emb2);
+			
+			Messages.addFlashGlobalInfo("Most similar proposal: " + similarProposal.getTitle() + " (Similarity: " + sim + ")");
+		}
+        
 		
 		
 	}

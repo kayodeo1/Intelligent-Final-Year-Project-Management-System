@@ -51,11 +51,11 @@ public class ProposalService {
 		}
 	
 
-	public List<Long> findMostSimilar(Proposal e) {
+	public List<Proposal> findSimilarProposals(Proposal e) {
 		float[] embedding = e.getEmbedding();
 	    String vectorLiteral = Arrays.toString(embedding);
 
-	    String sql = "SELECT p.id FROM proposal p " +
+	    String sql = "SELECT p FROM proposal p " +
 	                 "ORDER BY embedding <=> CAST('" + vectorLiteral + "' AS vector) " +
 	                 "LIMIT 5";
 

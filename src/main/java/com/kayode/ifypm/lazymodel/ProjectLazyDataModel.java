@@ -51,8 +51,8 @@ public class ProjectLazyDataModel extends LazyDataModel<Project> {
 	}
 
 	@Override
-	public Object getRowKey(Project object) {
-		return object.getId();
+	public String getRowKey(Project r) {
+	    return r.getId() != null ? r.getId().toString() : null;
 	}
 
 	@Override
@@ -85,6 +85,12 @@ public class ProjectLazyDataModel extends LazyDataModel<Project> {
 			e.printStackTrace();
 			return new ArrayList<Project>();
 		}
+	}
+
+	@Override
+	public int count(Map<String, FilterMeta> arg0) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
