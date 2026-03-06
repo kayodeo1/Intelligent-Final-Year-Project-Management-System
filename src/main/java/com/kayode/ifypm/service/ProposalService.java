@@ -41,26 +41,29 @@ public class ProposalService {
 	private EntityManager em;
 
 	private static Logger LOG = LoggerFactory.getLogger(ProposalService.class);
-	
-
 
 	public void createProposal(Proposal e) {
 		em.persist(e);
 		em.flush();
-		
-		}
-	
+
+	}
 
 	public List<Proposal> findSimilarProposals(Proposal e) {
 		float[] embedding = e.getEmbedding();
-	    String vectorLiteral = Arrays.toString(embedding);
 
-	    String sql = "SELECT p FROM proposal p " +
-	                 "ORDER BY embedding <=> CAST('" + vectorLiteral + "' AS vector) " +
-	                 "LIMIT 5";
+		StringBuilder sb = new StringBuilder("[");
+		for (int i = 0; i < embedding.length; i++) {
+			sb.append(embedding[i]);
+			if (i < embedding.length - 1)
+				sb.append(",");
+		}
+		sb.append("]");
+		String vectorLiteral = sb.toString();
 
-	    return em.createNativeQuery(sql, Proposal.class)
-	             .getResultList();
+		String sql = "SELECT * FROM proposal " + "WHERE id != " + e.getId() + " " + "AND embedding IS NOT NULL "
+				+ "ORDER BY embedding <=> CAST('" + vectorLiteral + "' AS vector) " + "LIMIT 5";
+
+		return em.createNativeQuery(sql, Proposal.class).getResultList();
 	}
 
 	public Proposal updateProposal(Proposal e) {

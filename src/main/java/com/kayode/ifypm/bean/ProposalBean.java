@@ -77,6 +77,8 @@ public class ProposalBean implements Serializable {
 	private static final String PROPOSAL_MGT_URL = APP_BASE_NAME + "/online/proposal/list.xhtml?faces-redirect=true";
 	private static final String PROPOSAL_CREATION_URL = APP_BASE_NAME
 			+ "/online/proposal/create.xhtml?faces-redirect=true";
+	private static final String PROPOSAL_COMPARE_URL = APP_BASE_NAME
+			+ "/online/proposal/compare.xhtml?faces-redirect=true";
 
 	private List<Proposal> entries = new ArrayList<>();
 	private String title;
@@ -86,6 +88,8 @@ public class ProposalBean implements Serializable {
 	private String objective1;
 	private String objective2;
 	private String objective3;
+	private Proposal similarProposal;
+	private double sim;
 	EmbeddingModel model = OllamaEmbeddingModel.builder()
             .baseUrl("http://localhost:11434")
             .modelName("embeddinggemma")
@@ -98,6 +102,14 @@ public class ProposalBean implements Serializable {
 	@PostConstruct
 	public void init() {
 		LOG.info("ProposalBean init!");
+		
+		if (Faces.getFlash().get("similarProposal") != null) {
+            this.similarProposal = (Proposal) Faces.getFlash().get("similarProposal");
+            LOG.info("similar proposal retrieved >>> " + similarProposal);
+            this.entry = (Proposal) Faces.getFlash().get("entry");
+            LOG.info("current proposal retrieved >>> " + entry);
+			this.sim = (double) Faces.getFlash().get("similarityScore");
+		}
 	}
 	
 
@@ -121,7 +133,7 @@ public class ProposalBean implements Serializable {
 
 	}
 	
-	public void submit() {
+	public String submit() {
 		String proposal = "Title: " + title + "\n\n" + "Methodology: " + methodology + "\n\n" + "Problem Statement: "
 				+ problemStatement + "\n\n" + "\n\n" + "Objective 1: " + objective1 + "\n\n" + "Objective 2: "
 				+ objective2 + "\n\n" + "Objective 3: " + objective3;
@@ -143,17 +155,29 @@ public class ProposalBean implements Serializable {
 			//TODO send to supervisor for review and approval.
 		} else {
 			Messages.addFlashGlobalInfo("Similar proposals found:");
-			Proposal similarProposal = similarProposals.get(0);
+			this.similarProposal = similarProposals.get(0);
 			
 			
 			
 			Embedding emb1 = Embedding.from(entry.getEmbedding());
 			Embedding emb2 = Embedding.from(similarProposal.getEmbedding());
 
-			double sim = CosineSimilarity.between(emb1, emb2);
+			this.sim = CosineSimilarity.between(emb1, emb2) ;
 			
-			Messages.addFlashGlobalInfo("Most similar proposal: " + similarProposal.getTitle() + " (Similarity: " + sim + ")");
+			if (sim >= 0.8) {
+				Messages.addFlashGlobalError(
+						"Warning: Your proposal is very similar to an existing proposal. Please review the similar proposal before proceeding.");
+				Faces.getFlash().put("entry", entry);
+				Faces.getFlash().put("similarProposal", similarProposal);
+				Faces.getFlash().put("similarityScore", sim);
+				
+				return "compare";
+			}else {
+				//TODO send to supervisor for review and approval.
+			}
+			
 		}
+		return "";
         
 		
 		
@@ -357,4 +381,37 @@ public class ProposalBean implements Serializable {
 		this.aimsAndObjectives = aimsAndObjectives;
 	}
 
+
+	/**
+	 * @return the sim
+	 */
+	public double getSim() {
+		return sim;
+	}
+
+
+	/**
+	 * @param sim the sim to set
+	 */
+	public void setSim(double sim) {
+		this.sim = sim;
+	}
+
+
+	/**
+	 * @return the similarProposal
+	 */
+	public Proposal getSimilarProposal() {
+		return similarProposal;
+	}
+
+
+	/**
+	 * @param similarProposal the similarProposal to set
+	 */
+	public void setSimilarProposal(Proposal similarProposal) {
+		this.similarProposal = similarProposal;
+	}
+
+	
 }

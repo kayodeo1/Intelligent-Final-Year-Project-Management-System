@@ -15,71 +15,70 @@
 
             <style>
                 /* ===== COMPARISON PAGE ===== */
-                .compare-header {
-                    display: flex;
-                    align-items: flex-start;
-                    justify-content: space-between;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                    margin-bottom: 1.75rem;
-                }
-                .compare-header-left h2 {
-                    font-family: 'Georgia', 'Times New Roman', serif;
-                    font-size: 1.4rem;
-                    font-weight: 700;
-                    color: #1B3A6B;
-                    margin-bottom: 0.3rem;
-                }
-                .compare-header-left p {
-                    font-size: 0.85rem;
-                    color: #9AA3B2;
-                }
 
-                /* Score banner */
-                .score-banner {
+                /* Score circle */
+                .score-circle-wrap {
                     display: flex;
+                    flex-direction: column;
                     align-items: center;
-                    gap: 1rem;
-                    background: #FFFFFF;
-                    border: 1px solid #E5E9F0;
-                    border-radius: 8px;
-                    padding: 0.85rem 1.25rem;
-                    box-shadow: 0 1px 4px rgba(10,22,40,0.06);
+                    margin-bottom: 2rem;
+                }
+                .score-circle {
+                    position: relative;
+                    width: 150px;
+                    height: 150px;
+                }
+                .score-circle svg {
+                    width: 150px;
+                    height: 150px;
+                    transform: rotate(-90deg);
+                }
+                .score-circle .track {
+                    fill: none;
+                    stroke: #E5E9F0;
+                    stroke-width: 10;
+                }
+                .score-circle .fill {
+                    fill: none;
+                    stroke-width: 10;
+                    stroke-linecap: round;
+                    transition: stroke-dashoffset 1s ease;
+                }
+                .score-circle .fill.high   { stroke: #C0392B; }
+                .score-circle .fill.medium { stroke: #B45309; }
+                .score-circle .fill.low    { stroke: #2E7D52; }
+                .score-circle-text {
+                    position: absolute;
+                    inset: 0;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .score-number {
+                    font-size: 2rem;
+                    font-weight: 800;
+                    line-height: 1;
+                }
+                .score-number.high   { color: #C0392B; }
+                .score-number.medium { color: #B45309; }
+                .score-number.low    { color: #2E7D52; }
+                .score-pct {
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    color: #9AA3B2;
+                    margin-top: 0.15rem;
                 }
                 .score-label {
                     font-size: 0.78rem;
                     font-weight: 600;
-                    color: #9AA3B2;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
+                    color: #9AA3B2;
+                    margin-top: 0.6rem;
                 }
-                .score-value {
-                    font-size: 1.6rem;
-                    font-weight: 800;
-                    line-height: 1;
-                }
-                .score-value.high   { color: #C0392B; }
-                .score-value.medium { color: #B45309; }
-                .score-value.low    { color: #2E7D52; }
-                .score-bar-wrap {
-                    width: 120px;
-                }
-                .score-bar {
-                    height: 8px;
-                    border-radius: 4px;
-                    background: #E5E9F0;
-                    overflow: hidden;
-                }
-                .score-bar-fill {
-                    height: 100%;
-                    border-radius: 4px;
-                    transition: width 0.5s ease;
-                }
-                .score-bar-fill.high   { background: #C0392B; }
-                .score-bar-fill.medium { background: #B45309; }
-                .score-bar-fill.low    { background: #2E7D52; }
                 .score-verdict {
-                    font-size: 0.78rem;
+                    font-size: 0.85rem;
                     font-weight: 600;
                     margin-top: 0.3rem;
                 }
@@ -176,58 +175,40 @@
                     border-top: 2px solid #C9A84C;
                     display: flex;
                     align-items: center;
-                    gap: 0.85rem;
-                    flex-wrap: wrap;
+                    justify-content: center;
                 }
-                .btn-approve {
-                    background: #1B3A6B; color: #FFFFFF; border: none;
-                    padding: 0.65rem 1.6rem; border-radius: 4px;
-                    font-size: 0.9rem; font-weight: 600; cursor: pointer;
-                    transition: background 0.2s;
-                }
-                .btn-approve:hover { background: #2E5399; }
-                .btn-reject {
-                    background: #C0392B; color: #FFFFFF; border: none;
-                    padding: 0.65rem 1.6rem; border-radius: 4px;
-                    font-size: 0.9rem; font-weight: 600; cursor: pointer;
-                    transition: background 0.2s;
-                }
-                .btn-reject:hover { background: #a93226; }
                 .btn-back {
                     background: transparent; color: #1B3A6B;
                     border: 1.5px solid #1B3A6B;
                     padding: 0.65rem 1.6rem; border-radius: 4px;
                     font-size: 0.9rem; cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all 0.2s; text-decoration: none;
                 }
                 .btn-back:hover { background: #1B3A6B; color: #FFFFFF; }
 
                 /* Responsive */
                 @media (max-width: 900px) {
                     .compare-grid { grid-template-columns: 1fr; }
-                    .compare-header { flex-direction: column; }
                 }
             </style>
 
-            <!-- ===== PAGE HEADER + SCORE ===== -->
-            <div class="compare-header">
-                <div class="compare-header-left">
-                    <h2>Similarity Comparison</h2>
-                    <p>Review the submitted proposal against the most similar existing project</p>
-                </div>
-
-                <div class="score-banner">
-                    <div>
-                        <div class="score-label">Similarity Score</div>
-                        <div class="score-value high">0.84</div>
-                    </div>
-                    <div class="score-bar-wrap">
-                        <div class="score-bar">
-                            <div class="score-bar-fill high" style="width: 84%;"></div>
-                        </div>
-                        <div class="score-verdict high">&#9888; Highly similar — potential duplicate</div>
+            <!-- ===== SCORE CIRCLE (centered) ===== -->
+            <div class="score-circle-wrap">
+                <div class="score-circle">
+                    <svg viewBox="0 0 150 150">
+                        <circle class="track" cx="75" cy="75" r="62" />
+                        <!-- circumference = 2 * pi * 62 ≈ 389.56; 84% fill = 389.56 * (1 - 0.84) ≈ 62.3 offset -->
+                        <circle class="fill high" cx="75" cy="75" r="62"
+                                stroke-dasharray="389.56"
+                                stroke-dashoffset="62.3" />
+                    </svg>
+                    <div class="score-circle-text">
+                        <span class="score-number high">#{proposalBean.sim}</span>
+                        <span class="score-pct">#{proposalBean.sim} match</span>
                     </div>
                 </div>
+                <div class="score-label">Similarity Score</div>
+                <div class="score-verdict high">&#9888; Highly similar — potential duplicate</div>
             </div>
 
             <!-- ===== SIDE-BY-SIDE COMPARISON ===== -->
@@ -332,26 +313,12 @@
 
             </div>
 
-            <!-- ===== SUPERVISOR ACTIONS ===== -->
-            <h:form id="compareForm" prependId="false">
-                <div class="compare-actions">
-                    <p:commandButton id="approveBtn"
-                                     value="&#10003; Approve Proposal"
-                                     action="#{proposalBean.updateProposal}"
-                                     ajax="false"
-                                     styleClass="btn-approve" />
-
-                    <p:commandButton id="rejectBtn"
-                                     value="&#10007; Reject Proposal"
-                                     action="#{proposalBean.updateProposal}"
-                                     ajax="false"
-                                     styleClass="btn-reject" />
-
-                    <a href="#" class="btn-back" onclick="history.back(); return false;">
-                        &#8592; Back to Proposals
-                    </a>
-                </div>
-            </h:form>
+            <!-- ===== BACK BUTTON ===== -->
+            <div class="compare-actions">
+                <a href="#" class="btn-back" onclick="history.back(); return false;">
+                    &#8592; Back to Proposals
+                </a>
+            </div>
 
         </ui:define>
 
