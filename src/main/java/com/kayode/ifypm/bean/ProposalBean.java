@@ -75,7 +75,7 @@ public class ProposalBean implements Serializable {
 	private LazyDataModel<Proposal> lazyModel;
 
 	private static final String PROPOSAL_MGT_URL = APP_BASE_NAME + "/online/proposal/list.xhtml?faces-redirect=true";
-	private static final String PROPOSAL_CREATION_URL = APP_BASE_NAME
+	private static final String PROPOSAL_CREATION_URL = APP_BASE_NAME +"/online/proposal/submit.xhtml?faces-redirect=true"
 			+ "/online/proposal/create.xhtml?faces-redirect=true";
 	private static final String PROPOSAL_COMPARE_URL = APP_BASE_NAME
 			+ "/online/proposal/compare.xhtml?faces-redirect=true";
@@ -109,6 +109,8 @@ public class ProposalBean implements Serializable {
             this.entry = (Proposal) Faces.getFlash().get("entry");
             LOG.info("current proposal retrieved >>> " + entry);
 			this.sim = (double) Faces.getFlash().get("similarityScore");
+		}else {
+			LOG.info("No similar proposal found in flash scope.");
 		}
 	}
 	
@@ -252,6 +254,10 @@ public class ProposalBean implements Serializable {
 		this.entry = (Proposal) flash.get("entry");
 		LOG.info("selected Proposal retrieved >>> " + entry);
 	}
+	
+	public String getSimFormatted() {
+	    return String.format("%.1f", sim * 100) + "%";
+	}
 
 //		private User getCurrentUser() {
 //		Subject subject = SecurityUtils.getSubject();
@@ -272,7 +278,7 @@ public class ProposalBean implements Serializable {
 	public void setEntry(Proposal entry) {
 		this.entry = entry;
 	}
-
+	
 	/**
 	 * @return the entries
 	 */

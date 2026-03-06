@@ -1,327 +1,360 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 <h:body>
-    <ui:composition template="/online/template/dashboard.xhtml">
+	<ui:composition template="/online/template/dashboard.xhtml">
 
-        <ui:define name="student_name">Adewale</ui:define>
+		<ui:define name="student_name">Adewale</ui:define>
 
-        <ui:define name="dashboard_body">
+		<ui:define name="dashboard_body">
 
-            <style>
-                /* ===== COMPARISON PAGE ===== */
+			<style>
+/* ===== COMPARISON PAGE ===== */
 
-                /* Score circle */
-                .score-circle-wrap {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    margin-bottom: 2rem;
-                }
-                .score-circle {
-                    position: relative;
-                    width: 150px;
-                    height: 150px;
-                }
-                .score-circle svg {
-                    width: 150px;
-                    height: 150px;
-                    transform: rotate(-90deg);
-                }
-                .score-circle .track {
-                    fill: none;
-                    stroke: #E5E9F0;
-                    stroke-width: 10;
-                }
-                .score-circle .fill {
-                    fill: none;
-                    stroke-width: 10;
-                    stroke-linecap: round;
-                    transition: stroke-dashoffset 1s ease;
-                }
-                .score-circle .fill.high   { stroke: #C0392B; }
-                .score-circle .fill.medium { stroke: #B45309; }
-                .score-circle .fill.low    { stroke: #2E7D52; }
-                .score-circle-text {
-                    position: absolute;
-                    inset: 0;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .score-number {
-                    font-size: 2rem;
-                    font-weight: 800;
-                    line-height: 1;
-                }
-                .score-number.high   { color: #C0392B; }
-                .score-number.medium { color: #B45309; }
-                .score-number.low    { color: #2E7D52; }
-                .score-pct {
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                    color: #9AA3B2;
-                    margin-top: 0.15rem;
-                }
-                .score-label {
-                    font-size: 0.78rem;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                    color: #9AA3B2;
-                    margin-top: 0.6rem;
-                }
-                .score-verdict {
-                    font-size: 0.85rem;
-                    font-weight: 600;
-                    margin-top: 0.3rem;
-                }
-                .score-verdict.high   { color: #C0392B; }
-                .score-verdict.medium { color: #B45309; }
-                .score-verdict.low    { color: #2E7D52; }
+/* Score circle */
+.score-circle-wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 2rem;
+}
 
-                /* Two-column comparison */
-                .compare-grid {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 1.25rem;
-                }
-                .compare-col {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1.25rem;
-                }
+.score-circle {
+	position: relative;
+	width: 150px;
+	height: 150px;
+}
 
-                /* Column header cards */
-                .col-label {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.6rem;
-                    background: #FFFFFF;
-                    border: 1px solid #E5E9F0;
-                    border-radius: 8px;
-                    padding: 0.85rem 1.1rem;
-                    box-shadow: 0 1px 4px rgba(10,22,40,0.06);
-                }
-                .col-label-dot {
-                    width: 10px;
-                    height: 10px;
-                    border-radius: 50%;
-                    flex-shrink: 0;
-                }
-                .col-label-dot.proposal { background: #2E5399; }
-                .col-label-dot.project  { background: #C9A84C; }
-                .col-label-title {
-                    font-size: 0.9rem;
-                    font-weight: 700;
-                    color: #1A202C;
-                }
-                .col-label-sub {
-                    font-size: 0.78rem;
-                    color: #9AA3B2;
-                    font-weight: 400;
-                    margin-left: 0.25rem;
-                }
+.score-circle svg {
+	width: 150px;
+	height: 150px;
+	transform: rotate(-90deg);
+}
 
-                /* Field card */
-                .field-card {
-                    background: #FFFFFF;
-                    border: 1px solid #E5E9F0;
-                    border-radius: 8px;
-                    overflow: hidden;
-                    box-shadow: 0 1px 4px rgba(10,22,40,0.06);
-                }
-                .field-card-header {
-                    font-size: 0.78rem;
-                    font-weight: 600;
-                    color: #1B3A6B;
-                    text-transform: uppercase;
-                    letter-spacing: 0.4px;
-                    padding: 0.7rem 1.1rem;
-                    background: #F7F8FC;
-                    border-bottom: 1px solid #E5E9F0;
-                }
-                .field-card-body {
-                    padding: 1rem 1.1rem;
-                    font-size: 0.9rem;
-                    color: #4A5568;
-                    line-height: 1.65;
-                }
-                .field-card-body .field-title {
-                    font-family: 'Georgia', 'Times New Roman', serif;
-                    font-size: 1.05rem;
-                    font-weight: 700;
-                    color: #1A202C;
-                }
+.score-circle .track {
+	fill: none;
+	stroke: #E5E9F0;
+	stroke-width: 10;
+}
 
-                /* Highlight match indicator on field cards */
-                .field-card.flag-high {
-                    border-left: 3px solid #C0392B;
-                }
-                .field-card.flag-medium {
-                    border-left: 3px solid #B45309;
-                }
+.score-circle .fill {
+	fill: none;
+	stroke-width: 10;
+	stroke-linecap: round;
+	transition: stroke-dashoffset 1s ease;
+}
 
-                /* Action bar */
-                .compare-actions {
-                    margin-top: 1.75rem;
-                    padding-top: 1.25rem;
-                    border-top: 2px solid #C9A84C;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .btn-back {
-                    background: transparent; color: #1B3A6B;
-                    border: 1.5px solid #1B3A6B;
-                    padding: 0.65rem 1.6rem; border-radius: 4px;
-                    font-size: 0.9rem; cursor: pointer;
-                    transition: all 0.2s; text-decoration: none;
-                }
-                .btn-back:hover { background: #1B3A6B; color: #FFFFFF; }
+.score-circle .fill.high {
+	stroke: #C0392B;
+}
 
-                /* Responsive */
-                @media (max-width: 900px) {
-                    .compare-grid { grid-template-columns: 1fr; }
-                }
-            </style>
+.score-circle .fill.medium {
+	stroke: #B45309;
+}
 
-            <!-- ===== SCORE CIRCLE (centered) ===== -->
-            <div class="score-circle-wrap">
-                <div class="score-circle">
-                    <svg viewBox="0 0 150 150">
+.score-circle .fill.low {
+	stroke: #2E7D52;
+}
+
+.score-circle-text {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.score-number {
+	font-size: 2rem;
+	font-weight: 800;
+	line-height: 1;
+}
+
+.score-number.high {
+	color: #C0392B;
+}
+
+.score-number.medium {
+	color: #B45309;
+}
+
+.score-number.low {
+	color: #2E7D52;
+}
+
+.score-pct {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #9AA3B2;
+	margin-top: 0.15rem;
+}
+
+.score-label {
+	font-size: 0.78rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: #9AA3B2;
+	margin-top: 0.6rem;
+}
+
+.score-verdict {
+	font-size: 0.85rem;
+	font-weight: 600;
+	margin-top: 0.3rem;
+}
+
+.score-verdict.high {
+	color: #C0392B;
+}
+
+.score-verdict.medium {
+	color: #B45309;
+}
+
+.score-verdict.low {
+	color: #2E7D52;
+}
+
+/* Two-column comparison */
+.compare-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.25rem;
+}
+
+.compare-col {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+/* Column header cards */
+.col-label {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	background: #FFFFFF;
+	border: 1px solid #E5E9F0;
+	border-radius: 8px;
+	padding: 0.85rem 1.1rem;
+	box-shadow: 0 1px 4px rgba(10, 22, 40, 0.06);
+}
+
+.col-label-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+.col-label-dot.proposal {
+	background: #2E5399;
+}
+
+.col-label-dot.project {
+	background: #C9A84C;
+}
+
+.col-label-title {
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: #1A202C;
+}
+
+.col-label-sub {
+	font-size: 0.78rem;
+	color: #9AA3B2;
+	font-weight: 400;
+	margin-left: 0.25rem;
+}
+
+/* Field card */
+.field-card {
+	background: #FFFFFF;
+	border: 1px solid #E5E9F0;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 1px 4px rgba(10, 22, 40, 0.06);
+}
+
+.field-card-header {
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: #1B3A6B;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+	padding: 0.7rem 1.1rem;
+	background: #F7F8FC;
+	border-bottom: 1px solid #E5E9F0;
+}
+
+.field-card-body {
+	padding: 1rem 1.1rem;
+	font-size: 0.9rem;
+	color: #4A5568;
+	line-height: 1.65;
+}
+
+.field-card-body .field-title {
+	font-family: 'Georgia', 'Times New Roman', serif;
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: #1A202C;
+}
+
+/* Highlight match indicator on field cards */
+.field-card.flag-high {
+	border-left: 3px solid #C0392B;
+}
+
+.field-card.flag-medium {
+	border-left: 3px solid #B45309;
+}
+
+/* Action bar */
+.compare-actions {
+	margin-top: 1.75rem;
+	padding-top: 1.25rem;
+	border-top: 2px solid #C9A84C;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.btn-back {
+	background: transparent;
+	color: #1B3A6B;
+	border: 1.5px solid #1B3A6B;
+	padding: 0.65rem 1.6rem;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	cursor: pointer;
+	transition: all 0.2s;
+	text-decoration: none;
+}
+
+.btn-back:hover {
+	background: #1B3A6B;
+	color: #FFFFFF;
+}
+
+/* Responsive */
+@media ( max-width : 900px) {
+	.compare-grid {
+		grid-template-columns: 1fr;
+	}
+}
+</style>
+
+			<!-- ===== SCORE CIRCLE (centered) ===== -->
+			<div class="score-circle-wrap">
+				<div class="score-circle">
+					<svg viewBox="0 0 150 150">
                         <circle class="track" cx="75" cy="75" r="62" />
                         <!-- circumference = 2 * pi * 62 ≈ 389.56; 84% fill = 389.56 * (1 - 0.84) ≈ 62.3 offset -->
                         <circle class="fill high" cx="75" cy="75" r="62"
-                                stroke-dasharray="389.56"
-                                stroke-dashoffset="62.3" />
+							stroke-dasharray="389.56" stroke-dashoffset="62.3" />
                     </svg>
-                    <div class="score-circle-text">
-                        <span class="score-number high">#{proposalBean.sim}</span>
-                        <span class="score-pct">#{proposalBean.sim} match</span>
-                    </div>
-                </div>
-                <div class="score-label">Similarity Score</div>
-                <div class="score-verdict high">&#9888; Highly similar — potential duplicate</div>
-            </div>
+					<div class="score-circle-text">
+						<span class="score-number high">#{proposalBean.simFormatted}</span>
+						<span class="score-pct">#{proposalBean.simFormatted} match</span>
+					</div>
+				</div>
+				<div class="score-label">Similarity Score</div>
+				<div class="score-verdict high">&#9888; Highly similar —
+					potential duplicate</div>
+			</div>
 
-            <!-- ===== SIDE-BY-SIDE COMPARISON ===== -->
-            <div class="compare-grid">
+			<!-- ===== SIDE-BY-SIDE COMPARISON ===== -->
+			<div class="compare-grid">
 
-                <!-- LEFT: Submitted Proposal -->
-                <div class="compare-col">
-                    <div class="col-label">
-                        <span class="col-label-dot proposal"></span>
-                        <span class="col-label-title">Submitted Proposal
-                            <span class="col-label-sub">— by Adewale Kayode</span>
-                        </span>
-                    </div>
+				<!-- LEFT: Submitted Proposal -->
+				<div class="compare-col">
+					<div class="col-label">
+						<span class="col-label-dot proposal"></span> <span
+							class="col-label-title">Submitted Proposal <span
+							class="col-label-sub">— by Adewale Kayode</span>
+						</span>
+					</div>
 
-                    <div class="field-card flag-high">
-                        <div class="field-card-header">Project Title</div>
-                        <div class="field-card-body">
-                            <span class="field-title">Intelligent Student Project Management System Using NLP-Based Duplicate Detection</span>
-                        </div>
-                    </div>
+					<div class="field-card flag-high">
+						<div class="field-card-header">Project Title</div>
+						<div class="field-card-body">
+							<span class="field-title">#{proposalBean.entry.title}</span>
+						</div>
+					</div>
 
-                    <div class="field-card flag-high">
-                        <div class="field-card-header">Problem Statement</div>
-                        <div class="field-card-body">
-                            Many universities lack an automated system to manage final year projects and detect
-                            duplicate or highly similar proposals. Supervisors must manually review each submission,
-                            which is time-consuming and error-prone. This results in duplicate projects going
-                            undetected, wasting institutional resources and undermining academic integrity.
-                        </div>
-                    </div>
+					<div class="field-card flag-high">
+						<div class="field-card-header">Problem Statement</div>
+						<div class="field-card-body">
+							#{proposalBean.entry.problemStatement}</div>
+					</div>
 
-                    <div class="field-card flag-medium">
-                        <div class="field-card-header">Aim &amp; Objectives</div>
-                        <div class="field-card-body">
-                            <ol style="padding-left: 1.2rem; margin: 0; display: flex; flex-direction: column; gap: 0.4rem;">
-                                <li>To develop a web-based project management platform for final year students</li>
-                                <li>To integrate NLP-based similarity detection for submitted proposals</li>
-                                <li>To provide supervisors with tools to review and approve projects efficiently</li>
-                            </ol>
-                        </div>
-                    </div>
+					<div class="field-card flag-medium">
+						<div class="field-card-header">Aim &amp; Objectives</div>
+						<div class="field-card-body">
+							#{proposalBean.entry.objectives}</div>
+					</div>
 
-                    <div class="field-card">
-                        <div class="field-card-header">Methodology</div>
-                        <div class="field-card-body">
-                            The system will use the Agile development methodology. The backend will be built
-                            with Java EE (JSF/PrimeFaces), PostgreSQL with pgvector for vector storage, and
-                            LangChain4j with the Ollama embeddinggemma model for generating text embeddings.
-                            Cosine similarity via pgvector will be used to compare proposal embeddings against
-                            existing projects and other submitted proposals.
-                        </div>
-                    </div>
-                </div>
+					<div class="field-card">
+						<div class="field-card-header">Methodology</div>
+						<div class="field-card-body">
+							#{proposalBean.entry.methodology}</div>
+					</div>
+				</div>
 
-                <!-- RIGHT: Similar Existing Project -->
-                <div class="compare-col">
-                    <div class="col-label">
-                        <span class="col-label-dot project"></span>
-                        <span class="col-label-title">Matched Project
-                            <span class="col-label-sub">— by Chinedu Okafor (2024)</span>
-                        </span>
-                    </div>
+				<!-- RIGHT: Similar Existing Project -->
+				<div class="compare-col">
+					<div class="col-label">
+						<span class="col-label-dot project"></span> <span
+							class="col-label-title">Matched Project <span
+							class="col-label-sub">— by Chinedu Okafor (2024)</span>
+						</span>
+					</div>
 
-                    <div class="field-card flag-high">
-                        <div class="field-card-header">Project Title</div>
-                        <div class="field-card-body">
-                            <span class="field-title">Automated Final Year Project Allocation and Plagiarism Detection System</span>
-                        </div>
-                    </div>
+					<div class="field-card flag-high">
+						<div class="field-card-header">Project Title</div>
+						<div class="field-card-body">
+							<span class="field-title">#{proposalBean.similarProposal.title}</span>
+						</div>
+					</div>
 
-                    <div class="field-card flag-high">
-                        <div class="field-card-header">Problem Statement</div>
-                        <div class="field-card-body">
-                            The manual process of allocating and managing final year projects in higher institutions
-                            is inefficient. There is no mechanism to detect when students submit project topics that
-                            are identical or closely related to previously completed ones, leading to repeated work
-                            and dilution of academic standards.
-                        </div>
-                    </div>
+					<div class="field-card flag-high">
+						<div class="field-card-header">Problem Statement</div>
+						<div class="field-card-body">
+							#{proposalBean.similarProposal.problemStatement}</div>
+					</div>
 
-                    <div class="field-card flag-medium">
-                        <div class="field-card-header">Aim &amp; Objectives</div>
-                        <div class="field-card-body">
-                            <ol style="padding-left: 1.2rem; margin: 0; display: flex; flex-direction: column; gap: 0.4rem;">
-                                <li>To design an automated system for managing student project allocations</li>
-                                <li>To implement text similarity analysis to flag duplicate project topics</li>
-                                <li>To evaluate the system's accuracy in detecting similar submissions</li>
-                            </ol>
-                        </div>
-                    </div>
+					<div class="field-card flag-medium">
+						<div class="field-card-header">Aim &amp; Objectives</div>
+						<div class="field-card-body">
+							#{proposalBean.similarProposal.objectives}</div>
+					</div>
 
-                    <div class="field-card">
-                        <div class="field-card-header">Methodology</div>
-                        <div class="field-card-body">
-                            The project followed the waterfall model. It was implemented using PHP and MySQL
-                            for the web platform. TF-IDF vectorization combined with cosine similarity was used
-                            to compare project proposals. The system was tested with a dataset of 150 past project
-                            titles and abstracts from the department's records.
-                        </div>
-                    </div>
-                </div>
+					<div class="field-card">
+						<div class="field-card-header">Methodology</div>
+						<div class="field-card-body">
+							#{proposalBean.similarProposal.methodology}</div>
+					</div>
+				</div>
 
-            </div>
+			</div>
 
-            <!-- ===== BACK BUTTON ===== -->
-            <div class="compare-actions">
-                <a href="#" class="btn-back" onclick="history.back(); return false;">
-                    &#8592; Back to Proposals
-                </a>
-            </div>
+			<!-- ===== BACK BUTTON ===== -->
+			<div class="compare-actions">
+				<a href="#" class="btn-back" onclick="history.back(); return false;">
+					&#8592; Back to Proposals </a>
+			</div>
 
-        </ui:define>
+		</ui:define>
 
-    </ui:composition>
+	</ui:composition>
 </h:body>
 </html>
