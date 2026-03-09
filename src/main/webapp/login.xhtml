@@ -14,137 +14,198 @@
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html, body { height: 100%; }
+
         body {
             font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-            background-color: #0A1628;
+            background: linear-gradient(160deg, #0A1628 0%, #122044 50%, #1B3A6B 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Subtle background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(27,58,107,0.15) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .login-wrapper {
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
             padding: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         /* Logo / branding */
         .login-brand {
             text-align: center;
-            margin-bottom: 1.75rem;
+            margin-bottom: 2rem;
         }
         .login-brand-icon {
-            width: 64px;
-            height: 64px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
-            background: #1B3A6B;
-            border: 2px solid #C9A84C;
+            background: rgba(27,58,107,0.6);
+            border: 2.5px solid #C9A84C;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.85rem;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(201,168,76,0.15);
         }
         .login-brand-icon span {
             font-family: 'Georgia', 'Times New Roman', serif;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: #C9A84C;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
         .login-brand h1 {
             font-family: 'Georgia', 'Times New Roman', serif;
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             font-weight: 700;
-            color: #C9A84C;
-            letter-spacing: 0.5px;
+            color: #FFFFFF;
+            letter-spacing: 1px;
         }
         .login-brand p {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             color: #9AA3B2;
-            margin-top: 0.25rem;
+            margin-top: 0.35rem;
+            letter-spacing: 0.2px;
         }
 
         /* Card */
         .login-card {
             background: #FFFFFF;
-            border-radius: 8px;
-            border-top: 4px solid #C9A84C;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-            padding: 2rem 1.75rem 1.75rem;
+            border-radius: 10px;
+            border-top: 3px solid #C9A84C;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.15);
+            padding: 2.25rem 2rem 1.75rem;
         }
         .login-card h2 {
             font-family: 'Georgia', 'Times New Roman', serif;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: #1B3A6B;
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.35rem;
+        }
+        .login-subtitle {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #9AA3B2;
+            margin-bottom: 1.75rem;
         }
 
-        /* Form */
+        /* Form fields */
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.15rem;
         }
         .form-label {
             display: block;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #4A5568;
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.4rem;
         }
-        .form-input {
-            width: 100%;
-            padding: 0.65rem 0.85rem;
-            border: 1.5px solid #E5E9F0;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            color: #1A202C;
-            background: #FFFFFF;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
+        .form-input,
+        .login-card .ui-inputtext {
+            width: 100% !important;
+            padding: 0.7rem 0.9rem !important;
+            border: 1.5px solid #E5E9F0 !important;
+            border-radius: 6px !important;
+            font-size: 0.9rem !important;
+            color: #1A202C !important;
+            background: #F7F8FC !important;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s !important;
+            box-sizing: border-box !important;
         }
-        .form-input:focus {
-            outline: none;
-            border-color: #1B3A6B;
-            box-shadow: 0 0 0 3px rgba(27,58,107,0.1);
+        .form-input:focus,
+        .login-card .ui-inputtext:focus {
+            outline: none !important;
+            border-color: #1B3A6B !important;
+            background: #FFFFFF !important;
+            box-shadow: 0 0 0 3px rgba(27,58,107,0.08) !important;
         }
+        .form-input::placeholder { color: #9AA3B2; }
 
         /* Submit button */
-        .btn-login {
-            width: 100%;
-            padding: 0.7rem;
-            background-color: #C9A84C;
-            color: #0A1628;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 0.5rem;
+        .btn-login,
+        .login-card .ui-button.btn-login {
+            width: 100% !important;
+            padding: 0.75rem !important;
+            background: linear-gradient(135deg, #C9A84C, #D4B85C) !important;
+            color: #0A1628 !important;
+            border: none !important;
+            border-radius: 6px !important;
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            transition: all 0.25s !important;
+            margin-top: 0.75rem !important;
+            letter-spacing: 0.3px !important;
+            box-shadow: 0 2px 8px rgba(201,168,76,0.25) !important;
         }
-        .btn-login:hover {
-            background-color: #F0D080;
+        .btn-login:hover,
+        .login-card .ui-button.btn-login:hover {
+            background: linear-gradient(135deg, #D4B85C, #F0D080) !important;
+            box-shadow: 0 4px 16px rgba(201,168,76,0.35) !important;
+            transform: translateY(-1px) !important;
+        }
+        .btn-login:active,
+        .login-card .ui-button.btn-login:active {
+            transform: translateY(0) !important;
+        }
+
+        /* PrimeFaces button label override */
+        .login-card .ui-button .ui-button-text {
+            padding: 0 !important;
         }
 
         .login-footer {
             text-align: center;
-            margin-top: 1.25rem;
-            font-size: 0.8rem;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
             color: #9AA3B2;
+            letter-spacing: 0.2px;
         }
 
-        /* Error message */
-        .login-error {
-            background: #FDECEA;
-            color: #C0392B;
-            font-size: 0.82rem;
-            padding: 0.55rem 0.85rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            text-align: center;
-            display: none;
+        /* Divider above footer */
+        .login-divider {
+            border: none;
+            border-top: 1px solid #E5E9F0;
+            margin: 1.5rem 0 0 0;
+        }
+
+        /* PrimeFaces message override */
+        .login-card .ui-messages {
+            background: #FDECEA !important;
+            color: #C0392B !important;
+            font-size: 0.82rem !important;
+            padding: 0.55rem 0.85rem !important;
+            border-radius: 6px !important;
+            margin-bottom: 1rem !important;
+            border: none !important;
+            text-align: center !important;
+        }
+        .login-card .ui-messages .ui-messages-error-icon { display: none; }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-wrapper { padding: 1rem; }
+            .login-card { padding: 1.75rem 1.25rem 1.5rem; }
+            .login-brand-icon { width: 60px; height: 60px; }
+            .login-brand h1 { font-size: 1.2rem; }
         }
     </style>
 </h:head>
@@ -162,32 +223,31 @@
 
         <!-- Login Card -->
         <div class="login-card">
-            <h2>Sign In</h2>
+            <h2>Welcome Back</h2>
+            <p class="login-subtitle">Sign in to your account to continue</p>
 
             <h:form id="loginForm" prependId="false">
-                <p:messages id="loginMsg" globalOnly="true"
-                            style="background:#FDECEA; color:#C0392B; font-size:0.82rem;
-                                   padding:0.55rem 0.85rem; border-radius:4px; margin-bottom:1rem;
-                                   text-align:center; list-style:none;" />
+                <p:messages id="loginMsg" globalOnly="true" />
 
                 <!-- Email -->
                 <div class="form-group">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input type="email" id="email" name="email" class="form-input"
-                           placeholder="you@university.edu" required="required" />
+                    <label for="email" class="form-label">Username</label>
+                    <p:inputText id="email" name="username"
+                           placeholder="you@university.edu" required="required" value="#{loginBean.username}"/>
                 </div>
 
                 <!-- Password -->
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" class="form-input"
-                           placeholder="Enter your password" required="required" />
+                    <p:inputText type="password" id="password" name="password"
+                           placeholder="Enter your password" required="required" value="#{loginBean.password}"/>
                 </div>
 
                 <!-- Submit -->
-                <button type="submit" class="btn-login">Sign In</button>
+                <p:commandButton type="submit" styleClass="btn-login" value="Sign In" action="#{loginBean.login}" process="@form" update="@form" />
             </h:form>
 
+            <hr class="login-divider" />
             <div class="login-footer">
                 &#169; 2026 FPMS — University Portal
             </div>

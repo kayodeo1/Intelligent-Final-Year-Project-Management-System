@@ -497,6 +497,7 @@
 </h:head>
 
 <h:body>
+<h:form>
 
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
@@ -554,9 +555,9 @@
             </li>
         </ul>
         <div class="sidebar-bottom">
-            <a href="#" class="sidebar-item">
-                <span class="icon">&#10140;</span> Logout
-            </a>
+            <p:commandLink class="sidebar-item" action="#{loginBean.logout}">
+        <span class="icon">&#10140;</span> Logout
+    </p:commandLink>
         </div>
     </aside>
 
@@ -753,6 +754,6 @@
             if (window.innerWidth > 1024) closeSidebar();
         });
     </script>
-
+</h:form>
 </h:body>
 </html>

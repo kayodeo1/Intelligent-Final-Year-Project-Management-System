@@ -43,8 +43,8 @@ public class User extends AbstractEntity {
 	// private Long id;
 
 	@NotNull
-	@Column(unique = true, name = "matricNumber")
-	private String matricNo;
+	@Column(unique = true, name = "username")
+	private String username;
 	private String department;
 	private Long supervisorId;
 	private Long projectlId;
@@ -234,5 +234,21 @@ public class User extends AbstractEntity {
 	public void setProjectlId(Long projectlId) {
 		this.projectlId = projectlId;
 	}
+
+	/**
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	
 
 }
