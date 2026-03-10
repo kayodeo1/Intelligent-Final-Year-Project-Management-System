@@ -29,6 +29,7 @@ public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 
 	private ProposalService service;
 	private QueryType query;
+	private Long userId;
 
 	List<Proposal> list = new ArrayList<>();
 
@@ -37,6 +38,11 @@ public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 	public ProposalLazyDataModel(ProposalService service,QueryType query) {
 		this.service = service;
 		this.query = query;
+	}
+	public ProposalLazyDataModel(ProposalService service,QueryType query,Long id) {
+		this.service = service;
+		this.query = query;
+		this.userId=id;
 	}
 
 	@Override
@@ -66,6 +72,9 @@ public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 			switch (query) {
 			case GET_ALL_PROPOSAL:
 				pagedList = service.fetchProposal(first, pageSize);
+				break;
+			case GET_ALL_STUDENT_PROPOSAL:
+				pagedList = service.fetchStudentProposal(first, pageSize,userId);
 				break;
 			default:
 				LOG.warn("query type not found! , " + query);

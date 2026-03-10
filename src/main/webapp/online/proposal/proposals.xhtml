@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<f:metadata>
+		<f:viewAction action="#{proposalBean.listProposal()}" />
+	</f:metadata>
+</h:head>
+
+<h:body>
+	<ui:composition template="/online/template/dashboard.xhtml">
+	<ui:define name="student_name">
+				<!-- Welcome Banner -->
+				
+			</ui:define>
+
+		<ui:define name="dashboard_body">
+
+			<style>
+/* ===== PROPOSALS  THEMED ===== */
+LIST /* Page header bar */  
+.prop-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+.prop-header-text h2 {
+	font-family: 'Georgia', 'Times New Roman', serif;
+	font-size: 1.3rem;
+	font-weight: 700;
+	color: #1B3A6B;
+	margin: 0;
+}
+
+.prop-header-text p {
+	font-size: 0.82rem;
+	color: #9AA3B2;
+	margin: 0.2rem 0 0;
+}
+
+/* Gold CTA button */
+.btn-new-proposal, .prop-header .ui-button.btn-new-proposal {
+	background: linear-gradient(135deg, #C9A84C, #D4B85C) !important;
+	color: #0A1628 !important;
+	border: none !important;
+	border-radius: 6px !important;
+	padding: 0.6rem 1.25rem !important;
+	font-size: 0.85rem !important;
+	font-weight: 700 !important;
+	cursor: pointer !important;
+	letter-spacing: 0.2px !important;
+	box-shadow: 0 2px 8px rgba(201, 168, 76, 0.2) !important;
+	transition: all 0.2s !important;
+	white-space: nowrap !important;
+}
+
+.btn-new-proposal:hover, .prop-header .ui-button.btn-new-proposal:hover
+	{
+	background: linear-gradient(135deg, #D4B85C, #F0D080) !important;
+	box-shadow: 0 4px 16px rgba(201, 168, 76, 0.3) !important;
+	transform: translateY(-1px) !important;
+}
+
+.prop-header .ui-button .ui-button-text {
+	padding: 0 !important;
+}
+
+/* Table card */
+.prop-card {
+	background: #FFFFFF;
+	border: 1px solid #E5E9F0;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+/* p:messages */
+.prop-card .ui-messages {
+	margin: 1rem 1.25rem 0 !important;
+	border-radius: 6px !important;
+	font-size: 0.82rem !important;
+	list-style: none !important;
+}
+
+.prop-card .ui-messages-error {
+	background: #FDECEA !important;
+	border: 1px solid #F5C6CB !important;
+	color: #C0392B !important;
+}
+
+.prop-card .ui-messages-info {
+	background: #D6E4F7 !important;
+	border: 1px solid #BDD4F0 !important;
+	color: #1B3A6B !important;
+}
+
+/* DataTable base */
+.prop-card .ui-datatable {
+	border: none !important;
+	font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+}
+
+/* DT header facet */
+.prop-card .ui-datatable .ui-datatable-header {
+	background: none !important;
+	border: none !important;
+	border-bottom: 1px solid #E5E9F0 !important;
+	padding: 1rem 1.35rem !important;
+	text-align: left !important;
+	font-family: 'Georgia', 'Times New Roman', serif !important;
+	font-size: 0.95rem !important;
+	font-weight: 700 !important;
+	color: #1B3A6B !important;
+}
+
+.prop-card .ui-datatable-header hr, .prop-card .ui-datatable-header .ui-spacer
+	{
+	display: none !important;
+}
+
+/* Column headers */
+.prop-card .ui-datatable thead th {
+	background: #F7F8FC !important;
+	border: none !important;
+	border-bottom: 1px solid #E5E9F0 !important;
+	padding: 0.75rem 1.15rem !important;
+	font-size: 0.73rem !important;
+	font-weight: 600 !important;
+	color: #9AA3B2 !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.4px !important;
+	text-align: left !important;
+}
+
+/* Body cells */
+.prop-card .ui-datatable tbody td {
+	border: none !important;
+	border-bottom: 1px solid #F1F3F7 !important;
+	padding: 0.85rem 1.15rem !important;
+	font-size: 0.85rem !important;
+	color: #4A5568 !important;
+	text-align: left !important;
+	vertical-align: middle !important;
+}
+
+.prop-card .ui-datatable tbody tr:hover td {
+	background: #FAFBFE !important;
+}
+
+.prop-card .ui-datatable tbody tr.ui-state-highlight td {
+	background: rgba(27, 58, 107, 0.06) !important;
+	color: #1B3A6B !important;
+}
+
+/* Empty message */
+.prop-card .ui-datatable .ui-datatable-empty-message td {
+	padding: 2.5rem 1.15rem !important;
+	text-align: center !important;
+	color: #9AA3B2 !important;
+	font-size: 0.9rem !important;
+}
+
+/* Paginator */
+.prop-card .ui-paginator {
+	background: #F7F8FC !important;
+	border: none !important;
+	border-top: 1px solid #E5E9F0 !important;
+	padding: 0.75rem 1.15rem !important;
+	font-size: 0.8rem !important;
+	color: #9AA3B2 !important;
+}
+
+.prop-card .ui-paginator .ui-paginator-page, .prop-card .ui-paginator .ui-paginator-first,
+	.prop-card .ui-paginator .ui-paginator-prev, .prop-card .ui-paginator .ui-paginator-next,
+	.prop-card .ui-paginator .ui-paginator-last {
+	border: 1px solid #E5E9F0 !important;
+	border-radius: 4px !important;
+	background: #FFFFFF !important;
+	color: #4A5568 !important;
+	min-width: 30px !important;
+	height: 30px !important;
+	margin: 0 0.15rem !important;
+	transition: all 0.15s !important;
+}
+
+.prop-card .ui-paginator .ui-paginator-page:hover, .prop-card .ui-paginator .ui-paginator-first:hover,
+	.prop-card .ui-paginator .ui-paginator-prev:hover, .prop-card .ui-paginator .ui-paginator-next:hover,
+	.prop-card .ui-paginator .ui-paginator-last:hover {
+	background: #D6E4F7 !important;
+	border-color: #1B3A6B !important;
+	color: #1B3A6B !important;
+}
+
+.prop-card .ui-paginator .ui-state-active {
+	background: #1B3A6B !important;
+	border-color: #1B3A6B !important;
+	color: #FFFFFF !important;
+}
+
+.prop-card .ui-paginator select {
+	border: 1px solid #E5E9F0;
+	border-radius: 4px;
+	padding: 0.25rem 0.5rem;
+	font-size: 0.8rem;
+	color: #4A5568;
+}
+
+.prop-card .ui-paginator .ui-paginator-current {
+	color: #9AA3B2 !important;
+	font-size: 0.78rem !important;
+}
+
+/* Action MenuButton */
+.prop-card .ui-menubutton .ui-button {
+	background: #FFFFFF !important;
+	border: 1px solid #E5E9F0 !important;
+	border-radius: 5px !important;
+	color: #1B3A6B !important;
+	font-size: 0.8rem !important;
+	font-weight: 600 !important;
+	padding: 0.35rem 0.75rem !important;
+	transition: all 0.15s !important;
+}
+
+.prop-card .ui-menubutton .ui-button:hover {
+	background: #F7F8FC !important;
+	border-color: #1B3A6B !important;
+}
+
+.prop-card .ui-menubutton .ui-button .ui-button-text {
+	padding: 0 0.35rem !important;
+}
+
+/* Menu overlay */
+.ui-menu.ui-menubutton-menu {
+	border: 1px solid #E5E9F0 !important;
+	border-radius: 6px !important;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+	padding: 0.35rem 0 !important;
+}
+
+.ui-menu .ui-menuitem-link {
+	padding: 0.5rem 1rem !important;
+	font-size: 0.82rem !important;
+	color: #4A5568 !important;
+	transition: background 0.15s !important;
+}
+
+.ui-menu .ui-menuitem-link:hover {
+	background: #F7F8FC !important;
+	color: #1B3A6B !important;
+}
+
+/* Loading dialog */
+.ui-dialog.ui-widget {
+	border-radius: 8px !important;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ===== RESPONSIVE ===== */
+@media ( max-width : 768px) {
+	.prop-header {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.prop-card .ui-datatable thead {
+		display: none !important;
+	}
+	.prop-card .ui-datatable tbody, .prop-card .ui-datatable tbody tr,
+		.prop-card .ui-datatable tbody td {
+		display: block !important;
+		width: 100% !important;
+	}
+	.prop-card .ui-datatable tbody td {
+		padding: 0.4rem 1.15rem !important;
+		border-bottom: none !important;
+	}
+	.prop-card .ui-datatable tbody td:first-child {
+		padding-top: 1rem !important;
+		font-weight: 600 !important;
+		color: #1A202C !important;
+	}
+	.prop-card .ui-datatable tbody td:last-child {
+		padding-bottom: 1rem !important;
+		border-bottom: 1px solid #F1F3F7 !important;
+	}
+}
+</style>
+
+			<h:form prependId="false" rendered="true">
+				<p:ajaxStatus onstart="PF('status').show()"
+					oncomplete="PF('status').hide()" />
+				<p:dialog widgetVar="status" modal="true" closable="false">
+					<p:graphicImage library="img" name="load4.jpg" />
+				</p:dialog>
+				
+
+				<!-- Page header + New Proposal button -->
+				<div class="prop-header">
+					<div class="prop-header-text">
+						<h2>My Proposals</h2>
+						<p>View and manage your project proposals</p>
+					</div>
+					<p:commandButton id="submitButton" immediate="true" rendered="true"
+						ajax="false" value="+ Submit New Proposal"
+						action="#{proposalBean.newProposalView()}"
+						styleClass="btn-new-proposal">
+					</p:commandButton>
+				</div>
+
+				<!-- Table card -->
+				<div class="prop-card">
+					<p:messages id="global_msg" />
+
+					<p:outputPanel id="viewProposal">
+
+						<p:dataTable id="proposalList" var="entry"
+							value="#{proposalBean.lazyModel}" paginator="true" rows="5"
+							paginatorPosition="bottom"
+							currentPageReportTemplate="Showing {startRecord}-{endRecord} out of {totalRecords}"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+							rowsPerPageTemplate="5,10,15" selectionMode="single"
+							selection="#{proposalBean.entry}" lazy="true"
+							rowKey="#{entry.id}"
+							emptyMessage="No proposals  click 'Submit New Proposal' to get started.">yet 
+<f:facet name="header">
+								<strong>Proposal</strong> Entries
+</f:facet>
+
+							<p:column headerText="Title">
+								<h:outputText rendered="#{entry.title == null}" />
+								<h:outputText value="#{entry.title}" />
+							</p:column>
+
+							<p:column headerText="Status" style="width:120px;">
+								<h:outputText rendered="#{entry.status == null}" />
+								<h:outputText value="#{entry.status}" />
+							</p:column>
+
+							<p:column headerText="Comment">
+								<h:outputText rendered="#{entry.supervisorComment == null}" />
+								<h:outputText value="#{entry.supervisorComment}" />
+							</p:column>
+
+							<p:column headerText="Submitted" style="width:140px;">
+								<h:outputText rendered="#{entry.submittedAt == null}" />
+								<h:outputText value="#{entry.getCreatedDate()}" />
+							</p:column>
+
+							<p:column headerText="" style="width:90px; text-align:center;">
+								<p:menuButton value="Action">
+									<p:menuitem value="View" icon="ui-icon-arrowrefresh-1-w"
+										style="font-size:1em!important;" process="@this">
+									</p:menuitem>
+								</p:menuButton>
+							</p:column>
+						</p:dataTable>
+
+					</p:outputPanel>
+				</div>
+
+			</h:form>
+
+		</ui:define>
+
+	</ui:composition>
+</h:body>
+</html>

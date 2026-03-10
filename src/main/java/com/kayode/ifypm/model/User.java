@@ -48,6 +48,8 @@ public class User extends AbstractEntity {
 	private String department;
 	private Long supervisorId;
 	private Long projectlId;
+	@Enumerated(EnumType.STRING) 
+	private Status projectStatus = Status.NOT_STARTED;
 	
 
 	// @NotNull
@@ -252,6 +254,20 @@ public class User extends AbstractEntity {
 	 */
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	/**
+	 * @return the projectStatus
+	 */
+	public Status getProjectStatus() {
+		return projectStatus;
+	}
+
+	/**
+	 * @param projectStatus the projectStatus to set
+	 */
+	public void setProjectStatus(Status projectStatus) {
+		this.projectStatus = projectStatus;
 	}
 	
 	

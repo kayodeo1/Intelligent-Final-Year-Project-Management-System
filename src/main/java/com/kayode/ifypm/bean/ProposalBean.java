@@ -26,6 +26,8 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 //import org.apache.shiro.SecurityUtils;
 //import org.apache.shiro.subject.Subject;
 import org.omnifaces.util.Faces;
@@ -43,10 +45,12 @@ import com.kayode.ifypm.model.Constants;
 import com.kayode.ifypm.lazymodel.ProposalLazyDataModel;
 import com.kayode.ifypm.model.Proposal;
 import com.kayode.ifypm.model.Status;
+import com.kayode.ifypm.model.User;
 //import com.kayode.ifypm.model.Role;
 //import com.kayode.ifypm.model.User;
 import com.kayode.ifypm.service.ProposalService;
 //import com.kayode.ifypm.service.UserService;
+import com.kayode.ifypm.service.UserService;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.embedding.EmbeddingModel;
@@ -77,7 +81,7 @@ public class ProposalBean implements Serializable {
 	private static final String PROPOSAL_MGT_URL = APP_BASE_NAME + "/online/proposal/list.xhtml?faces-redirect=true";
 	private static final String PROPOSAL_CREATION_URL = APP_BASE_NAME +"/online/proposal/submit.xhtml?faces-redirect=true"
 			+ "/online/proposal/create.xhtml?faces-redirect=true";
-	private static final String PROPOSAL_COMPARE_URL = APP_BASE_NAME
+	private static final String PROPOSAL_COMPARE_URL = APP_BASE_NAME+"/online/proposal/compare.xhtml"
 			+ "/online/proposal/compare.xhtml?faces-redirect=true";
 
 	private List<Proposal> entries = new ArrayList<>();
@@ -89,11 +93,15 @@ public class ProposalBean implements Serializable {
 	private String objective2;
 	private String objective3;
 	private Proposal similarProposal;
+	private User currentUser;
 	private double sim;
 	EmbeddingModel model = OllamaEmbeddingModel.builder()
             .baseUrl("http://localhost:11434")
             .modelName("embeddinggemma")
             .build();
+	
+	@Inject
+	UserService userService;
 	
 	
 
@@ -102,8 +110,10 @@ public class ProposalBean implements Serializable {
 	@PostConstruct
 	public void init() {
 		LOG.info("ProposalBean init!");
-		
+		Subject subject = SecurityUtils.getSubject();
+		this.setCurrentUser(userService.findUserByUserName(subject.getPrincipal().toString()));
 		if (Faces.getFlash().get("similarProposal") != null) {
+			
             this.similarProposal = (Proposal) Faces.getFlash().get("similarProposal");
             LOG.info("similar proposal retrieved >>> " + similarProposal);
             this.entry = (Proposal) Faces.getFlash().get("entry");
@@ -112,6 +122,11 @@ public class ProposalBean implements Serializable {
 		}else {
 			LOG.info("No similar proposal found in flash scope.");
 		}
+	}
+	
+	public void newProposalView() {
+		System.out.println("new proposal view invoked");
+		Faces.redirect(PROPOSAL_CREATION_URL);
 	}
 	
 
@@ -145,6 +160,7 @@ public class ProposalBean implements Serializable {
 		entry.setMethodology(methodology);
 		entry.setProblemStatement(problemStatement);
 		entry.setObjectives(objective1 + "\n\n" + objective2 + "\n\n" + objective3);
+		entry.setStudentId(this.currentUser.getId());
 		Embedding embedding = model.embed(proposal).content();
         entry.setEmbedding(embedding.vector());
         entry.setStatus(Status.DRAFT);
@@ -417,6 +433,16 @@ public class ProposalBean implements Serializable {
 	 */
 	public void setSimilarProposal(Proposal similarProposal) {
 		this.similarProposal = similarProposal;
+	}
+
+
+	public User getCurrentUser() {
+		return currentUser;
+	}
+
+
+	public void setCurrentUser(User currentUser) {
+		this.currentUser = currentUser;
 	}
 
 	

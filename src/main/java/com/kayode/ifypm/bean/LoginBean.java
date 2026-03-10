@@ -21,11 +21,16 @@ public class LoginBean implements Serializable {
 	private static Logger LOG = LoggerFactory.getLogger(LoginBean.class);
 
 	private static final long serialVersionUID = 1L;
-    public static final String APP_BASE_NAME = Constants.APP_BASE_NAME;
+	public static final String APP_BASE_NAME = Constants.APP_BASE_NAME;
 
-	private static final String DASHBOARD_URL = APP_BASE_NAME+"/online/template/dashboard.xhtml?faces-redirect=true";
+	private static final String STUDENT_DASHBOARD_URL = APP_BASE_NAME + "/online/template/dashboard.xhtml?faces-redirect=true";
+	private static final String SUPERVISOR_DASHBOARD_URL = APP_BASE_NAME + "/online/supervisor/dashboard.xhtml?faces-redirect=true";
+	private static final String ADMIN_DASHBOARD_URL = APP_BASE_NAME + "/online/admin/dashboard.xhtml?faces-redirect=true";
+	private Subject subject = SecurityUtils.getSubject();
+;
+
 	public void logout() {
-		Subject subject = SecurityUtils.getSubject();
+		this.subject = SecurityUtils.getSubject();
 		subject.logout();
 		LOG.info("User logged out successfully");
 		try {
@@ -35,7 +40,6 @@ public class LoginBean implements Serializable {
 			Messages.addFlashGlobalError("An error occurred while logging out. Please try again.");
 		}
 	}
-	
 
 	public void login() {
 		Subject subject = SecurityUtils.getSubject();
@@ -45,18 +49,30 @@ public class LoginBean implements Serializable {
 		} else {
 			try {
 				subject.login(new UsernamePasswordToken(username, password));
-				LOG.info("login successfull for"+ username);
-				LOG.info("roles gotten for user: " + username + ". Roles: " + subject.hasRole("STUDENT") + ", " + subject.hasRole("SUPERVISOR"));
-				Faces.redirect(DASHBOARD_URL);
+				LOG.info("login successfull for" + username);
+				if (subject.hasRole("STUDENT"))
+					Faces.redirect(STUDENT_DASHBOARD_URL);
+				else if (subject.hasRole("SUPERVISOR"))
+					Faces.redirect(SUPERVISOR_DASHBOARD_URL);
+				else if (subject.hasRole("ADMIN"))
+					Faces.redirect(ADMIN_DASHBOARD_URL);
+				else
+					Faces.redirect(APP_BASE_NAME + "/online/login.xhtml?faces-redirect=true");
 			} catch (org.apache.shiro.authc.AuthenticationException e) {
 				LOG.info("Login failed for user: " + username + ". Reason: " + e.getMessage());
 				Messages.addFlashGlobalError("Invalid username or password. Please try again.");
 			}
 		}
 
-		
+	}
+
+	public boolean isStudent() {
+		return subject.hasRole("STUDENT");
 	}
 	
+	public boolean isSupervisor() {
+		return subject.hasRole("SUPERVISOR");
+	}
 	private String username;
 	private String password;
 
@@ -75,9 +91,5 @@ public class LoginBean implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	
-	
-	
 
 }

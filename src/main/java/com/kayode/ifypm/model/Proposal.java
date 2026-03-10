@@ -205,6 +205,20 @@ public float[] getEmbedding() {
 public void setEmbedding(float[] embedding) {
 	this.embedding = embedding;
 }
+/**
+ * @return the createdDate
+ */
+public Date getCreatedDate() {
+	return createdDate;
+}
+/**
+ * @param createdDate the createdDate to set
+ */
+public void setCreatedDate(Date createdDate) {
+	this.createdDate = createdDate;
+}
+
+
 
 
 

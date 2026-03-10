@@ -1,759 +1,889 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 <h:head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FPMS — Final Year Project Management System</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>FPMS — Final Year Project Management System</title>
 
-    <style>
-        /* ===== RESET ===== */
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+	<style>
+/* ===== RESET ===== */
+*, *::before, *::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
 
-        /* ===== FONTS ===== */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+/* ===== FONTS ===== */
+@import
+	url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap')
+	;
 
-        :root {
-            /* Primary (Navy) */
-            --navy-deep:    #0A1628;
-            --navy-primary: #1B3A6B;
-            --navy-mid:     #2E5399;
-            --navy-light:   #D6E4F7;
+:root {
+	/* Primary (Navy) */
+	--navy-deep: #0A1628;
+	--navy-primary: #1B3A6B;
+	--navy-mid: #2E5399;
+	--navy-light: #D6E4F7;
+	/* Accent (Gold) */
+	--gold-primary: #C9A84C;
+	--gold-light: #F0D080;
+	--gold-muted: #E8D5A3;
+	/* Neutrals */
+	--white: #FFFFFF;
+	--off-white: #F7F8FC;
+	--grey-light: #E5E9F0;
+	--grey-mid: #9AA3B2;
+	--grey-dark: #4A5568;
+	--black: #1A202C;
+	/* Semantic */
+	--success: #2E7D52;
+	--warning: #B45309;
+	--danger: #C0392B;
+	--info: #2E5399;
+	/* Layout */
+	--navbar-h: 64px;
+	--sidebar-w: 250px;
+}
 
-            /* Accent (Gold) */
-            --gold-primary: #C9A84C;
-            --gold-light:   #F0D080;
-            --gold-muted:   #E8D5A3;
+body {
+	font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+	background-color: var(--off-white);
+	color: var(--grey-dark);
+	line-height: 1.6;
+}
 
-            /* Neutrals */
-            --white:        #FFFFFF;
-            --off-white:    #F7F8FC;
-            --grey-light:   #E5E9F0;
-            --grey-mid:     #9AA3B2;
-            --grey-dark:    #4A5568;
-            --black:        #1A202C;
+/* ===== NAVBAR ===== */
+.navbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	height: var(--navbar-h);
+	background-color: var(--navy-deep);
+	border-bottom: 3px solid var(--gold-primary);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 1.5rem;
+}
 
-            /* Semantic */
-            --success: #2E7D52;
-            --warning: #B45309;
-            --danger:  #C0392B;
-            --info:    #2E5399;
+.navbar-brand {
+	font-family: 'Georgia', 'Times New Roman', serif;
+	font-size: 1.3rem;
+	font-weight: 700;
+	color: var(--gold-primary);
+	letter-spacing: 1px;
+	text-decoration: none;
+}
 
-            /* Layout */
-            --navbar-h: 64px;
-            --sidebar-w: 250px;
-        }
+.navbar-hamburger {
+	display: none;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 0.4rem;
+}
 
-        body {
-            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-            background-color: var(--off-white);
-            color: var(--grey-dark);
-            line-height: 1.6;
-        }
+.navbar-hamburger span {
+	display: block;
+	width: 22px;
+	height: 2px;
+	background: var(--white);
+	margin: 5px 0;
+	border-radius: 2px;
+	transition: 0.3s;
+}
 
-        /* ===== NAVBAR ===== */
-        .navbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
-            height: var(--navbar-h);
-            background-color: var(--navy-deep);
-            border-bottom: 3px solid var(--gold-primary);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1.5rem;
-        }
+.navbar-right {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
 
-        .navbar-brand {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--gold-primary);
-            letter-spacing: 1px;
-            text-decoration: none;
-        }
+.avatar-circle {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background-color: var(--gold-primary);
+	color: var(--navy-deep);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 0.85rem;
+}
 
-        .navbar-hamburger {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.4rem;
-        }
-        .navbar-hamburger span {
-            display: block;
-            width: 22px;
-            height: 2px;
-            background: var(--white);
-            margin: 5px 0;
-            border-radius: 2px;
-            transition: 0.3s;
-        }
+.user-name {
+	color: var(--navy-light);
+	font-size: 0.9rem;
+	font-weight: 500;
+}
 
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+.profile-dropdown {
+	position: relative;
+}
 
-        .avatar-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: var(--gold-primary);
-            color: var(--navy-deep);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
+.profile-toggle {
+	background: none;
+	border: none;
+	color: var(--navy-light);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.3rem 0.5rem;
+	border-radius: 4px;
+	transition: background 0.2s;
+}
 
-        .user-name {
-            color: var(--navy-light);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
+.profile-toggle:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
 
-        .profile-dropdown {
-            position: relative;
-        }
+.dropdown-arrow {
+	font-size: 0.6rem;
+	transition: transform 0.2s;
+}
 
-        .profile-toggle {
-            background: none;
-            border: none;
-            color: var(--navy-light);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.3rem 0.5rem;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        .profile-toggle:hover {
-            background: rgba(255,255,255,0.08);
-        }
+.dropdown-menu {
+	display: none;
+	position: absolute;
+	top: calc(100% + 0.5rem);
+	right: 0;
+	background: var(--white);
+	border: 1px solid var(--grey-light);
+	border-radius: 6px;
+	box-shadow: 0 4px 16px rgba(10, 22, 40, 0.12);
+	min-width: 180px;
+	overflow: hidden;
+	z-index: 1100;
+}
 
-        .dropdown-arrow {
-            font-size: 0.6rem;
-            transition: transform 0.2s;
-        }
+.dropdown-menu.show {
+	display: block;
+}
 
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: calc(100% + 0.5rem);
-            right: 0;
-            background: var(--white);
-            border: 1px solid var(--grey-light);
-            border-radius: 6px;
-            box-shadow: 0 4px 16px rgba(10,22,40,0.12);
-            min-width: 180px;
-            overflow: hidden;
-            z-index: 1100;
-        }
-        .dropdown-menu.show { display: block; }
+.dropdown-menu a {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.7rem 1rem;
+	color: var(--grey-dark);
+	text-decoration: none;
+	font-size: 0.875rem;
+	transition: background 0.15s;
+}
 
-        .dropdown-menu a {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.7rem 1rem;
-            color: var(--grey-dark);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: background 0.15s;
-        }
-        .dropdown-menu a:hover {
-            background: var(--off-white);
-            color: var(--navy-primary);
-        }
-        .dropdown-menu a.danger-link:hover {
-            color: var(--danger);
-        }
+.dropdown-menu a:hover {
+	background: var(--off-white);
+	color: var(--navy-primary);
+}
 
-        /* ===== SIDEBAR ===== */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(10,22,40,0.5);
-            z-index: 800;
-        }
+.dropdown-menu a.danger-link:hover {
+	color: var(--danger);
+}
 
-        .sidebar {
-            position: fixed;
-            top: var(--navbar-h);
-            left: 0;
-            bottom: 0;
-            width: var(--sidebar-w);
-            background-color: var(--navy-primary);
-            padding: 1.25rem 0;
-            overflow-y: auto;
-            z-index: 900;
-            transition: transform 0.3s ease;
-        }
+/* ===== SIDEBAR ===== */
+.sidebar-overlay {
+	display: none;
+	position: fixed;
+	inset: 0;
+	background: rgba(10, 22, 40, 0.5);
+	z-index: 800;
+}
 
-        .sidebar-nav { list-style: none; }
+.sidebar {
+	position: fixed;
+	top: var(--navbar-h);
+	left: 0;
+	bottom: 0;
+	width: var(--sidebar-w);
+	background-color: var(--navy-primary);
+	padding: 1.25rem 0;
+	overflow-y: auto;
+	z-index: 900;
+	transition: transform 0.3s ease;
+}
 
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1.5rem;
-            color: var(--navy-light);
-            font-size: 0.9rem;
-            text-decoration: none;
-            cursor: pointer;
-            border-left: 3px solid transparent;
-            transition: background 0.2s, border-color 0.2s, color 0.2s;
-        }
-        .sidebar-item:hover {
-            background-color: var(--navy-mid);
-            color: var(--white);
-        }
-        .sidebar-item.active {
-            background-color: var(--navy-mid);
-            border-left-color: var(--gold-primary);
-            color: var(--white);
-        }
+.sidebar-nav {
+	list-style: none;
+}
 
-        .sidebar-item .icon { font-size: 1.1rem; width: 1.4rem; text-align: center; }
+.sidebar-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 1.5rem;
+	color: var(--navy-light);
+	font-size: 0.9rem;
+	text-decoration: none;
+	cursor: pointer;
+	border-left: 3px solid transparent;
+	transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
 
-        .sidebar-spacer { flex: 1; }
+.sidebar-item:hover {
+	background-color: var(--navy-mid);
+	color: var(--white);
+}
 
-        .sidebar-bottom {
-            margin-top: auto;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
+.sidebar-item.active {
+	background-color: var(--navy-mid);
+	border-left-color: var(--gold-primary);
+	color: var(--white);
+}
 
-        /* ===== MAIN CONTENT ===== */
-        .main-content {
-            margin-left: var(--sidebar-w);
-            margin-top: var(--navbar-h);
-            padding: 2rem;
-            min-height: calc(100vh - var(--navbar-h));
-        }
+.sidebar-item .icon {
+	font-size: 1.1rem;
+	width: 1.4rem;
+	text-align: center;
+}
 
-        /* Welcome Banner */
-        .welcome-banner {
-            margin-bottom: 1.75rem;
-        }
-        .welcome-banner h1 {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            font-size: 1.65rem;
-            font-weight: 700;
-            color: var(--navy-primary);
-        }
-        .welcome-banner p {
-            font-size: 0.9rem;
-            color: var(--grey-mid);
-            margin-top: 0.25rem;
-        }
+.sidebar-spacer {
+	flex: 1;
+}
 
-        /* ===== STATUS CARDS ROW ===== */
-        .cards-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
+.sidebar-bottom {
+	margin-top: auto;
+	padding-top: 1rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-        .status-card {
-            background: var(--white);
-            border: 1px solid var(--grey-light);
-            border-radius: 8px;
-            padding: 1.25rem 1.25rem 1rem;
-            box-shadow: 0 1px 4px rgba(10,22,40,0.06);
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
+/* ===== MAIN CONTENT ===== */
+.main-content {
+	margin-left: var(--sidebar-w);
+	margin-top: var(--navbar-h);
+	padding: 2rem;
+	min-height: calc(100vh - var(--navbar-h));
+}
 
-        .status-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+/* Welcome Banner */
+.welcome-banner {
+	margin-bottom: 1.75rem;
+}
 
-        .status-card-label {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--grey-mid);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+.welcome-banner h1 {
+	font-family: 'Georgia', 'Times New Roman', serif;
+	font-size: 1.65rem;
+	font-weight: 700;
+	color: var(--navy-primary);
+}
 
-        .status-card-icon {
-            font-size: 1.2rem;
-        }
+.welcome-banner p {
+	font-size: 0.9rem;
+	color: var(--grey-mid);
+	margin-top: 0.25rem;
+}
 
-        .status-card-value {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--black);
-        }
+/* ===== STATUS CARDS ROW ===== */
+.cards-row {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 1.25rem;
+	margin-bottom: 1.5rem;
+}
 
-        /* Badges */
-        .badge {
-            display: inline-block;
-            padding: 0.2rem 0.7rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-        .badge-draft      { background: var(--grey-light);  color: var(--grey-dark); }
-        .badge-submitted   { background: var(--navy-light);  color: var(--navy-primary); }
-        .badge-approved    { background: #D4EDDA; color: var(--success); }
-        .badge-rejected    { background: #FDECEA; color: var(--danger); }
-        .badge-not-started { background: var(--grey-light);  color: var(--grey-dark); }
-        .badge-in-progress { background: #FEF3CD; color: var(--warning); }
-        .badge-completed   { background: #D4EDDA; color: var(--success); }
+.status-card {
+	background: var(--white);
+	border: 1px solid var(--grey-light);
+	border-radius: 8px;
+	padding: 1.25rem 1.25rem 1rem;
+	box-shadow: 0 1px 4px rgba(10, 22, 40, 0.06);
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
 
-        /* Similarity indicator */
-        .similarity-score {
-            font-weight: 700;
-            font-size: 1.15rem;
-        }
-        .similarity-low    { color: var(--success); }
-        .similarity-medium { color: var(--warning); }
-        .similarity-high   { color: var(--danger); }
+.status-card-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
 
-        .similarity-bar {
-            height: 6px;
-            border-radius: 3px;
-            background: var(--grey-light);
-            overflow: hidden;
-            margin-top: 0.35rem;
-        }
-        .similarity-bar-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.5s ease;
-        }
-        .similarity-bar-fill.low    { background: var(--success); }
-        .similarity-bar-fill.medium { background: var(--warning); }
-        .similarity-bar-fill.high   { background: var(--danger); }
+.status-card-label {
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--grey-mid);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
 
-        .similarity-hint {
-            font-size: 0.75rem;
-            color: var(--grey-mid);
-            margin-top: 0.2rem;
-        }
+.status-card-icon {
+	font-size: 1.2rem;
+}
 
-        /* ===== DETAIL PANELS ROW ===== */
-        .panels-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.25rem;
-        }
+.status-card-value {
+	font-size: 1.05rem;
+	font-weight: 600;
+	color: var(--black);
+}
 
-        .panel-card {
-            background: var(--white);
-            border: 1px solid var(--grey-light);
-            border-radius: 8px;
-            box-shadow: 0 1px 4px rgba(10,22,40,0.06);
-            overflow: hidden;
-        }
+/* Badges */
+.badge {
+	display: inline-block;
+	padding: 0.2rem 0.7rem;
+	border-radius: 20px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.3px;
+}
 
-        .panel-card-header {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--navy-primary);
-            padding: 1rem 1.25rem 0.75rem;
-            border-bottom: 2px solid var(--gold-primary);
-        }
+.badge-draft {
+	background: var(--grey-light);
+	color: var(--grey-dark);
+}
 
-        .panel-card-body {
-            padding: 1rem 1.25rem 1.25rem;
-        }
+.badge-submitted {
+	background: var(--navy-light);
+	color: var(--navy-primary);
+}
 
-        /* Chapter progress */
-        .chapter-list { list-style: none; }
+.badge-approved {
+	background: #D4EDDA;
+	color: var(--success);
+}
 
-        .chapter-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.6rem 0;
-            border-bottom: 1px solid var(--grey-light);
-            font-size: 0.875rem;
-        }
-        .chapter-row:last-child { border-bottom: none; }
+.badge-rejected {
+	background: #FDECEA;
+	color: var(--danger);
+}
 
-        .chapter-info {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
+.badge-not-started {
+	background: var(--grey-light);
+	color: var(--grey-dark);
+}
 
-        .chapter-number {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: var(--navy-light);
-            color: var(--navy-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-        .chapter-number.done {
-            background: var(--success);
-            color: var(--white);
-        }
+.badge-in-progress {
+	background: #FEF3CD;
+	color: var(--warning);
+}
 
-        .chapter-title {
-            color: var(--black);
-            font-weight: 500;
-        }
+.badge-completed {
+	background: #D4EDDA;
+	color: var(--success);
+}
 
-        /* Activity timeline */
-        .activity-list { list-style: none; }
+/* Similarity indicator */
+.similarity-score {
+	font-weight: 700;
+	font-size: 1.15rem;
+}
 
-        .activity-item {
-            display: flex;
-            gap: 0.75rem;
-            padding: 0.65rem 0;
-            border-bottom: 1px solid var(--grey-light);
-            font-size: 0.85rem;
-        }
-        .activity-item:last-child { border-bottom: none; }
+.similarity-low {
+	color: var(--success);
+}
 
-        .activity-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-top: 0.45rem;
-            flex-shrink: 0;
-        }
-        .activity-dot.green  { background: var(--success); }
-        .activity-dot.blue   { background: var(--info); }
-        .activity-dot.orange { background: var(--warning); }
-        .activity-dot.red    { background: var(--danger); }
+.similarity-medium {
+	color: var(--warning);
+}
 
-        .activity-text { color: var(--grey-dark); }
-        .activity-time {
-            font-size: 0.75rem;
-            color: var(--grey-mid);
-            margin-top: 0.15rem;
-        }
+.similarity-high {
+	color: var(--danger);
+}
 
-        /* ===== RESPONSIVE ===== */
+.similarity-bar {
+	height: 6px;
+	border-radius: 3px;
+	background: var(--grey-light);
+	overflow: hidden;
+	margin-top: 0.35rem;
+}
 
-        /* Tablet:  1024px */
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .sidebar-overlay.show {
-                display: block;
-            }
-            .navbar-hamburger { display: block; }
+.similarity-bar-fill {
+	height: 100%;
+	border-radius: 3px;
+	transition: width 0.5s ease;
+}
 
-            .main-content {
-                margin-left: 0;
-            }
+.similarity-bar-fill.low {
+	background: var(--success);
+}
 
-            .cards-row {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+.similarity-bar-fill.medium {
+	background: var(--warning);
+}
 
-        /* Mobile:  640px */
-        @media (max-width: 640px) {
-            .main-content { padding: 1.25rem; }
+.similarity-bar-fill.high {
+	background: var(--danger);
+}
 
-            .cards-row {
-                grid-template-columns: 1fr;
-            }
+.similarity-hint {
+	font-size: 0.75rem;
+	color: var(--grey-mid);
+	margin-top: 0.2rem;
+}
 
-            .panels-row {
-                grid-template-columns: 1fr;
-            }
+/* ===== DETAIL PANELS ROW ===== */
+.panels-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.25rem;
+}
 
-            .welcome-banner h1 { font-size: 1.3rem; }
+.panel-card {
+	background: var(--white);
+	border: 1px solid var(--grey-light);
+	border-radius: 8px;
+	box-shadow: 0 1px 4px rgba(10, 22, 40, 0.06);
+	overflow: hidden;
+}
 
-            .navbar-right .user-name { display: none; }
+.panel-card-header {
+	font-family: 'Georgia', 'Times New Roman', serif;
+	font-size: 1.05rem;
+	font-weight: 600;
+	color: var(--navy-primary);
+	padding: 1rem 1.25rem 0.75rem;
+	border-bottom: 2px solid var(--gold-primary);
+}
 
-            .sidebar { width: 280px; }
-        }
-    </style>
+.panel-card-body {
+	padding: 1rem 1.25rem 1.25rem;
+}
+
+/* Chapter progress */
+.chapter-list {
+	list-style: none;
+}
+
+.chapter-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.6rem 0;
+	border-bottom: 1px solid var(--grey-light);
+	font-size: 0.875rem;
+}
+
+.chapter-row:last-child {
+	border-bottom: none;
+}
+
+.chapter-info {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+}
+
+.chapter-number {
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	background: var(--navy-light);
+	color: var(--navy-primary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.75rem;
+	font-weight: 700;
+	flex-shrink: 0;
+}
+
+.chapter-number.done {
+	background: var(--success);
+	color: var(--white);
+}
+
+.chapter-title {
+	color: var(--black);
+	font-weight: 500;
+}
+
+/* Activity timeline */
+.activity-list {
+	list-style: none;
+}
+
+.activity-item {
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.65rem 0;
+	border-bottom: 1px solid var(--grey-light);
+	font-size: 0.85rem;
+}
+
+.activity-item:last-child {
+	border-bottom: none;
+}
+
+.activity-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	margin-top: 0.45rem;
+	flex-shrink: 0;
+}
+
+.activity-dot.green {
+	background: var(--success);
+}
+
+.activity-dot.blue {
+	background: var(--info);
+}
+
+.activity-dot.orange {
+	background: var(--warning);
+}
+
+.activity-dot.red {
+	background: var(--danger);
+}
+
+.activity-text {
+	color: var(--grey-dark);
+}
+
+.activity-time {
+	font-size: 0.75rem;
+	color: var(--grey-mid);
+	margin-top: 0.15rem;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablet:  1024px */
+@media ( max-width : 1024px) {
+	.sidebar {
+		transform: translateX(-100%);
+	}
+	.sidebar.open {
+		transform: translateX(0);
+	}
+	.sidebar-overlay.show {
+		display: block;
+	}
+	.navbar-hamburger {
+		display: block;
+	}
+	.main-content {
+		margin-left: 0;
+	}
+	.cards-row {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+/* Mobile:  640px */
+@media ( max-width : 640px) {
+	.main-content {
+		padding: 1.25rem;
+	}
+	.cards-row {
+		grid-template-columns: 1fr;
+	}
+	.panels-row {
+		grid-template-columns: 1fr;
+	}
+	.welcome-banner h1 {
+		font-size: 1.3rem;
+	}
+	.navbar-right .user-name {
+		display: none;
+	}
+	.sidebar {
+		width: 280px;
+	}
+}
+</style>
 </h:head>
 
 <h:body>
-<h:form>
+	<h:form>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar">
-        <div style="display:flex; align-items:center; gap:1rem;">
-            <button class="navbar-hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
-                <span></span><span></span><span></span>
-            </button>
-            <a href="#" class="navbar-brand">FPMS</a>
-        </div>
+		<!-- ===== NAVBAR ===== -->
+		<nav class="navbar">
+			<div style="display: flex; align-items: center; gap: 1rem;">
+				<button class="navbar-hamburger" onclick="toggleSidebar()"
+					aria-label="Toggle menu">
+					<span></span><span></span><span></span>
+				</button>
+				<a href="#" class="navbar-brand">FPMS</a>
+			</div>
 
-        <div class="navbar-right">
-            <div class="profile-dropdown">
-                <button class="profile-toggle" onclick="toggleDropdown(event)">
-                    <div class="avatar-circle">
-                        <ui:insert name="user_initials">AK</ui:insert>
-                    </div>
-                    <span class="user-name">
-                        <ui:insert name="user_fullname">Adewale Kayode</ui:insert>
-                    </span>
-                    <span class="dropdown-arrow">&#9662;</span>
-                </button>
-                <div class="dropdown-menu" id="profileDropdown">
-                    <a href="#">&#128100;&#xFE0E; My Profile</a>
-                    <a href="#" class="danger-link">&#9109;&#xFE0E; Logout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+			<div class="navbar-right">
+				<div class="profile-dropdown">
+					<button class="profile-toggle" onclick="toggleDropdown(event)">
+						<div class="avatar-circle">
+							<ui:insert name="user_initials">AK</ui:insert>
+						</div>
+						<span class="user-name"> <ui:insert name="user_fullname">Adewale Kayode</ui:insert>
+						</span> <span class="dropdown-arrow">&#9662;</span>
+					</button>
+					<div class="dropdown-menu" id="profileDropdown">
+						<a href="#">&#128100;&#xFE0E; My Profile</a> <a href="#"
+							class="danger-link">&#9109;&#xFE0E; Logout</a>
+					</div>
+				</div>
+			</div>
+		</nav>
 
-    <!-- ===== SIDEBAR OVERLAY (mobile/tablet) ===== -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+		<!-- ===== SIDEBAR OVERLAY (mobile/tablet) ===== -->
+		<div class="sidebar-overlay" id="sidebarOverlay"
+			onclick="closeSidebar()"></div>
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar" id="sidebar">
-        <ul class="sidebar-nav">
-            <li>
-                <p:link href="/fypms/online/template/dashboard.xhtml" class="sidebar-item active">
-                    <span class="icon">&#9632;</span> Dashboard
-                </p:link>
-            </li>
-            <li>
-                <p:link href="/fypms//online/proposal/submit.xhtml" class="sidebar-item">
-                    <span class="icon">&#128196;</span> My Proposal
-                </p:link>
-            </li>
-            <li>
-                <a href="#" class="sidebar-item">
-                    <span class="icon">&#128193;</span> My Project
-                </a>
-            </li>
-            <li>
-                <a href="#" class="sidebar-item">
-                    <span class="icon">&#128209;</span> Chapters
-                </a>
-            </li>
-        </ul>
-        <div class="sidebar-bottom">
-            <p:commandLink class="sidebar-item" action="#{loginBean.logout}">
-        <span class="icon">&#10140;</span> Logout
+		<!-- ===== SIDEBAR ===== -->
+		<aside class="sidebar" id="sidebar">
+			<p:outputPanel rendered="#{loginBean.isStudent()}">
+
+				<ul class="sidebar-nav">
+					<li><p:link href="/fypms/online/template/dashboard.xhtml"
+							class="sidebar-item active">
+							<span class="icon">&#9632;</span> Dashboard
+                </p:link></li>
+					<li><p:link href="/fypms/online/proposal/proposals.xhtml"
+							class="sidebar-item">
+							<span class="icon">&#128196;</span> My Proposal
+                </p:link></li>
+					<li><a href="#" class="sidebar-item"> <span class="icon">&#128193;</span>
+							My Project
+					</a></li>
+					<li><a href="#" class="sidebar-item"> <span class="icon">&#128209;</span>
+							Chapters
+					</a></li>
+				</ul>
+			</p:outputPanel>
+			<p:outputPanel rendered="#{loginBean.isSupervisor()}">
+
+				<ul class="sidebar-nav">
+					<li><p:link href="/fypms/online/template/dashboard.xhtml"
+							class="sidebar-item active">
+							<span class="icon">&#9632;</span> Dashboard
+                </p:link></li>
+					<li><p:link href="/fypms//online/proposal/submit.xhtml"
+							class="sidebar-item">
+							<span class="icon">&#128196;</span> My Proposal
+                </p:link></li>
+					<li><a href="#" class="sidebar-item"> <span class="icon">&#128193;</span>
+							My Project
+					</a></li>
+					<li><a href="#" class="sidebar-item"> <span class="icon">&#128209;</span>
+							Chapters
+					</a></li>
+				</ul>
+			</p:outputPanel>
+			<div class="sidebar-bottom">
+				<p:commandLink class="sidebar-item" action="#{loginBean.logout}">
+					<span class="icon">&#10140;</span> Logout
     </p:commandLink>
-        </div>
-    </aside>
+			</div>
+		</aside>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <main class="main-content">
 
-        <!-- Welcome Banner -->
-        <div class="welcome-banner">
-            <h1>Welcome back, <ui:insert name="student_name">Adewale</ui:insert></h1>
-            <p>Here's an overview of your project status</p>
-        </div>
+		<!-- ===== MAIN CONTENT ===== -->
+		<main class="main-content">
+			<ui:insert name="student_name">
+				<!-- Welcome Banner -->
+				<div class="welcome-banner">
+					<h1>Welcome back, Adewale</h1>
+					<p>Here's an overview of your project status</p>
+				</div>
+			</ui:insert>
 
-        <ui:insert name="dashboard_body">
+			<ui:insert name="dashboard_body">
 
-            <!-- ===== ROW 1: STATUS CARDS ===== -->
-            <div class="cards-row">
+				<!-- ===== ROW 1: STATUS CARDS ===== -->
+				<div class="cards-row">
 
-                <!-- Proposal Status -->
-                <div class="status-card">
-                    <div class="status-card-header">
-                        <span class="status-card-label">Proposal Status</span>
-                        <span class="status-card-icon">&#128203;</span>
-                    </div>
-                    <div class="status-card-value">
-                        <span class="badge badge-submitted">Submitted</span>
-                    </div>
-                </div>
+					<!-- Proposal Status -->
+					<div class="status-card">
+						<div class="status-card-header">
+							<span class="status-card-label">Proposal Status</span> <span
+								class="status-card-icon">&#128203;</span>
+						</div>
+						<div class="status-card-value">
+							<span class="badge badge-submitted">Submitted</span>
+						</div>
+					</div>
 
-                <!-- Supervisor -->
-                <div class="status-card">
-                    <div class="status-card-header">
-                        <span class="status-card-label">Supervisor</span>
-                        <span class="status-card-icon">&#128104;&#8205;&#127891;</span>
-                    </div>
-                    <div class="status-card-value">Dr. Oladipo A.</div>
-                    <div style="font-size:0.8rem; color:var(--grey-mid);">Computer Science Dept.</div>
-                </div>
+					<!-- Supervisor -->
+					<div class="status-card">
+						<div class="status-card-header">
+							<span class="status-card-label">Supervisor</span> <span
+								class="status-card-icon">&#128104;&#8205;&#127891;</span>
+						</div>
+						<div class="status-card-value">Dr. Oladipo A.</div>
+						<div style="font-size: 0.8rem; color: var(--grey-mid);">Computer
+							Science Dept.</div>
+					</div>
 
-                <!-- Project Status -->
-                <div class="status-card">
-                    <div class="status-card-header">
-                        <span class="status-card-label">Project Status</span>
-                        <span class="status-card-icon">&#128193;</span>
-                    </div>
-                    <div class="status-card-value">
-                        <span class="badge badge-in-progress">In Progress</span>
-                    </div>
-                </div>
+					<!-- Project Status -->
+					<div class="status-card">
+						<div class="status-card-header">
+							<span class="status-card-label">Project Status</span> <span
+								class="status-card-icon">&#128193;</span>
+						</div>
+						<div class="status-card-value">
+							<span class="badge badge-in-progress">In Progress</span>
+						</div>
+					</div>
 
-                <!-- Similarity Score -->
-                <div class="status-card">
-                    <div class="status-card-header">
-                        <span class="status-card-label">Similarity Score</span>
-                        <span class="status-card-icon">&#128270;</span>
-                    </div>
-                    <div class="status-card-value">
-                        <span class="similarity-score similarity-low">0.42</span>
-                    </div>
-                    <div class="similarity-bar">
-                        <div class="similarity-bar-fill low" style="width: 42%;"></div>
-                    </div>
-                    <div class="similarity-hint">&#10003; Distinct topic — clear to proceed</div>
-                </div>
+					<!-- Similarity Score -->
+					<div class="status-card">
+						<div class="status-card-header">
+							<span class="status-card-label">Similarity Score</span> <span
+								class="status-card-icon">&#128270;</span>
+						</div>
+						<div class="status-card-value">
+							<span class="similarity-score similarity-low">0.42</span>
+						</div>
+						<div class="similarity-bar">
+							<div class="similarity-bar-fill low" style="width: 42%;"></div>
+						</div>
+						<div class="similarity-hint">&#10003; Distinct topic — clear
+							to proceed</div>
+					</div>
 
-            </div>
+				</div>
 
-            <!-- ===== ROW 2: DETAIL PANELS ===== -->
-            <div class="panels-row">
+				<!-- ===== ROW 2: DETAIL PANELS ===== -->
+				<div class="panels-row">
 
-                <!-- Chapter Progress -->
-                <div class="panel-card">
-                    <div class="panel-card-header">Chapter Progress</div>
-                    <div class="panel-card-body">
-                        <ul class="chapter-list">
-                            <li class="chapter-row">
-                                <div class="chapter-info">
-                                    <div class="chapter-number done">1</div>
-                                    <span class="chapter-title">Introduction</span>
-                                </div>
-                                <span class="badge badge-approved">Approved</span>
-                            </li>
-                            <li class="chapter-row">
-                                <div class="chapter-info">
-                                    <div class="chapter-number done">2</div>
-                                    <span class="chapter-title">Literature Review</span>
-                                </div>
-                                <span class="badge badge-approved">Approved</span>
-                            </li>
-                            <li class="chapter-row">
-                                <div class="chapter-info">
-                                    <div class="chapter-number">3</div>
-                                    <span class="chapter-title">Methodology</span>
-                                </div>
-                                <span class="badge badge-submitted">Submitted</span>
-                            </li>
-                            <li class="chapter-row">
-                                <div class="chapter-info">
-                                    <div class="chapter-number">4</div>
-                                    <span class="chapter-title">System Design &amp; Implementation</span>
-                                </div>
-                                <span class="badge badge-draft">Not Submitted</span>
-                            </li>
-                            <li class="chapter-row">
-                                <div class="chapter-info">
-                                    <div class="chapter-number">5</div>
-                                    <span class="chapter-title">Testing &amp; Evaluation</span>
-                                </div>
-                                <span class="badge badge-draft">Not Submitted</span>
-                            </li>
-                            <li class="chapter-row">
-                                <div class="chapter-info">
-                                    <div class="chapter-number">6</div>
-                                    <span class="chapter-title">Conclusion &amp; Recommendations</span>
-                                </div>
-                                <span class="badge badge-draft">Not Submitted</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+					<!-- Chapter Progress -->
+					<div class="panel-card">
+						<div class="panel-card-header">Chapter Progress</div>
+						<div class="panel-card-body">
+							<ul class="chapter-list">
+								<li class="chapter-row">
+									<div class="chapter-info">
+										<div class="chapter-number done">1</div>
+										<span class="chapter-title">Introduction</span>
+									</div> <span class="badge badge-approved">Approved</span>
+								</li>
+								<li class="chapter-row">
+									<div class="chapter-info">
+										<div class="chapter-number done">2</div>
+										<span class="chapter-title">Literature Review</span>
+									</div> <span class="badge badge-approved">Approved</span>
+								</li>
+								<li class="chapter-row">
+									<div class="chapter-info">
+										<div class="chapter-number">3</div>
+										<span class="chapter-title">Methodology</span>
+									</div> <span class="badge badge-submitted">Submitted</span>
+								</li>
+								<li class="chapter-row">
+									<div class="chapter-info">
+										<div class="chapter-number">4</div>
+										<span class="chapter-title">System Design &amp;
+											Implementation</span>
+									</div> <span class="badge badge-draft">Not Submitted</span>
+								</li>
+								<li class="chapter-row">
+									<div class="chapter-info">
+										<div class="chapter-number">5</div>
+										<span class="chapter-title">Testing &amp; Evaluation</span>
+									</div> <span class="badge badge-draft">Not Submitted</span>
+								</li>
+								<li class="chapter-row">
+									<div class="chapter-info">
+										<div class="chapter-number">6</div>
+										<span class="chapter-title">Conclusion &amp;
+											Recommendations</span>
+									</div> <span class="badge badge-draft">Not Submitted</span>
+								</li>
+							</ul>
+						</div>
+					</div>
 
-                <!-- Recent Activity -->
-                <div class="panel-card">
-                    <div class="panel-card-header">Recent Activity</div>
-                    <div class="panel-card-body">
-                        <ul class="activity-list">
-                            <li class="activity-item">
-                                <div class="activity-dot green"></div>
-                                <div>
-                                    <div class="activity-text">Supervisor approved <strong>Chapter 2</strong></div>
-                                    <div class="activity-time">2 hours ago</div>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-dot blue"></div>
-                                <div>
-                                    <div class="activity-text">You submitted <strong>Chapter 3 — Methodology</strong></div>
-                                    <div class="activity-time">1 day ago</div>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-dot orange"></div>
-                                <div>
-                                    <div class="activity-text">Feedback received on <strong>Chapter 2</strong></div>
-                                    <div class="activity-time">3 days ago</div>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-dot green"></div>
-                                <div>
-                                    <div class="activity-text">Proposal <strong>approved</strong> by supervisor</div>
-                                    <div class="activity-time">1 week ago</div>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-dot blue"></div>
-                                <div>
-                                    <div class="activity-text">Proposal submitted — similarity score: <strong>0.42</strong></div>
-                                    <div class="activity-time">2 weeks ago</div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+					<!-- Recent Activity -->
+					<div class="panel-card">
+						<div class="panel-card-header">Recent Activity</div>
+						<div class="panel-card-body">
+							<ul class="activity-list">
+								<li class="activity-item">
+									<div class="activity-dot green"></div>
+									<div>
+										<div class="activity-text">
+											Supervisor approved <strong>Chapter 2</strong>
+										</div>
+										<div class="activity-time">2 hours ago</div>
+									</div>
+								</li>
+								<li class="activity-item">
+									<div class="activity-dot blue"></div>
+									<div>
+										<div class="activity-text">
+											You submitted <strong>Chapter 3 — Methodology</strong>
+										</div>
+										<div class="activity-time">1 day ago</div>
+									</div>
+								</li>
+								<li class="activity-item">
+									<div class="activity-dot orange"></div>
+									<div>
+										<div class="activity-text">
+											Feedback received on <strong>Chapter 2</strong>
+										</div>
+										<div class="activity-time">3 days ago</div>
+									</div>
+								</li>
+								<li class="activity-item">
+									<div class="activity-dot green"></div>
+									<div>
+										<div class="activity-text">
+											Proposal <strong>approved</strong> by supervisor
+										</div>
+										<div class="activity-time">1 week ago</div>
+									</div>
+								</li>
+								<li class="activity-item">
+									<div class="activity-dot blue"></div>
+									<div>
+										<div class="activity-text">
+											Proposal submitted — similarity score: <strong>0.42</strong>
+										</div>
+										<div class="activity-time">2 weeks ago</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
 
-            </div>
+				</div>
 
-        </ui:insert>
+			</ui:insert>
 
-    </main>
+		</main>
 
-    <!-- ===== JS ===== -->
-    <script>
-        /* Sidebar toggle */
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('show');
-        }
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('show');
-        }
+		<!-- ===== JS ===== -->
+		<script>
+			/* Sidebar toggle */
+			function toggleSidebar() {
+				document.getElementById('sidebar').classList.toggle('open');
+				document.getElementById('sidebarOverlay').classList
+						.toggle('show');
+			}
+			function closeSidebar() {
+				document.getElementById('sidebar').classList.remove('open');
+				document.getElementById('sidebarOverlay').classList
+						.remove('show');
+			}
 
-        /* Profile dropdown */
-        function toggleDropdown(e) {
-            e.stopPropagation();
-            document.getElementById('profileDropdown').classList.toggle('show');
-        }
-        document.addEventListener('click', function() {
-            document.getElementById('profileDropdown').classList.remove('show');
-        });
+			/* Profile dropdown */
+			function toggleDropdown(e) {
+				e.stopPropagation();
+				document.getElementById('profileDropdown').classList
+						.toggle('show');
+			}
+			document.addEventListener('click', function() {
+				document.getElementById('profileDropdown').classList
+						.remove('show');
+			});
 
-        /* Close sidebar on resize to desktop */
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 1024) closeSidebar();
-        });
-    </script>
-</h:form>
+			/* Close sidebar on resize to desktop */
+			window.addEventListener('resize', function() {
+				if (window.innerWidth > 1024)
+					closeSidebar();
+			});
+		</script>
+	</h:form>
 </h:body>
 </html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<h:head />
+
+<h:body>
+    <ui:composition template="/online/template/dashboard.xhtml">
+
+        <ui:define name="user_initials">OA</ui:define>
+        <ui:define name="user_fullname">Dr. Oladipo A.</ui:define>
+        <ui:define name="student_name">Dr. Oladipo</ui:define>
+
+        <ui:define name="dashboard_body">
+
+            <style>
+                /* ===== SUPERVISOR DASHBOARD ===== */
+
+                /* --- Stat Cards Row --- */
+                .sup-stats {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 1.15rem;
+                    margin-bottom: 1.75rem;
+                }
+                .sup-stat-card {
+                    background: #FFFFFF;
+                    border: 1px solid #E5E9F0;
+                    border-radius: 8px;
+                    padding: 1.25rem 1.35rem;
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 1rem;
+                    transition: box-shadow 0.2s;
+                }
+                .sup-stat-card:hover {
+                    box-shadow: 0 4px 16px rgba(27,58,107,0.07);
+                }
+                .sup-stat-icon {
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.25rem;
+                    flex-shrink: 0;
+                }
+                .sup-stat-icon.blue    { background: #D6E4F7; color: #1B3A6B; }
+                .sup-stat-icon.gold    { background: #FDF3D7; color: #B45309; }
+                .sup-stat-icon.green   { background: #D1FAE5; color: #2E7D52; }
+                .sup-stat-icon.red     { background: #FDECEA; color: #C0392B; }
+                .sup-stat-body { flex: 1; }
+                .sup-stat-label {
+                    font-size: 0.78rem;
+                    font-weight: 500;
+                    color: #9AA3B2;
+                    text-transform: uppercase;
+                    letter-spacing: 0.4px;
+                    margin-bottom: 0.3rem;
+                }
+                .sup-stat-value {
+                    font-family: 'Georgia', 'Times New Roman', serif;
+                    font-size: 1.65rem;
+                    font-weight: 700;
+                    color: #1B3A6B;
+                    line-height: 1;
+                }
+                .sup-stat-hint {
+                    font-size: 0.75rem;
+                    color: #9AA3B2;
+                    margin-top: 0.3rem;
+                }
+
+                /* --- Panels Row --- */
+                .sup-panels {
+                    display: grid;
+                    grid-template-columns: 1.25fr 0.75fr;
+                    gap: 1.25rem;
+                    margin-bottom: 1.75rem;
+                }
+                .sup-panel {
+                    background: #FFFFFF;
+                    border: 1px solid #E5E9F0;
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+                .sup-panel-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 1rem 1.35rem;
+                    border-bottom: 1px solid #E5E9F0;
+                }
+                .sup-panel-header h3 {
+                    font-family: 'Georgia', 'Times New Roman', serif;
+                    font-size: 1rem;
+                    font-weight: 700;
+                    color: #1B3A6B;
+                }
+                .sup-panel-header .view-all {
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    color: #C9A84C;
+                    text-decoration: none;
+                    transition: color 0.2s;
+                }
+                .sup-panel-header .view-all:hover { color: #B45309; }
+                .sup-panel-body {
+                    padding: 0;
+                }
+
+                /* --- Proposals Table --- */
+                .sup-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 0.85rem;
+                }
+                .sup-table thead th {
+                    text-align: left;
+                    padding: 0.75rem 1.35rem;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    color: #9AA3B2;
+                    text-transform: uppercase;
+                    letter-spacing: 0.3px;
+                    background: #F7F8FC;
+                    border-bottom: 1px solid #E5E9F0;
+                }
+                .sup-table tbody td {
+                    padding: 0.85rem 1.35rem;
+                    color: #4A5568;
+                    border-bottom: 1px solid #F1F3F7;
+                    vertical-align: middle;
+                }
+                .sup-table tbody tr:last-child td { border-bottom: none; }
+                .sup-table tbody tr:hover { background: #FAFBFE; }
+
+                .sup-student-name {
+                    font-weight: 600;
+                    color: #1A202C;
+                }
+                .sup-student-matric {
+                    font-size: 0.75rem;
+                    color: #9AA3B2;
+                }
+                .sup-proposal-title {
+                    max-width: 220px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                /* Badges */
+                .sup-badge {
+                    display: inline-block;
+                    padding: 0.2rem 0.6rem;
+                    border-radius: 4px;
+                    font-size: 0.72rem;
+                    font-weight: 600;
+                    letter-spacing: 0.2px;
+                    white-space: nowrap;
+                }
+                .sup-badge.pending   { background: #FDF3D7; color: #B45309; }
+                .sup-badge.approved  { background: #D1FAE5; color: #2E7D52; }
+                .sup-badge.rejected  { background: #FDECEA; color: #C0392B; }
+                .sup-badge.draft     { background: #E5E9F0; color: #4A5568; }
+
+                /* Similarity pill */
+                .sup-sim {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.3rem;
+                    font-weight: 600;
+                    font-size: 0.82rem;
+                }
+                .sup-sim .dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                }
+                .sup-sim.low  .dot { background: #2E7D52; }
+                .sup-sim.med  .dot { background: #B45309; }
+                .sup-sim.high .dot { background: #C0392B; }
+                .sup-sim.low       { color: #2E7D52; }
+                .sup-sim.med       { color: #B45309; }
+                .sup-sim.high      { color: #C0392B; }
+
+                /* Action link */
+                .sup-action {
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    color: #1B3A6B;
+                    text-decoration: none;
+                    transition: color 0.2s;
+                }
+                .sup-action:hover { color: #C9A84C; }
+
+                /* --- Students Progress (right panel) --- */
+                .sup-student-list {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                }
+                .sup-student-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.85rem;
+                    padding: 0.9rem 1.35rem;
+                    border-bottom: 1px solid #F1F3F7;
+                    transition: background 0.15s;
+                }
+                .sup-student-row:last-child { border-bottom: none; }
+                .sup-student-row:hover { background: #FAFBFE; }
+                .sup-student-avatar {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    background: #D6E4F7;
+                    color: #1B3A6B;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.78rem;
+                    font-weight: 700;
+                    flex-shrink: 0;
+                }
+                .sup-student-info { flex: 1; min-width: 0; }
+                .sup-student-info .name {
+                    font-weight: 600;
+                    font-size: 0.85rem;
+                    color: #1A202C;
+                }
+                .sup-student-info .project-title {
+                    font-size: 0.75rem;
+                    color: #9AA3B2;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .sup-progress-ring {
+                    width: 38px;
+                    height: 38px;
+                    flex-shrink: 0;
+                    position: relative;
+                }
+                .sup-progress-ring svg {
+                    width: 100%;
+                    height: 100%;
+                    transform: rotate(-90deg);
+                }
+                .sup-progress-ring .track {
+                    fill: none;
+                    stroke: #E5E9F0;
+                    stroke-width: 3.5;
+                }
+                .sup-progress-ring .fill {
+                    fill: none;
+                    stroke-width: 3.5;
+                    stroke-linecap: round;
+                    transition: stroke-dashoffset 0.5s;
+                }
+                .sup-progress-pct {
+                    position: absolute;
+                    inset: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.6rem;
+                    font-weight: 700;
+                    color: #4A5568;
+                }
+
+                /* --- Activity Timeline (bottom) --- */
+                .sup-full-row {
+                    margin-bottom: 1.75rem;
+                }
+                .sup-activity-list {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0.5rem 1.35rem 1rem;
+                }
+                .sup-activity-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 0.75rem;
+                    padding: 0.65rem 0;
+                    border-bottom: 1px solid #F1F3F7;
+                }
+                .sup-activity-item:last-child { border-bottom: none; }
+                .sup-activity-dot {
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    margin-top: 0.35rem;
+                    flex-shrink: 0;
+                }
+                .sup-activity-dot.green  { background: #2E7D52; }
+                .sup-activity-dot.blue   { background: #2E5399; }
+                .sup-activity-dot.orange { background: #B45309; }
+                .sup-activity-dot.red    { background: #C0392B; }
+                .sup-activity-text {
+                    font-size: 0.85rem;
+                    color: #4A5568;
+                    line-height: 1.4;
+                }
+                .sup-activity-text strong { color: #1A202C; }
+                .sup-activity-time {
+                    font-size: 0.72rem;
+                    color: #9AA3B2;
+                    margin-top: 0.15rem;
+                }
+
+                /* ===== RESPONSIVE ===== */
+                @media (max-width: 1024px) {
+                    .sup-stats { grid-template-columns: repeat(2, 1fr); }
+                    .sup-panels { grid-template-columns: 1fr; }
+                }
+                @media (max-width: 640px) {
+                    .sup-stats { grid-template-columns: 1fr; }
+                    .sup-table thead { display: none; }
+                    .sup-table, .sup-table tbody, .sup-table tr, .sup-table td {
+                        display: block;
+                        width: 100%;
+                    }
+                    .sup-table tbody td {
+                        padding: 0.4rem 1.35rem;
+                        border-bottom: none;
+                    }
+                    .sup-table tbody td:first-child { padding-top: 0.85rem; }
+                    .sup-table tbody td:last-child {
+                        padding-bottom: 0.85rem;
+                        border-bottom: 1px solid #F1F3F7;
+                    }
+                }
+            </style>
+
+            <!-- ===== ROW 1: STAT CARDS ===== -->
+            <div class="sup-stats">
+
+                <div class="sup-stat-card">
+                    <div class="sup-stat-icon blue">&#128101;</div>
+                    <div class="sup-stat-body">
+                        <div class="sup-stat-label">My Students</div>
+                        <div class="sup-stat-value">12</div>
+                        <div class="sup-stat-hint">Assigned this session</div>
+                    </div>
+                </div>
+
+                <div class="sup-stat-card">
+                    <div class="sup-stat-icon gold">&#128203;</div>
+                    <div class="sup-stat-body">
+                        <div class="sup-stat-label">Pending Proposals</div>
+                        <div class="sup-stat-value">4</div>
+                        <div class="sup-stat-hint">Awaiting your review</div>
+                    </div>
+                </div>
+
+                <div class="sup-stat-card">
+                    <div class="sup-stat-icon green">&#9889;</div>
+                    <div class="sup-stat-body">
+                        <div class="sup-stat-label">Active Projects</div>
+                        <div class="sup-stat-value">7</div>
+                        <div class="sup-stat-hint">Currently in progress</div>
+                    </div>
+                </div>
+
+                <div class="sup-stat-card">
+                    <div class="sup-stat-icon red">&#9888;</div>
+                    <div class="sup-stat-body">
+                        <div class="sup-stat-label">Flagged Proposals</div>
+                        <div class="sup-stat-value">2</div>
+                        <div class="sup-stat-hint">High similarity detected</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== ROW 2: PROPOSALS TABLE + STUDENTS PROGRESS ===== -->
+            <div class="sup-panels">
+
+                <!-- Pending Proposals -->
+                <div class="sup-panel">
+                    <div class="sup-panel-header">
+                        <h3>Pending Proposals</h3>
+                        <a href="#{request.contextPath}/online/supervisor/proposals.xhtml" class="view-all">View All &#8594;</a>
+                    </div>
+                    <div class="sup-panel-body">
+                        <table class="sup-table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Proposal Title</th>
+                                    <th>Status</th>
+                                    <th>Similarity</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="sup-student-name">Chinwe Okoro</div>
+                                        <div class="sup-student-matric">CSC/2022/045</div>
+                                    </td>
+                                    <td><div class="sup-proposal-title">AI-Based Crop Disease Detection System</div></td>
+                                    <td><span class="sup-badge pending">Pending</span></td>
+                                    <td>
+                                        <span class="sup-sim low"><span class="dot"></span> 0.38</span>
+                                    </td>
+                                    <td><a href="#" class="sup-action">Review</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="sup-student-name">Emeka Nwosu</div>
+                                        <div class="sup-student-matric">CSC/2022/112</div>
+                                    </td>
+                                    <td><div class="sup-proposal-title">Smart Attendance System Using Face Recognition</div></td>
+                                    <td><span class="sup-badge pending">Pending</span></td>
+                                    <td>
+                                        <span class="sup-sim high"><span class="dot"></span> 0.87</span>
+                                    </td>
+                                    <td><a href="#" class="sup-action">Review</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="sup-student-name">Fatima Bello</div>
+                                        <div class="sup-student-matric">CSC/2022/078</div>
+                                    </td>
+                                    <td><div class="sup-proposal-title">Blockchain-Based Voting Platform for Student Elections</div></td>
+                                    <td><span class="sup-badge pending">Pending</span></td>
+                                    <td>
+                                        <span class="sup-sim med"><span class="dot"></span> 0.71</span>
+                                    </td>
+                                    <td><a href="#" class="sup-action">Review</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="sup-student-name">Tunde Adeyemi</div>
+                                        <div class="sup-student-matric">CSC/2022/091</div>
+                                    </td>
+                                    <td><div class="sup-proposal-title">NLP Chatbot for University FAQ Automation</div></td>
+                                    <td><span class="sup-badge pending">Pending</span></td>
+                                    <td>
+                                        <span class="sup-sim low"><span class="dot"></span> 0.29</span>
+                                    </td>
+                                    <td><a href="#" class="sup-action">Review</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Students Progress -->
+                <div class="sup-panel">
+                    <div class="sup-panel-header">
+                        <h3>Student Progress</h3>
+                    </div>
+                    <div class="sup-panel-body">
+                        <ul class="sup-student-list">
+                            <li class="sup-student-row">
+                                <div class="sup-student-avatar">AK</div>
+                                <div class="sup-student-info">
+                                    <div class="name">Adewale Kayode</div>
+                                    <div class="project-title">Intelligent Project Management with NLP</div>
+                                </div>
+                                <div class="sup-progress-ring">
+                                    <svg viewBox="0 0 36 36">
+                                        <circle class="track" cx="18" cy="18" r="15.5" />
+                                        <circle class="fill" cx="18" cy="18" r="15.5"
+                                                stroke="#2E7D52"
+                                                stroke-dasharray="97.4"
+                                                stroke-dashoffset="32.1" />
+                                    </svg>
+                                    <span class="sup-progress-pct">67%</span>
+                                </div>
+                            </li>
+                            <li class="sup-student-row">
+                                <div class="sup-student-avatar">CO</div>
+                                <div class="sup-student-info">
+                                    <div class="name">Chinwe Okoro</div>
+                                    <div class="project-title">AI-Based Crop Disease Detection</div>
+                                </div>
+                                <div class="sup-progress-ring">
+                                    <svg viewBox="0 0 36 36">
+                                        <circle class="track" cx="18" cy="18" r="15.5" />
+                                        <circle class="fill" cx="18" cy="18" r="15.5"
+                                                stroke="#B45309"
+                                                stroke-dasharray="97.4"
+                                                stroke-dashoffset="64.4" />
+                                    </svg>
+                                    <span class="sup-progress-pct">34%</span>
+                                </div>
+                            </li>
+                            <li class="sup-student-row">
+                                <div class="sup-student-avatar">FB</div>
+                                <div class="sup-student-info">
+                                    <div class="name">Fatima Bello</div>
+                                    <div class="project-title">Blockchain Voting Platform</div>
+                                </div>
+                                <div class="sup-progress-ring">
+                                    <svg viewBox="0 0 36 36">
+                                        <circle class="track" cx="18" cy="18" r="15.5" />
+                                        <circle class="fill" cx="18" cy="18" r="15.5"
+                                                stroke="#2E7D52"
+                                                stroke-dasharray="97.4"
+                                                stroke-dashoffset="48.7" />
+                                    </svg>
+                                    <span class="sup-progress-pct">50%</span>
+                                </div>
+                            </li>
+                            <li class="sup-student-row">
+                                <div class="sup-student-avatar">EN</div>
+                                <div class="sup-student-info">
+                                    <div class="name">Emeka Nwosu</div>
+                                    <div class="project-title">Smart Attendance System</div>
+                                </div>
+                                <div class="sup-progress-ring">
+                                    <svg viewBox="0 0 36 36">
+                                        <circle class="track" cx="18" cy="18" r="15.5" />
+                                        <circle class="fill" cx="18" cy="18" r="15.5"
+                                                stroke="#C0392B"
+                                                stroke-dasharray="97.4"
+                                                stroke-dashoffset="81.1" />
+                                    </svg>
+                                    <span class="sup-progress-pct">17%</span>
+                                </div>
+                            </li>
+                            <li class="sup-student-row">
+                                <div class="sup-student-avatar">TA</div>
+                                <div class="sup-student-info">
+                                    <div class="name">Tunde Adeyemi</div>
+                                    <div class="project-title">NLP Chatbot for University FAQ</div>
+                                </div>
+                                <div class="sup-progress-ring">
+                                    <svg viewBox="0 0 36 36">
+                                        <circle class="track" cx="18" cy="18" r="15.5" />
+                                        <circle class="fill" cx="18" cy="18" r="15.5"
+                                                stroke="#2E5399"
+                                                stroke-dasharray="97.4"
+                                                stroke-dashoffset="87.7" />
+                                    </svg>
+                                    <span class="sup-progress-pct">10%</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== ROW 3: RECENT ACTIVITY ===== -->
+            <div class="sup-full-row">
+                <div class="sup-panel">
+                    <div class="sup-panel-header">
+                        <h3>Recent Activity</h3>
+                    </div>
+                    <div class="sup-panel-body">
+                        <ul class="sup-activity-list">
+                            <li class="sup-activity-item">
+                                <div class="sup-activity-dot gold"></div>
+                                <div>
+                                    <div class="sup-activity-text"><strong>Emeka Nwosu</strong> submitted a proposal — similarity score <strong>0.87</strong> (flagged)</div>
+                                    <div class="sup-activity-time">35 minutes ago</div>
+                                </div>
+                            </li>
+                            <li class="sup-activity-item">
+                                <div class="sup-activity-dot green"></div>
+                                <div>
+                                    <div class="sup-activity-text">You approved <strong>Adewale Kayode</strong>'s Chapter 3 — Methodology</div>
+                                    <div class="sup-activity-time">2 hours ago</div>
+                                </div>
+                            </li>
+                            <li class="sup-activity-item">
+                                <div class="sup-activity-dot blue"></div>
+                                <div>
+                                    <div class="sup-activity-text"><strong>Fatima Bello</strong> submitted Chapter 2 — Literature Review</div>
+                                    <div class="sup-activity-time">5 hours ago</div>
+                                </div>
+                            </li>
+                            <li class="sup-activity-item">
+                                <div class="sup-activity-dot orange"></div>
+                                <div>
+                                    <div class="sup-activity-text"><strong>Tunde Adeyemi</strong> submitted a new proposal for review</div>
+                                    <div class="sup-activity-time">1 day ago</div>
+                                </div>
+                            </li>
+                            <li class="sup-activity-item">
+                                <div class="sup-activity-dot red"></div>
+                                <div>
+                                    <div class="sup-activity-text">You rejected <strong>Chinwe Okoro</strong>'s initial proposal — high similarity</div>
+                                    <div class="sup-activity-time">2 days ago</div>
+                                </div>
+                            </li>
+                            <li class="sup-activity-item">
+                                <div class="sup-activity-dot green"></div>
+                                <div>
+                                    <div class="sup-activity-text">You approved <strong>Chinwe Okoro</strong>'s revised proposal</div>
+                                    <div class="sup-activity-time">1 day ago</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </ui:define>
+
+    </ui:composition>
+</h:body>
+</html>

@@ -87,6 +87,21 @@ public class ProposalService {
 
 		return list;
 	}
+	public PagedList<Proposal> fetchStudentProposal(int first, int pageSize, Long studentId) {
+		PagedList<Proposal> list = new PagedList<Proposal>();
+		TypedQuery<Proposal> query = em.createQuery("select s from Proposal s WHERE s.studentId =:id order by s.createdDate desc",
+				Proposal.class);
+		query.setParameter("id", studentId);
+		query.setFirstResult(first).setMaxResults(pageSize);
+		List<Proposal> res = query.getResultList();
+		list.setList(res);
+
+		Number count = fetchProposalCount();
+		list.setCount(count.intValue());
+
+		return list;
+	}
+
 
 	public Number fetchProposalCount() {
 		TypedQuery<Number> query = em.createQuery("select count(s.id) from Proposal s", Number.class);
