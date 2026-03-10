@@ -62,7 +62,12 @@ public class User extends AbstractEntity {
 	@Enumerated(EnumType.STRING)
 	// @CollectionTable(name = "userroles", joinColumns = { @JoinColumn(name =
 	// "userid") }, schema = "public2")
-	@CollectionTable(name = "userroles", joinColumns = { @JoinColumn(name = "userid") })
+//	@CollectionTable(name = "userroles", joinColumns = { @JoinColumn(name = "userid") })
+	@CollectionTable(
+		    name = "user_roles",                             
+		    joinColumns = { @JoinColumn(name = "username",    // join by username, not userid
+		                   referencedColumnName = "username") }
+		)
 	@Column(name = "role")
 	private List<Role> roles;
 

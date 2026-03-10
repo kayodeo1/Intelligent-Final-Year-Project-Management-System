@@ -45,7 +45,8 @@ public class LoginBean implements Serializable {
 		} else {
 			try {
 				subject.login(new UsernamePasswordToken(username, password));
-				System.out.println("Login successful for user: " + username);
+				LOG.info("login successfull for"+ username);
+				LOG.info("roles gotten for user: " + username + ". Roles: " + subject.hasRole("STUDENT") + ", " + subject.hasRole("SUPERVISOR"));
 				Faces.redirect(DASHBOARD_URL);
 			} catch (org.apache.shiro.authc.AuthenticationException e) {
 				LOG.info("Login failed for user: " + username + ". Reason: " + e.getMessage());
