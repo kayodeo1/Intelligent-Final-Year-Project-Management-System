@@ -70,6 +70,9 @@ public class ProposalBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final String APP_BASE_NAME = Constants.APP_BASE_NAME;
+	public static final String EMBEDDING_MODEL_NAME = Constants.EMBEDDING_MODEL_NAME;
+	public static final String EMBEDDING_MODEL_URL = Constants.EMBEDDING_MODEL_URL;
+
 	private static Logger LOG = LoggerFactory.getLogger(ProposalBean.class);
 //	@Inject
 //	private UserService userService;
@@ -96,8 +99,8 @@ public class ProposalBean implements Serializable {
 	private User currentUser;
 	private double sim;
 	EmbeddingModel model = OllamaEmbeddingModel.builder()
-            .baseUrl("http://localhost:11434")
-            .modelName("embeddinggemma")
+            .baseUrl(EMBEDDING_MODEL_URL)
+            .modelName(EMBEDDING_MODEL_NAME)
             .build();
 	
 	@Inject
@@ -143,6 +146,7 @@ public class ProposalBean implements Serializable {
 		Embedding embedding = model.embed(proposal).content();
         entry.setEmbedding(embedding.vector());
         entry.setStatus(Status.DRAFT);
+        entry.setStudentName(currentUser.getFirstName()+" "+currentUser.getLastName());
         proposalService.createProposal(entry);
         Messages.addFlashGlobalInfo("Proposal saved as draft!");
         Faces.redirect(PROPOSAL_MGT_URL);
@@ -206,6 +210,18 @@ public class ProposalBean implements Serializable {
 		try {
 			// SecurityUtils.getSubject().checkRole("MDOPS");
 			lazyModel = new ProposalLazyDataModel(proposalService, QueryType.GET_ALL_PROPOSAL);
+		} catch (Exception e) {
+			Messages.addGlobalError("oops error encountered while fetching entries!");
+			LOG.error("oops error encountered while fetching entries!", e.fillInStackTrace());
+			e.printStackTrace(); //
+		}
+	}
+	
+	public void listStudentsProposal() {
+		LOG.info("listStudentsProposal invoked!!!");
+		try {
+			// SecurityUtils.getSubject().checkRole("MDOPS");
+			lazyModel = new ProposalLazyDataModel(proposalService, QueryType.GET_ALL_STUDENT_PROPOSAL,currentUser.getId());
 		} catch (Exception e) {
 			Messages.addGlobalError("oops error encountered while fetching entries!");
 			LOG.error("oops error encountered while fetching entries!", e.fillInStackTrace());

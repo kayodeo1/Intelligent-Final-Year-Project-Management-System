@@ -7,7 +7,7 @@
 
 <h:head>
 	<f:metadata>
-		<f:viewAction action="#{proposalBean.listProposal()}" />
+		<f:viewAction action="#{proposalBean.listStudentsProposal()}" />
 	</f:metadata>
 </h:head>
 
@@ -264,6 +264,218 @@ LIST /* Page header bar */
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
 }
 
+/* ===== PROPOSAL DETAIL DIALOG ===== */
+.ui-dialog.ui-widget.prop-detail-dlg {
+	border: none !important;
+	border-radius: 10px !important;
+	box-shadow: 0 16px 56px rgba(10,22,40,0.25) !important;
+	max-width: 680px;
+	width: 95vw !important;
+}
+.prop-detail-dlg .ui-dialog-titlebar {
+	background: #0A1628 !important;
+	border: none !important;
+	border-radius: 10px 10px 0 0 !important;
+	padding: 1rem 1.5rem !important;
+}
+.prop-detail-dlg .ui-dialog-title {
+	font-family: 'Georgia', 'Times New Roman', serif !important;
+	font-size: 1.05rem !important;
+	font-weight: 700 !important;
+	color: #C9A84C !important;
+}
+.prop-detail-dlg .ui-dialog-titlebar-close {
+	color: #9AA3B2 !important;
+	transition: color 0.2s !important;
+}
+.prop-detail-dlg .ui-dialog-titlebar-close:hover {
+	color: #FFFFFF !important;
+}
+.prop-detail-dlg .ui-dialog-content {
+	padding: 0 !important;
+	background: #F7F8FC !important;
+}
+
+/* Dialog inner */
+.prop-detail-body {
+	padding: 1.5rem 1.75rem 1.25rem;
+}
+
+/* Status + date row */
+.prop-detail-meta {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 1.5rem;
+	flex-wrap: wrap;
+}
+.prop-meta-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.3rem 0.75rem;
+	border-radius: 5px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+}
+.prop-meta-badge.status-submitted { background: #D6E4F7; color: #1B3A6B; }
+.prop-meta-badge.status-approved  { background: #D1FAE5; color: #2E7D52; }
+.prop-meta-badge.status-rejected  { background: #FDECEA; color: #C0392B; }
+.prop-meta-badge.status-draft     { background: #E5E9F0; color: #4A5568; }
+.prop-meta-date {
+	font-size: 0.78rem;
+	color: #9AA3B2;
+}
+
+/* Field group */
+.prop-detail-field {
+	margin-bottom: 1.25rem;
+}
+.prop-detail-label {
+	display: block;
+	font-size: 0.73rem;
+	font-weight: 600;
+	color: #9AA3B2;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+	margin-bottom: 0.4rem;
+}
+.prop-detail-value {
+	background: #FFFFFF;
+	border: 1px solid #E5E9F0;
+	border-radius: 6px;
+	padding: 0.7rem 0.9rem;
+	font-size: 0.88rem;
+	color: #1A202C;
+	line-height: 1.55;
+	min-height: 20px;
+}
+.prop-detail-value.multiline {
+	white-space: pre-wrap;
+	min-height: 60px;
+}
+
+/* Objectives list */
+.prop-detail-objectives {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+.prop-detail-objectives li {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.6rem;
+	background: #FFFFFF;
+	border: 1px solid #E5E9F0;
+	border-radius: 6px;
+	padding: 0.6rem 0.9rem;
+	font-size: 0.88rem;
+	color: #1A202C;
+	line-height: 1.45;
+}
+.obj-num {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: #D6E4F7;
+	color: #1B3A6B;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.68rem;
+	font-weight: 700;
+	flex-shrink: 0;
+	margin-top: 1px;
+}
+
+/* Similarity banner */
+.prop-detail-similarity {
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	background: #FFF8E1;
+	border: 1px solid #F0D080;
+	border-radius: 6px;
+	padding: 0.85rem 1rem;
+	margin-bottom: 1.25rem;
+}
+.prop-sim-score {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.82rem;
+	font-weight: 700;
+	flex-shrink: 0;
+}
+.prop-sim-score.high { background: #FDECEA; color: #C0392B; border: 2px solid #C0392B; }
+.prop-sim-score.med  { background: #FDF3D7; color: #B45309; border: 2px solid #B45309; }
+.prop-sim-score.low  { background: #D1FAE5; color: #2E7D52; border: 2px solid #2E7D52; }
+.prop-sim-info { flex: 1; }
+.prop-sim-info .sim-label {
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: #4A5568;
+}
+.prop-sim-info .sim-hint {
+	font-size: 0.73rem;
+	color: #9AA3B2;
+	margin-top: 0.15rem;
+}
+
+/* Dialog footer */
+.prop-detail-footer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 0.65rem;
+	padding: 1rem 1.75rem;
+	border-top: 1px solid #E5E9F0;
+	background: #FFFFFF;
+	border-radius: 0 0 10px 10px;
+}
+.btn-compare,
+.prop-detail-footer .ui-button.btn-compare {
+	background: #1B3A6B !important;
+	color: #FFFFFF !important;
+	border: none !important;
+	border-radius: 6px !important;
+	padding: 0.55rem 1.15rem !important;
+	font-size: 0.82rem !important;
+	font-weight: 600 !important;
+	cursor: pointer !important;
+	transition: all 0.2s !important;
+}
+.btn-compare:hover,
+.prop-detail-footer .ui-button.btn-compare:hover {
+	background: #2E5399 !important;
+	transform: translateY(-1px) !important;
+}
+.btn-close-dlg,
+.prop-detail-footer .ui-button.btn-close-dlg {
+	background: #FFFFFF !important;
+	color: #4A5568 !important;
+	border: 1px solid #E5E9F0 !important;
+	border-radius: 6px !important;
+	padding: 0.55rem 1.15rem !important;
+	font-size: 0.82rem !important;
+	font-weight: 600 !important;
+	cursor: pointer !important;
+	transition: all 0.15s !important;
+}
+.btn-close-dlg:hover,
+.prop-detail-footer .ui-button.btn-close-dlg:hover {
+	background: #F7F8FC !important;
+	border-color: #1B3A6B !important;
+}
+.prop-detail-footer .ui-button .ui-button-text { padding: 0 !important; }
+
 /* ===== RESPONSIVE ===== */
 @media ( max-width : 768px) {
 	.prop-header {
@@ -356,8 +568,11 @@ LIST /* Page header bar */
 
 							<p:column headerText="" style="width:90px; text-align:center;">
 								<p:menuButton value="Action">
-									<p:menuitem value="View" icon="ui-icon-arrowrefresh-1-w"
-										style="font-size:1em!important;" process="@this">
+									<p:menuitem value="View" icon="ui-icon-search"
+										style="font-size:1em!important;" process="@this"
+										actionListener="#{proposalBean.displayProposalDialog(entry)}"
+										update="proposalDetailPanel"
+										oncomplete="PF('proposalDetailDlg').show()">
 									</p:menuitem>
 								</p:menuButton>
 							</p:column>
@@ -365,6 +580,78 @@ LIST /* Page header bar */
 
 					</p:outputPanel>
 				</div>
+
+				<!-- ===== PROPOSAL DETAIL DIALOG ===== -->
+				<p:dialog widgetVar="proposalDetailDlg" id="proposalDetailDlg"
+					modal="true" showEffect="fade" hideEffect="fade"
+					resizable="false" draggable="true" closable="true"
+					header="Proposal Details" styleClass="prop-detail-dlg">
+
+					<p:outputPanel id="proposalDetailPanel">
+
+						<div class="prop-detail-body">
+
+							<!-- Status + Date row -->
+							<div class="prop-detail-meta">
+								<span class="prop-meta-badge status-submitted">Submitted</span>
+								<span class="prop-meta-date">&#128197; Submitted on 8 Mar 2026, 14:32</span>
+							</div>
+
+							<!-- Title -->
+							<div class="prop-detail-field">
+								<span class="prop-detail-label">Project Title</span>
+								<div class="prop-detail-value">
+									Intelligent Project Management System with NLP-Based Similarity Detection
+								</div>
+							</div>
+
+							<!-- Problem Statement -->
+							<div class="prop-detail-field">
+								<span class="prop-detail-label">Problem Statement</span>
+								<div class="prop-detail-value multiline">Many universities face the recurring problem of students submitting final year project proposals that are too similar to previously completed projects. Manual checking is tedious and error-prone, leading to duplicated research efforts and wasted academic resources.</div>
+							</div>
+
+							<!-- Objectives -->
+							<div class="prop-detail-field">
+								<span class="prop-detail-label">Aim &amp; Objectives</span>
+								<ul class="prop-detail-objectives">
+									<li><span class="obj-num">1</span> To design a web-based project management system for supervising final year projects</li>
+									<li><span class="obj-num">2</span> To implement NLP-based similarity detection using sentence embeddings</li>
+									<li><span class="obj-num">3</span> To evaluate system effectiveness through comprehensive testing</li>
+								</ul>
+							</div>
+
+							<!-- Methodology -->
+							<div class="prop-detail-field">
+								<span class="prop-detail-label">Methodology</span>
+								<div class="prop-detail-value multiline">The system will adopt an agile development methodology. The backend will be built using Java EE with PrimeFaces for the UI. NLP similarity detection will leverage LangChain4j with Ollama embeddings stored in PostgreSQL using the pgvector extension. Cosine similarity will be computed between proposal embeddings to flag potentially duplicated topics.</div>
+							</div>
+
+							<!-- Similarity banner (rendered if similar project exists) -->
+							<div class="prop-detail-similarity">
+								<div class="prop-sim-score high">0.87</div>
+								<div class="prop-sim-info">
+									<div class="sim-label">High similarity detected with an existing project</div>
+									<div class="sim-hint">Your proposal closely matches a previously submitted project. Click Compare to see details.</div>
+								</div>
+							</div>
+
+						</div>
+
+						<!-- Footer buttons -->
+						<div class="prop-detail-footer">
+							<p:commandButton value="Close" type="button"
+								onclick="PF('proposalDetailDlg').hide();"
+								styleClass="btn-close-dlg" />
+							<p:commandButton value="&#128270; Compare with Similar Project"
+								ajax="false"
+								action="/online/proposal/compare.xhtml?faces-redirect=true"
+								styleClass="btn-compare" />
+						</div>
+
+					</p:outputPanel>
+
+				</p:dialog>
 
 			</h:form>
 

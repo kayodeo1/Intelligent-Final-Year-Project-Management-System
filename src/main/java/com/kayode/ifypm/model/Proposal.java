@@ -46,6 +46,7 @@ private String similarityScore;
 private Long mostSimilarProposalId;
 private Long mostSimilarProjectId;
 private String submittedAt;
+public String studentName;
 
 @Column(name = "embedding", columnDefinition = "vector(768)")
 @Convert(converter = VectorConverter.class)
@@ -217,6 +218,20 @@ public Date getCreatedDate() {
 public void setCreatedDate(Date createdDate) {
 	this.createdDate = createdDate;
 }
+/**
+ * @return the studentName
+ */
+public String getStudentName() {
+	return studentName;
+}
+/**
+ * @param studentName the studentName to set
+ */
+public void setStudentName(String studentName) {
+	this.studentName = studentName;
+}
+
+
 
 
 
