@@ -275,6 +275,8 @@ public class ProposalBean implements Serializable {
 
 	public void displayProposalDialog(Proposal e) {
 		LOG.info("displayProposalDialog invoked!");
+		System.out.println(e.getCreatedDate());
+		System.out.println("displayProposalDialog -> " + e.getTitle());
 		this.entry = e;
 		LOG.info("entry selected:  id -> " + this.entry.getId());
 

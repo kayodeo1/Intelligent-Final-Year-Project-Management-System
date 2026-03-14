@@ -294,6 +294,8 @@ LIST /* Page header bar */
 .prop-detail-dlg .ui-dialog-content {
 	padding: 0 !important;
 	background: #F7F8FC !important;
+	max-height: 70vh !important;
+	overflow-y: auto !important;
 }
 
 /* Dialog inner */
@@ -569,9 +571,9 @@ LIST /* Page header bar */
 							<p:column headerText="" style="width:90px; text-align:center;">
 								<p:menuButton value="Action">
 									<p:menuitem value="View" icon="ui-icon-search"
-										style="font-size:1em!important;" process="@this"
+										style="font-size:1em!important;" process="@form"
 										actionListener="#{proposalBean.displayProposalDialog(entry)}"
-										update="proposalDetailPanel"
+										update=":proposalDetailDlg"
 										oncomplete="PF('proposalDetailDlg').show()">
 									</p:menuitem>
 								</p:menuButton>
@@ -581,7 +583,6 @@ LIST /* Page header bar */
 					</p:outputPanel>
 				</div>
 
-				<!-- ===== PROPOSAL DETAIL DIALOG ===== -->
 				<p:dialog widgetVar="proposalDetailDlg" id="proposalDetailDlg"
 					modal="true" showEffect="fade" hideEffect="fade"
 					resizable="false" draggable="true" closable="true"
@@ -594,7 +595,7 @@ LIST /* Page header bar */
 							<!-- Status + Date row -->
 							<div class="prop-detail-meta">
 								<span class="prop-meta-badge status-submitted">Submitted</span>
-								<span class="prop-meta-date">&#128197; Submitted on 8 Mar 2026, 14:32</span>
+								<span class="prop-meta-date">&#128197;#{proposalBean.entry.getCreatedDate()}</span>
 							</div>
 
 							<!-- Title -->
@@ -614,11 +615,9 @@ LIST /* Page header bar */
 							<!-- Objectives -->
 							<div class="prop-detail-field">
 								<span class="prop-detail-label">Aim &amp; Objectives</span>
-								<ul class="prop-detail-objectives">
-									<li><span class="obj-num">1</span> To design a web-based project management system for supervising final year projects</li>
-									<li><span class="obj-num">2</span> To implement NLP-based similarity detection using sentence embeddings</li>
-									<li><span class="obj-num">3</span> To evaluate system effectiveness through comprehensive testing</li>
-								</ul>
+								<div class="prop-detail-value multiline scrollable">1. To design a web-based project management system for supervising final year projects
+2. To implement NLP-based similarity detection using sentence embeddings
+3. To evaluate system effectiveness through comprehensive testing</div>
 							</div>
 
 							<!-- Methodology -->
