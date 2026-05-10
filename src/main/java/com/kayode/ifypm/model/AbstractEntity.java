@@ -19,7 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
 /**
- * @author AAfolayan
+ * @author Kayode
  */
 
 @MappedSuperclass

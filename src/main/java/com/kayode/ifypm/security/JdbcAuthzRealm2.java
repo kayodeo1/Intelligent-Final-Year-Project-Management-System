@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.slf4j.Logger;
+
 import javax.sql.DataSource;
 
 import org.apache.shiro.SecurityUtils;
@@ -28,6 +28,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
 import org.apache.shiro.util.JdbcUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

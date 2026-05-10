@@ -2,8 +2,8 @@ package com.kayode.ifypm.bean;
 
 import java.io.Serializable;
 
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Named;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
@@ -12,8 +12,12 @@ import org.slf4j.LoggerFactory;
 
 import com.kayode.ifypm.model.Constants;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
+
+/**
+ * @author Kayode
+ **/
 
 @Named("loginBean")
 @ViewScoped
@@ -27,7 +31,6 @@ public class LoginBean implements Serializable {
 	private static final String SUPERVISOR_DASHBOARD_URL = APP_BASE_NAME + "/online/supervisor/dashboard.xhtml?faces-redirect=true";
 	private static final String ADMIN_DASHBOARD_URL = APP_BASE_NAME + "/online/admin/dashboard.xhtml?faces-redirect=true";
 	private Subject subject = SecurityUtils.getSubject();
-;
 
 	public void logout() {
 		this.subject = SecurityUtils.getSubject();
@@ -50,14 +53,15 @@ public class LoginBean implements Serializable {
 			try {
 				subject.login(new UsernamePasswordToken(username, password));
 				LOG.info("login successfull for" + username);
-				if (subject.hasRole("STUDENT"))
+				if (subject.hasRole("STUDENT")) {
 					Faces.redirect(STUDENT_DASHBOARD_URL);
-				else if (subject.hasRole("SUPERVISOR"))
+				} else if (subject.hasRole("SUPERVISOR")) {
 					Faces.redirect(SUPERVISOR_DASHBOARD_URL);
-				else if (subject.hasRole("ADMIN"))
+				} else if (subject.hasRole("ADMIN")) {
 					Faces.redirect(ADMIN_DASHBOARD_URL);
-				else
+				} else {
 					Faces.redirect(APP_BASE_NAME + "/online/login.xhtml?faces-redirect=true");
+				}
 			} catch (org.apache.shiro.authc.AuthenticationException e) {
 				LOG.info("Login failed for user: " + username + ". Reason: " + e.getMessage());
 				Messages.addFlashGlobalError("Invalid username or password. Please try again.");
@@ -69,7 +73,7 @@ public class LoginBean implements Serializable {
 	public boolean isStudent() {
 		return subject.hasRole("STUDENT");
 	}
-	
+
 	public boolean isSupervisor() {
 		return subject.hasRole("SUPERVISOR");
 	}

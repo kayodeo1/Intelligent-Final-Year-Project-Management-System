@@ -1,30 +1,12 @@
 /**
- * 
+ *
  */
 package com.kayode.ifypm.bean;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.ejb.EJB;
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.context.Flash;
-import jakarta.faces.event.ValueChangeEvent;
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -32,17 +14,14 @@ import org.apache.shiro.subject.Subject;
 //import org.apache.shiro.subject.Subject;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.FlowEvent;
-import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
-import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kayode.ifypm.constants.QueryType;
-import com.kayode.ifypm.model.Constants;
 import com.kayode.ifypm.lazymodel.ProposalLazyDataModel;
+import com.kayode.ifypm.model.Constants;
 import com.kayode.ifypm.model.Proposal;
 import com.kayode.ifypm.model.Status;
 import com.kayode.ifypm.model.User;
@@ -56,9 +35,16 @@ import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
 import dev.langchain4j.store.embedding.CosineSimilarity;
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.context.Flash;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
- * @author AAfolayan
+ * @author Kayode
  *
  */
 @Named("proposalBean")
@@ -66,7 +52,7 @@ import dev.langchain4j.store.embedding.CosineSimilarity;
 public class ProposalBean implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final String APP_BASE_NAME = Constants.APP_BASE_NAME;
@@ -81,7 +67,7 @@ public class ProposalBean implements Serializable {
 	private Proposal entry = new Proposal();
 	private LazyDataModel<Proposal> lazyModel;
 
-	private static final String PROPOSAL_MGT_URL = APP_BASE_NAME + "/online/proposal/list.xhtml?faces-redirect=true";
+	private static final String PROPOSAL_MGT_URL = APP_BASE_NAME + "/online/proposal/proposals.xhtml?faces-redirect=true";
 	private static final String PROPOSAL_CREATION_URL = APP_BASE_NAME +"/online/proposal/submit.xhtml?faces-redirect=true"
 			+ "/online/proposal/create.xhtml?faces-redirect=true";
 	private static final String PROPOSAL_COMPARE_URL = APP_BASE_NAME+"/online/proposal/compare.xhtml"
@@ -102,11 +88,11 @@ public class ProposalBean implements Serializable {
             .baseUrl(EMBEDDING_MODEL_URL)
             .modelName(EMBEDDING_MODEL_NAME)
             .build();
-	
+
 	@Inject
 	UserService userService;
-	
-	
+
+
 
 //	private User user = new User();
 
@@ -116,44 +102,58 @@ public class ProposalBean implements Serializable {
 		Subject subject = SecurityUtils.getSubject();
 		this.setCurrentUser(userService.findUserByUserName(subject.getPrincipal().toString()));
 		if (Faces.getFlash().get("similarProposal") != null) {
-			
+
             this.similarProposal = (Proposal) Faces.getFlash().get("similarProposal");
             LOG.info("similar proposal retrieved >>> " + similarProposal);
             this.entry = (Proposal) Faces.getFlash().get("entry");
             LOG.info("current proposal retrieved >>> " + entry);
 			this.sim = (double) Faces.getFlash().get("similarityScore");
+			
 		}else {
 			LOG.info("No similar proposal found in flash scope.");
 		}
 	}
-	
+
+	public String compareSimilar() {
+		Proposal p = this.entry;
+		Faces.getFlash().put("entry", p);
+		Proposal sim = proposalService.findProposal(p.getMostSimilarProjectId());
+		Faces.getFlash().put("similarProposal", sim);
+		Faces.getFlash().put("similarityScore", p.getSimilarityScore());
+
+		
+		return "compare";
+		
+		
+	}
 	public void newProposalView() {
 		System.out.println("new proposal view invoked");
 		Faces.redirect(PROPOSAL_CREATION_URL);
 	}
+
+
+//	public void saveProposal() {
+//		String proposal = "Title: " + title + "\n\n" + "Methodology: " + methodology + "\n\n" + "Problem Statement: "
+//				+ problemStatement + "\n\n" + "\n\n" + "Objective 1: " + objective1 + "\n\n" + "Objective 2: "
+//				+ objective2 + "\n\n" + "Objective 3: " + objective3;
+//
+//		this.entry = new Proposal();
+//		entry.setTitle(title);
+//		entry.setMethodology(methodology);
+//		entry.setProblemStatement(problemStatement);
+//		entry.setObjectives(objective1 + "\n\n" + objective2 + "\n\n" + objective3);
+//		Embedding embedding = model.embed(proposal).content();
+//        entry.setEmbedding(embedding.vector());
+//        entry.setStatus(Status.DRAFT);
+//        entry.setStudentName(currentUser.getFirstName()+" "+currentUser.getLastName());
+//        proposalService.createProposal(entry);
+//        Messages.addFlashGlobalInfo("Proposal saved as draft!");
+//        Faces.redirect(PROPOSAL_MGT_URL);
+//
+//
+//	}
 	
 
-	public void saveProposal() {
-		String proposal = "Title: " + title + "\n\n" + "Methodology: " + methodology + "\n\n" + "Problem Statement: "
-				+ problemStatement + "\n\n" + "\n\n" + "Objective 1: " + objective1 + "\n\n" + "Objective 2: "
-				+ objective2 + "\n\n" + "Objective 3: " + objective3;
-
-		this.entry = new Proposal();
-		entry.setTitle(title);
-		entry.setMethodology(methodology);
-		entry.setProblemStatement(problemStatement);
-		entry.setObjectives(objective1 + "\n\n" + objective2 + "\n\n" + objective3);
-		Embedding embedding = model.embed(proposal).content();
-        entry.setEmbedding(embedding.vector());
-        entry.setStatus(Status.DRAFT);
-        entry.setStudentName(currentUser.getFirstName()+" "+currentUser.getLastName());
-        proposalService.createProposal(entry);
-        Messages.addFlashGlobalInfo("Proposal saved as draft!");
-        Faces.redirect(PROPOSAL_MGT_URL);
-
-
-	}
-	
 	public String submit() {
 		String proposal = "Title: " + title + "\n\n" + "Methodology: " + methodology + "\n\n" + "Problem Statement: "
 				+ problemStatement + "\n\n" + "\n\n" + "Objective 1: " + objective1 + "\n\n" + "Objective 2: "
@@ -165,12 +165,13 @@ public class ProposalBean implements Serializable {
 		entry.setProblemStatement(problemStatement);
 		entry.setObjectives(objective1 + "\n\n" + objective2 + "\n\n" + objective3);
 		entry.setStudentId(this.currentUser.getId());
+		entry.setStudentName(this.currentUser.getFirstName() + " " + this.currentUser.getLastName());
 		Embedding embedding = model.embed(proposal).content();
         entry.setEmbedding(embedding.vector());
         entry.setStatus(Status.DRAFT);
         proposalService.createProposal(entry);
         Messages.addFlashGlobalInfo("Proposal saved as draft!");
-//        Faces.redirect(PROPOSAL_MGT_URL);		
+//        Faces.redirect(PROPOSAL_MGT_URL);
         List<Proposal> similarProposals = proposalService.findSimilarProposals(entry);
 		if (similarProposals.isEmpty()) {
 			Messages.addFlashGlobalInfo("No similar proposals found.");
@@ -178,31 +179,36 @@ public class ProposalBean implements Serializable {
 		} else {
 			Messages.addFlashGlobalInfo("Similar proposals found:");
 			this.similarProposal = similarProposals.get(0);
-			
-			
-			
+
+
+
 			Embedding emb1 = Embedding.from(entry.getEmbedding());
 			Embedding emb2 = Embedding.from(similarProposal.getEmbedding());
 
 			this.sim = CosineSimilarity.between(emb1, emb2) ;
-			
+
 			if (sim >= 0.8) {
 				Messages.addFlashGlobalError(
 						"Warning: Your proposal is very similar to an existing proposal. Please review the similar proposal before proceeding.");
 				Faces.getFlash().put("entry", entry);
 				Faces.getFlash().put("similarProposal", similarProposal);
 				Faces.getFlash().put("similarityScore", sim);
+				this.entry.setMostSimilarProjectId(this.similarProposal.getId());
+				this.entry.setSimilarityScore(sim);
+				this.entry.setStatus(Status.DISALLOWED);
+				proposalService.updateProposal(this.entry);
 				
+
 				return "compare";
 			}else {
 				//TODO send to supervisor for review and approval.
 			}
-			
+
 		}
 		return "";
-        
-		
-		
+
+
+
 	}
 
 	public void listProposal() {
@@ -216,7 +222,7 @@ public class ProposalBean implements Serializable {
 			e.printStackTrace(); //
 		}
 	}
-	
+
 	public void listStudentsProposal() {
 		LOG.info("listStudentsProposal invoked!!!");
 		try {
@@ -278,7 +284,10 @@ public class ProposalBean implements Serializable {
 		System.out.println(e.getCreatedDate());
 		System.out.println("displayProposalDialog -> " + e.getTitle());
 		this.entry = e;
+		System.out.println(entry.getObjectives());
 		LOG.info("entry selected:  id -> " + this.entry.getId());
+		
+	    
 
 	}
 
@@ -288,7 +297,7 @@ public class ProposalBean implements Serializable {
 		this.entry = (Proposal) flash.get("entry");
 		LOG.info("selected Proposal retrieved >>> " + entry);
 	}
-	
+
 	public String getSimFormatted() {
 	    return String.format("%.1f", sim * 100) + "%";
 	}
@@ -312,7 +321,7 @@ public class ProposalBean implements Serializable {
 	public void setEntry(Proposal entry) {
 		this.entry = entry;
 	}
-	
+
 	/**
 	 * @return the entries
 	 */
@@ -463,5 +472,5 @@ public class ProposalBean implements Serializable {
 		this.currentUser = currentUser;
 	}
 
-	
+
 }

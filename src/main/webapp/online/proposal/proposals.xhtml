@@ -13,646 +13,694 @@
 
 <h:body>
 	<ui:composition template="/online/template/dashboard.xhtml">
-	<ui:define name="student_name">
-				<!-- Welcome Banner -->
-				
-			</ui:define>
+
+		<ui:define name="student_name">
+			<!-- Welcome Banner -->
+		</ui:define>
 
 		<ui:define name="dashboard_body">
 
 			<style>
-/* ===== PROPOSALS  THEMED ===== */
-LIST /* Page header bar */  
-.prop-header {
+:root {
+	--ink: #0C1B33;
+	--ink-mid: #1B3A6B;
+	--ink-soft: #2E5399;
+	--gold: #C9A84C;
+	--cream: #FAFAF7;
+	--surface: #F2F4F9;
+	--card: #FFFFFF;
+	--border: #E0E6F0;
+	--border-lt: #EEF1F8;
+	--muted: #8A94A6;
+	--text: #1A202C;
+	--text-sm: #4A5568;
+	--red: #C0392B;
+	--red-bg: #FDF0EF;
+	--green: #2E7D52;
+	--green-bg: #EBF7F0;
+	--amber: #B45309;
+	--amber-bg: #FEF3C7;
+	--r-sm: 6px;
+	--r: 10px;
+	--r-lg: 14px;
+	--shadow-xs: 0 1px 3px rgba(12, 27, 51, .06);
+	--shadow-sm: 0 2px 8px rgba(12, 27, 51, .08);
+	--shadow-lg: 0 16px 56px rgba(12, 27, 51, .20);
+}
+
+.pg {
+	font-family: 'Inter', 'Segoe UI', sans-serif;
+	color: var(--text);
+}
+
+.pg-head {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
-	margin-bottom: 1.5rem;
+	margin-bottom: 1.75rem;
 	flex-wrap: wrap;
 	gap: 1rem;
 }
 
-.prop-header-text h2 {
+.pg-head-copy h2 {
 	font-family: 'Georgia', 'Times New Roman', serif;
-	font-size: 1.3rem;
+	font-size: 1.55rem;
 	font-weight: 700;
-	color: #1B3A6B;
+	color: var(--ink);
+	margin: 0 0 0.2rem;
+	letter-spacing: -0.3px;
+	line-height: 1.2;
+}
+
+.pg-head-copy p {
+	font-size: 0.82rem;
+	color: var(--muted);
 	margin: 0;
 }
 
-.prop-header-text p {
-	font-size: 0.82rem;
-	color: #9AA3B2;
-	margin: 0.2rem 0 0;
-}
-
-/* Gold CTA button */
-.btn-new-proposal, .prop-header .ui-button.btn-new-proposal {
-	background: linear-gradient(135deg, #C9A84C, #D4B85C) !important;
-	color: #0A1628 !important;
+.btn-gold, .ui-button.btn-gold {
+	background: linear-gradient(135deg, #C9A84C 0%, #E8C96A 100%) !important;
+	color: var(--ink) !important;
 	border: none !important;
-	border-radius: 6px !important;
-	padding: 0.6rem 1.25rem !important;
-	font-size: 0.85rem !important;
-	font-weight: 700 !important;
+	border-radius: var(--r-sm) !important;
+	padding: 0.65rem 1.4rem !important;
+	font-size: 0.83rem !important;
+	font-weight: 600 !important;
+	box-shadow: 0 2px 12px rgba(201, 168, 76, .30) !important;
+	transition: all 0.2s ease !important;
 	cursor: pointer !important;
-	letter-spacing: 0.2px !important;
-	box-shadow: 0 2px 8px rgba(201, 168, 76, 0.2) !important;
-	transition: all 0.2s !important;
 	white-space: nowrap !important;
 }
 
-.btn-new-proposal:hover, .prop-header .ui-button.btn-new-proposal:hover
-	{
-	background: linear-gradient(135deg, #D4B85C, #F0D080) !important;
-	box-shadow: 0 4px 16px rgba(201, 168, 76, 0.3) !important;
+.btn-gold:hover, .ui-button.btn-gold:hover {
+	box-shadow: 0 6px 24px rgba(201, 168, 76, .42) !important;
 	transform: translateY(-1px) !important;
 }
 
-.prop-header .ui-button .ui-button-text {
+.ui-button.btn-gold .ui-button-text {
 	padding: 0 !important;
 }
 
-/* Table card */
-.prop-card {
-	background: #FFFFFF;
-	border: 1px solid #E5E9F0;
-	border-radius: 8px;
+.tbl-card {
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: var(--r);
+	box-shadow: var(--shadow-xs);
 	overflow: hidden;
 }
 
-/* p:messages */
-.prop-card .ui-messages {
-	margin: 1rem 1.25rem 0 !important;
-	border-radius: 6px !important;
-	font-size: 0.82rem !important;
-	list-style: none !important;
-}
-
-.prop-card .ui-messages-error {
-	background: #FDECEA !important;
-	border: 1px solid #F5C6CB !important;
-	color: #C0392B !important;
-}
-
-.prop-card .ui-messages-info {
-	background: #D6E4F7 !important;
-	border: 1px solid #BDD4F0 !important;
-	color: #1B3A6B !important;
-}
-
-/* DataTable base */
-.prop-card .ui-datatable {
+.tbl-card .ui-datatable {
 	border: none !important;
-	font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+	font-family: 'Inter', sans-serif !important;
 }
 
-/* DT header facet */
-.prop-card .ui-datatable .ui-datatable-header {
-	background: none !important;
+.tbl-card .ui-datatable .ui-datatable-header {
+	background: var(--card) !important;
 	border: none !important;
-	border-bottom: 1px solid #E5E9F0 !important;
-	padding: 1rem 1.35rem !important;
+	border-bottom: 1px solid var(--border) !important;
+	padding: 1.15rem 1.5rem !important;
 	text-align: left !important;
-	font-family: 'Georgia', 'Times New Roman', serif !important;
-	font-size: 0.95rem !important;
+	font-family: 'Georgia', serif !important;
+	font-size: 0.97rem !important;
 	font-weight: 700 !important;
-	color: #1B3A6B !important;
+	color: var(--ink) !important;
 }
 
-.prop-card .ui-datatable-header hr, .prop-card .ui-datatable-header .ui-spacer
-	{
-	display: none !important;
-}
-
-/* Column headers */
-.prop-card .ui-datatable thead th {
-	background: #F7F8FC !important;
+.tbl-card .ui-datatable thead th {
+	background: var(--surface) !important;
 	border: none !important;
-	border-bottom: 1px solid #E5E9F0 !important;
-	padding: 0.75rem 1.15rem !important;
-	font-size: 0.73rem !important;
+	border-bottom: 1px solid var(--border) !important;
+	padding: 0.7rem 1.3rem !important;
+	font-size: 0.69rem !important;
 	font-weight: 600 !important;
-	color: #9AA3B2 !important;
+	color: var(--muted) !important;
 	text-transform: uppercase !important;
-	letter-spacing: 0.4px !important;
-	text-align: left !important;
+	letter-spacing: 0.5px !important;
 }
 
-/* Body cells */
-.prop-card .ui-datatable tbody td {
+.tbl-card .ui-datatable tbody td {
 	border: none !important;
-	border-bottom: 1px solid #F1F3F7 !important;
-	padding: 0.85rem 1.15rem !important;
-	font-size: 0.85rem !important;
-	color: #4A5568 !important;
-	text-align: left !important;
+	border-bottom: 1px solid var(--border-lt) !important;
+	padding: 0.95rem 1.3rem !important;
+	font-size: 0.855rem !important;
+	color: var(--text-sm) !important;
 	vertical-align: middle !important;
 }
 
-.prop-card .ui-datatable tbody tr:hover td {
-	background: #FAFBFE !important;
+.tbl-card .ui-datatable tbody tr:last-child td {
+	border-bottom: none !important;
 }
 
-.prop-card .ui-datatable tbody tr.ui-state-highlight td {
-	background: rgba(27, 58, 107, 0.06) !important;
-	color: #1B3A6B !important;
+.tbl-card .ui-datatable tbody tr:hover td {
+	background: #F8FAFF !important;
 }
 
-/* Empty message */
-.prop-card .ui-datatable .ui-datatable-empty-message td {
-	padding: 2.5rem 1.15rem !important;
+.tbl-card .ui-datatable .ui-datatable-empty-message td {
+	padding: 3.5rem 1.3rem !important;
 	text-align: center !important;
-	color: #9AA3B2 !important;
-	font-size: 0.9rem !important;
+	color: var(--muted) !important;
+	font-size: 0.88rem !important;
 }
 
-/* Paginator */
-.prop-card .ui-paginator {
-	background: #F7F8FC !important;
-	border: none !important;
-	border-top: 1px solid #E5E9F0 !important;
-	padding: 0.75rem 1.15rem !important;
-	font-size: 0.8rem !important;
-	color: #9AA3B2 !important;
-}
-
-.prop-card .ui-paginator .ui-paginator-page, .prop-card .ui-paginator .ui-paginator-first,
-	.prop-card .ui-paginator .ui-paginator-prev, .prop-card .ui-paginator .ui-paginator-next,
-	.prop-card .ui-paginator .ui-paginator-last {
-	border: 1px solid #E5E9F0 !important;
-	border-radius: 4px !important;
-	background: #FFFFFF !important;
-	color: #4A5568 !important;
-	min-width: 30px !important;
-	height: 30px !important;
-	margin: 0 0.15rem !important;
-	transition: all 0.15s !important;
-}
-
-.prop-card .ui-paginator .ui-paginator-page:hover, .prop-card .ui-paginator .ui-paginator-first:hover,
-	.prop-card .ui-paginator .ui-paginator-prev:hover, .prop-card .ui-paginator .ui-paginator-next:hover,
-	.prop-card .ui-paginator .ui-paginator-last:hover {
-	background: #D6E4F7 !important;
-	border-color: #1B3A6B !important;
-	color: #1B3A6B !important;
-}
-
-.prop-card .ui-paginator .ui-state-active {
-	background: #1B3A6B !important;
-	border-color: #1B3A6B !important;
-	color: #FFFFFF !important;
-}
-
-.prop-card .ui-paginator select {
-	border: 1px solid #E5E9F0;
-	border-radius: 4px;
-	padding: 0.25rem 0.5rem;
-	font-size: 0.8rem;
-	color: #4A5568;
-}
-
-.prop-card .ui-paginator .ui-paginator-current {
-	color: #9AA3B2 !important;
-	font-size: 0.78rem !important;
-}
-
-/* Action MenuButton */
-.prop-card .ui-menubutton .ui-button {
-	background: #FFFFFF !important;
-	border: 1px solid #E5E9F0 !important;
-	border-radius: 5px !important;
-	color: #1B3A6B !important;
-	font-size: 0.8rem !important;
+.cell-title {
 	font-weight: 600 !important;
-	padding: 0.35rem 0.75rem !important;
-	transition: all 0.15s !important;
+	color: var(--ink) !important;
+	font-size: 0.875rem !important;
 }
 
-.prop-card .ui-menubutton .ui-button:hover {
-	background: #F7F8FC !important;
-	border-color: #1B3A6B !important;
+.cell-date {
+	font-size: 0.8rem !important;
+	color: var(--muted) !important;
 }
 
-.prop-card .ui-menubutton .ui-button .ui-button-text {
-	padding: 0 0.35rem !important;
-}
-
-/* Menu overlay */
-.ui-menu.ui-menubutton-menu {
-	border: 1px solid #E5E9F0 !important;
-	border-radius: 6px !important;
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-	padding: 0.35rem 0 !important;
-}
-
-.ui-menu .ui-menuitem-link {
-	padding: 0.5rem 1rem !important;
+.cell-comment {
 	font-size: 0.82rem !important;
-	color: #4A5568 !important;
-	transition: background 0.15s !important;
+	color: var(--text-sm) !important;
+	max-width: 220px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-.ui-menu .ui-menuitem-link:hover {
-	background: #F7F8FC !important;
-	color: #1B3A6B !important;
-}
-
-/* Loading dialog */
-.ui-dialog.ui-widget {
-	border-radius: 8px !important;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* ===== PROPOSAL DETAIL DIALOG ===== */
-.ui-dialog.ui-widget.prop-detail-dlg {
-	border: none !important;
-	border-radius: 10px !important;
-	box-shadow: 0 16px 56px rgba(10,22,40,0.25) !important;
-	max-width: 680px;
-	width: 95vw !important;
-}
-.prop-detail-dlg .ui-dialog-titlebar {
-	background: #0A1628 !important;
-	border: none !important;
-	border-radius: 10px 10px 0 0 !important;
-	padding: 1rem 1.5rem !important;
-}
-.prop-detail-dlg .ui-dialog-title {
-	font-family: 'Georgia', 'Times New Roman', serif !important;
-	font-size: 1.05rem !important;
-	font-weight: 700 !important;
-	color: #C9A84C !important;
-}
-.prop-detail-dlg .ui-dialog-titlebar-close {
-	color: #9AA3B2 !important;
-	transition: color 0.2s !important;
-}
-.prop-detail-dlg .ui-dialog-titlebar-close:hover {
-	color: #FFFFFF !important;
-}
-.prop-detail-dlg .ui-dialog-content {
-	padding: 0 !important;
-	background: #F7F8FC !important;
-	max-height: 70vh !important;
-	overflow-y: auto !important;
-}
-
-/* Dialog inner */
-.prop-detail-body {
-	padding: 1.5rem 1.75rem 1.25rem;
-}
-
-/* Status + date row */
-.prop-detail-meta {
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-	margin-bottom: 1.5rem;
-	flex-wrap: wrap;
-}
-.prop-meta-badge {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.35rem;
-	padding: 0.3rem 0.75rem;
-	border-radius: 5px;
-	font-size: 0.78rem;
+.badge {
+	display: inline-block;
+	padding: 0.22rem 0.65rem;
+	border-radius: 20px;
+	font-size: 0.70rem;
 	font-weight: 600;
 	letter-spacing: 0.2px;
 }
-.prop-meta-badge.status-submitted { background: #D6E4F7; color: #1B3A6B; }
-.prop-meta-badge.status-approved  { background: #D1FAE5; color: #2E7D52; }
-.prop-meta-badge.status-rejected  { background: #FDECEA; color: #C0392B; }
-.prop-meta-badge.status-draft     { background: #E5E9F0; color: #4A5568; }
-.prop-meta-date {
-	font-size: 0.78rem;
-	color: #9AA3B2;
-}
 
-/* Field group */
-.prop-detail-field {
-	margin-bottom: 1.25rem;
-}
-.prop-detail-label {
-	display: block;
-	font-size: 0.73rem;
-	font-weight: 600;
-	color: #9AA3B2;
-	text-transform: uppercase;
-	letter-spacing: 0.4px;
-	margin-bottom: 0.4rem;
-}
-.prop-detail-value {
-	background: #FFFFFF;
-	border: 1px solid #E5E9F0;
-	border-radius: 6px;
-	padding: 0.7rem 0.9rem;
-	font-size: 0.88rem;
-	color: #1A202C;
-	line-height: 1.55;
-	min-height: 20px;
-}
-.prop-detail-value.multiline {
-	white-space: pre-wrap;
-	min-height: 60px;
-}
-
-/* Objectives list */
-.prop-detail-objectives {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-}
-.prop-detail-objectives li {
-	display: flex;
-	align-items: flex-start;
-	gap: 0.6rem;
-	background: #FFFFFF;
-	border: 1px solid #E5E9F0;
-	border-radius: 6px;
-	padding: 0.6rem 0.9rem;
-	font-size: 0.88rem;
-	color: #1A202C;
-	line-height: 1.45;
-}
-.obj-num {
-	width: 22px;
-	height: 22px;
-	border-radius: 50%;
-	background: #D6E4F7;
+.badge-SUBMITTED {
+	background: #DDEAF8;
 	color: #1B3A6B;
+}
+
+.badge-APPROVED {
+	background: var(--green-bg);
+	color: var(--green);
+}
+
+.badge-REJECTED {
+	background: var(--red-bg);
+	color: var(--red);
+}
+
+.badge-PENDING {
+	background: var(--amber-bg);
+	color: var(--amber);
+}
+
+.badge-DRAFT {
+	background: var(--surface);
+	color: var(--muted);
+	border: 1px solid var(--border);
+}
+
+.tbl-card .ui-paginator {
+	background: var(--surface) !important;
+	border: none !important;
+	border-top: 1px solid var(--border) !important;
+	padding: 0.7rem 1.3rem !important;
+	font-size: 0.78rem !important;
+}
+
+.tbl-card .ui-paginator .ui-paginator-page, .tbl-card .ui-paginator .ui-paginator-first,
+	.tbl-card .ui-paginator .ui-paginator-prev, .tbl-card .ui-paginator .ui-paginator-next,
+	.tbl-card .ui-paginator .ui-paginator-last {
+	border: 1px solid var(--border) !important;
+	border-radius: 5px !important;
+	background: var(--card) !important;
+	color: var(--text-sm) !important;
+	min-width: 30px !important;
+	height: 30px !important;
+	margin: 0 0.12rem !important;
+}
+
+.tbl-card .ui-paginator .ui-state-active {
+	background: var(--ink-mid) !important;
+	border-color: var(--ink-mid) !important;
+	color: #fff !important;
+}
+
+.tbl-card .ui-paginator .ui-paginator-current {
+	color: var(--muted) !important;
+	font-size: 0.76rem !important;
+}
+
+.btn-view, .ui-button.btn-view {
+	background: var(--card) !important;
+	border: 1px solid var(--border) !important;
+	border-radius: var(--r-sm) !important;
+	color: var(--ink-mid) !important;
+	font-size: 0.78rem !important;
+	font-weight: 600 !important;
+	padding: 0.32rem 0.85rem !important;
+	transition: all 0.15s !important;
+	cursor: pointer !important;
+}
+
+.btn-view:hover, .ui-button.btn-view:hover {
+	background: var(--surface) !important;
+	border-color: var(--ink-mid) !important;
+}
+
+.ui-button.btn-view .ui-button-text {
+	padding: 0 0.25rem !important;
+}
+
+/* dialog */
+.prop-dlg.ui-dialog {
+	border: none !important;
+	border-radius: var(--r-lg) !important;
+	box-shadow: var(--shadow-lg) !important;
+	width: min(700px, 96vw) !important;
+}
+
+.prop-dlg .ui-dialog-titlebar {
+	background: var(--ink) !important;
+	border: none !important;
+	border-radius: var(--r-lg) var(--r-lg) 0 0 !important;
+	padding: 1.1rem 1.6rem !important;
+}
+
+.prop-dlg .ui-dialog-title {
+	font-family: 'Georgia', serif !important;
+	font-size: 1.05rem !important;
+	font-weight: 700 !important;
+	color: var(--gold) !important;
+}
+
+.prop-dlg .ui-dialog-titlebar-close {
+	color: var(--muted) !important;
+}
+
+.prop-dlg .ui-dialog-titlebar-close:hover {
+	color: #fff !important;
+}
+
+.prop-dlg .ui-dialog-content {
+	padding: 0 !important;
+	background: var(--cream) !important;
+	max-height: 74vh !important;
+	overflow-y: auto !important;
+}
+
+.dlg-body {
+	padding: 1.5rem 1.8rem 0.5rem;
+}
+
+.dlg-meta {
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	gap: 0.7rem;
+	margin-bottom: 1.4rem;
+	padding-bottom: 1.1rem;
+	border-bottom: 1px solid var(--border);
+	flex-wrap: wrap;
+}
+
+.dlg-meta-date {
+	font-size: 0.77rem;
+	color: var(--muted);
+}
+
+.dlg-field {
+	margin-bottom: 1.15rem;
+}
+
+.dlg-label {
+	display: block;
 	font-size: 0.68rem;
-	font-weight: 700;
-	flex-shrink: 0;
-	margin-top: 1px;
+	font-weight: 600;
+	color: var(--muted);
+	text-transform: uppercase;
+	letter-spacing: 0.55px;
+	margin-bottom: 0.38rem;
 }
 
-/* Similarity banner */
-.prop-detail-similarity {
+.dlg-value {
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: var(--r-sm);
+	padding: 0.75rem 1rem;
+	font-size: 0.875rem;
+	color: var(--text);
+	line-height: 1.65;
+}
+
+.dlg-value.multi {
+	white-space: pre-wrap;
+	min-height: 58px;
+}
+
+.dlg-sim {
 	display: flex;
 	align-items: center;
-	gap: 0.85rem;
-	background: #FFF8E1;
-	border: 1px solid #F0D080;
-	border-radius: 6px;
-	padding: 0.85rem 1rem;
-	margin-bottom: 1.25rem;
+	gap: 1rem;
+	border-radius: var(--r-sm);
+	padding: 0.9rem 1.1rem;
+	margin-bottom: 1.15rem;
 }
-.prop-sim-score {
-	width: 44px;
-	height: 44px;
+
+.dlg-sim.high {
+	background: var(--red-bg);
+	border: 1px solid #F5C6CB;
+}
+
+.dlg-sim.med {
+	background: var(--amber-bg);
+	border: 1px solid #FDE68A;
+}
+
+.dlg-sim.low {
+	background: var(--green-bg);
+	border: 1px solid #A7F3C9;
+}
+
+.sim-bubble {
+	width: 48px;
+	height: 48px;
 	border-radius: 50%;
+	flex-shrink: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 0.82rem;
-	font-weight: 700;
-	flex-shrink: 0;
-}
-.prop-sim-score.high { background: #FDECEA; color: #C0392B; border: 2px solid #C0392B; }
-.prop-sim-score.med  { background: #FDF3D7; color: #B45309; border: 2px solid #B45309; }
-.prop-sim-score.low  { background: #D1FAE5; color: #2E7D52; border: 2px solid #2E7D52; }
-.prop-sim-info { flex: 1; }
-.prop-sim-info .sim-label {
 	font-size: 0.78rem;
-	font-weight: 600;
-	color: #4A5568;
-}
-.prop-sim-info .sim-hint {
-	font-size: 0.73rem;
-	color: #9AA3B2;
-	margin-top: 0.15rem;
+	font-weight: 700;
 }
 
-/* Dialog footer */
-.prop-detail-footer {
+.dlg-sim.high .sim-bubble {
+	background: #FDECEA;
+	color: var(--red);
+	border: 2px solid var(--red);
+}
+
+.dlg-sim.med  .sim-bubble {
+	background: #FEF3C7;
+	color: var(--amber);
+	border: 2px solid var(--amber);
+}
+
+.dlg-sim.low  .sim-bubble {
+	background: var(--green-bg);
+	color: var(--green);
+	border: 2px solid var(--green);
+}
+
+.sim-text .sim-head {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--text);
+}
+
+.sim-text .sim-sub {
+	font-size: 0.73rem;
+	color: var(--muted);
+	margin-top: 0.12rem;
+}
+
+.dlg-footer {
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
 	gap: 0.65rem;
-	padding: 1rem 1.75rem;
-	border-top: 1px solid #E5E9F0;
-	background: #FFFFFF;
-	border-radius: 0 0 10px 10px;
+	padding: 1rem 1.8rem;
+	border-top: 1px solid var(--border);
+	background: var(--card);
+	border-radius: 0 0 var(--r-lg) var(--r-lg);
 }
-.btn-compare,
-.prop-detail-footer .ui-button.btn-compare {
-	background: #1B3A6B !important;
-	color: #FFFFFF !important;
+
+.btn-primary, .ui-button.btn-primary {
+	background: var(--ink-mid) !important;
+	color: #fff !important;
 	border: none !important;
-	border-radius: 6px !important;
-	padding: 0.55rem 1.15rem !important;
+	border-radius: var(--r-sm) !important;
+	padding: 0.58rem 1.25rem !important;
 	font-size: 0.82rem !important;
 	font-weight: 600 !important;
-	cursor: pointer !important;
 	transition: all 0.2s !important;
+	cursor: pointer !important;
 }
-.btn-compare:hover,
-.prop-detail-footer .ui-button.btn-compare:hover {
-	background: #2E5399 !important;
+
+.btn-primary:hover, .ui-button.btn-primary:hover {
+	background: var(--ink-soft) !important;
 	transform: translateY(-1px) !important;
 }
-.btn-close-dlg,
-.prop-detail-footer .ui-button.btn-close-dlg {
-	background: #FFFFFF !important;
-	color: #4A5568 !important;
-	border: 1px solid #E5E9F0 !important;
-	border-radius: 6px !important;
-	padding: 0.55rem 1.15rem !important;
+
+.btn-ghost, .ui-button.btn-ghost {
+	background: var(--card) !important;
+	color: var(--text-sm) !important;
+	border: 1px solid var(--border) !important;
+	border-radius: var(--r-sm) !important;
+	padding: 0.58rem 1.25rem !important;
 	font-size: 0.82rem !important;
 	font-weight: 600 !important;
-	cursor: pointer !important;
 	transition: all 0.15s !important;
+	cursor: pointer !important;
 }
-.btn-close-dlg:hover,
-.prop-detail-footer .ui-button.btn-close-dlg:hover {
-	background: #F7F8FC !important;
-	border-color: #1B3A6B !important;
-}
-.prop-detail-footer .ui-button .ui-button-text { padding: 0 !important; }
 
-/* ===== RESPONSIVE ===== */
+.btn-ghost:hover, .ui-button.btn-ghost:hover {
+	background: var(--surface) !important;
+	border-color: var(--ink-mid) !important;
+}
+
+.ui-button.btn-primary .ui-button-text, .ui-button.btn-ghost .ui-button-text
+	{
+	padding: 0 !important;
+}
+
+.msg-wrap {
+	margin-bottom: 1rem;
+}
+
+.msg-wrap .ui-messages {
+	border-radius: var(--r-sm) !important;
+	font-size: 0.82rem !important;
+}
+
 @media ( max-width : 768px) {
-	.prop-header {
+	.pg-head {
 		flex-direction: column;
 		align-items: flex-start;
 	}
-	.prop-card .ui-datatable thead {
+	.tbl-card .ui-datatable thead {
 		display: none !important;
 	}
-	.prop-card .ui-datatable tbody, .prop-card .ui-datatable tbody tr,
-		.prop-card .ui-datatable tbody td {
+	.tbl-card .ui-datatable tbody, .tbl-card .ui-datatable tbody tr,
+		.tbl-card .ui-datatable tbody td {
 		display: block !important;
 		width: 100% !important;
 	}
-	.prop-card .ui-datatable tbody td {
-		padding: 0.4rem 1.15rem !important;
+	.tbl-card .ui-datatable tbody td {
+		padding: 0.4rem 1.3rem !important;
 		border-bottom: none !important;
 	}
-	.prop-card .ui-datatable tbody td:first-child {
+	.tbl-card .ui-datatable tbody td:first-child {
 		padding-top: 1rem !important;
-		font-weight: 600 !important;
-		color: #1A202C !important;
 	}
-	.prop-card .ui-datatable tbody td:last-child {
+	.tbl-card .ui-datatable tbody td:last-child {
 		padding-bottom: 1rem !important;
-		border-bottom: 1px solid #F1F3F7 !important;
+		border-bottom: 1px solid var(--border-lt) !important;
 	}
 }
 </style>
 
-			<h:form prependId="false" rendered="true">
-				<p:ajaxStatus onstart="PF('status').show()"
-					oncomplete="PF('status').hide()" />
-				<p:dialog widgetVar="status" modal="true" closable="false">
-					<p:graphicImage library="img" name="load4.jpg" />
-				</p:dialog>
-				
+			<!-- ═══════════════════════════════════════════════════════════
+             NO h:form HERE — template provides the form.
+             The p:commandLink logout in the sidebar needs a form too,
+             so the template must own the single top-level form.
 
-				<!-- Page header + New Proposal button -->
-				<div class="prop-header">
-					<div class="prop-header-text">
+             In dashboard.xhtml, wrap <main class="main-content"> with:
+                 <h:form prependId="false" id="pageForm">
+                     ...
+                 </h:form>
+             and remove any other forms.
+             ═══════════════════════════════════════════════════════════ -->
+
+			<p:ajaxStatus onstart="PF('loadDlg').show()"
+				oncomplete="PF('loadDlg').hide()" />
+			<p:dialog widgetVar="loadDlg" modal="true" closable="false"
+				showHeader="false"
+				contentStyle="padding:1.25rem 1.5rem;text-align:center;background:#fff;">
+				<p:graphicImage library="img" name="load4.jpg" />
+			</p:dialog>
+
+			<div class="pg">
+
+				<!-- Header -->
+				<div class="pg-head">
+					<div class="pg-head-copy">
 						<h2>My Proposals</h2>
-						<p>View and manage your project proposals</p>
+						<p>Track and manage your final year project proposals</p>
 					</div>
-					<p:commandButton id="submitButton" immediate="true" rendered="true"
-						ajax="false" value="+ Submit New Proposal"
-						action="#{proposalBean.newProposalView()}"
-						styleClass="btn-new-proposal">
-					</p:commandButton>
+					<p:commandButton value="+ New Proposal"
+						action="#{proposalBean.newProposalView()}" ajax="false"
+						styleClass="btn-gold" />
 				</div>
 
-				<!-- Table card -->
-				<div class="prop-card">
-					<p:messages id="global_msg" />
-
-					<p:outputPanel id="viewProposal">
-
-						<p:dataTable id="proposalList" var="entry"
-							value="#{proposalBean.lazyModel}" paginator="true" rows="5"
-							paginatorPosition="bottom"
-							currentPageReportTemplate="Showing {startRecord}-{endRecord} out of {totalRecords}"
-							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-							rowsPerPageTemplate="5,10,15" selectionMode="single"
-							selection="#{proposalBean.entry}" lazy="true"
-							rowKey="#{entry.id}"
-							emptyMessage="No proposals  click 'Submit New Proposal' to get started.">yet 
-<f:facet name="header">
-								<strong>Proposal</strong> Entries
-</f:facet>
-
-							<p:column headerText="Title">
-								<h:outputText rendered="#{entry.title == null}" />
-								<h:outputText value="#{entry.title}" />
-							</p:column>
-
-							<p:column headerText="Status" style="width:120px;">
-								<h:outputText rendered="#{entry.status == null}" />
-								<h:outputText value="#{entry.status}" />
-							</p:column>
-
-							<p:column headerText="Comment">
-								<h:outputText rendered="#{entry.supervisorComment == null}" />
-								<h:outputText value="#{entry.supervisorComment}" />
-							</p:column>
-
-							<p:column headerText="Submitted" style="width:140px;">
-								<h:outputText rendered="#{entry.submittedAt == null}" />
-								<h:outputText value="#{entry.getCreatedDate()}" />
-							</p:column>
-
-							<p:column headerText="" style="width:90px; text-align:center;">
-								<p:menuButton value="Action">
-									<p:menuitem value="View" icon="ui-icon-search"
-										style="font-size:1em!important;" process="@form"
-										actionListener="#{proposalBean.displayProposalDialog(entry)}"
-										update=":proposalDetailDlg"
-										oncomplete="PF('proposalDetailDlg').show()">
-									</p:menuitem>
-								</p:menuButton>
-							</p:column>
-						</p:dataTable>
-
-					</p:outputPanel>
+				<!-- Messages -->
+				<div class="msg-wrap">
+					<p:messages id="globalMsg" showDetail="true" />
 				</div>
 
-				<p:dialog widgetVar="proposalDetailDlg" id="proposalDetailDlg"
-					modal="true" showEffect="fade" hideEffect="fade"
-					resizable="false" draggable="true" closable="true"
-					header="Proposal Details" styleClass="prop-detail-dlg">
+				<!-- Table -->
+				<div class="tbl-card">
+					<p:dataTable id="proposalList" var="entry"
+						value="#{proposalBean.lazyModel}" paginator="true" rows="5"
+						paginatorPosition="bottom"
+						currentPageReportTemplate="Showing {startRecord}–{endRecord} of {totalRecords}"
+						paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+						rowsPerPageTemplate="5,10,15" lazy="true" rowKey="#{entry.id}"
+						emptyMessage="No proposals yet — click '+ New Proposal' to get started.">
 
-					<p:outputPanel id="proposalDetailPanel">
+						<f:facet name="header">Proposal Submissions</f:facet>
 
-						<div class="prop-detail-body">
+						<p:column headerText="Project Title">
+							<span class="cell-title"> <h:outputText
+									value="#{entry.title}" />
+							</span>
+						</p:column>
 
-							<!-- Status + Date row -->
-							<div class="prop-detail-meta">
-								<span class="prop-meta-badge status-submitted">Submitted</span>
-								<span class="prop-meta-date">&#128197;#{proposalBean.entry.getCreatedDate()}</span>
-							</div>
+						<p:column headerText="Status" style="width:130px;">
+							<h:outputText styleClass="badge badge-#{entry.status}"
+								value="#{entry.status}" />
+						</p:column>
 
-							<!-- Title -->
-							<div class="prop-detail-field">
-								<span class="prop-detail-label">Project Title</span>
-								<div class="prop-detail-value">
-									Intelligent Project Management System with NLP-Based Similarity Detection
-								</div>
-							</div>
+						<p:column headerText="Supervisor Comment">
+							<span class="cell-comment"> <h:outputText
+									value="#{empty entry.supervisorComment ? '—' : entry.supervisorComment}" />
+							</span>
+						</p:column>
 
-							<!-- Problem Statement -->
-							<div class="prop-detail-field">
-								<span class="prop-detail-label">Problem Statement</span>
-								<div class="prop-detail-value multiline">Many universities face the recurring problem of students submitting final year project proposals that are too similar to previously completed projects. Manual checking is tedious and error-prone, leading to duplicated research efforts and wasted academic resources.</div>
-							</div>
+						<p:column headerText="Submitted" style="width:140px;">
+							<span class="cell-date"> <h:outputText
+									value="#{entry.getCreatedDate()}" />
+							</span>
+						</p:column>
 
-							<!-- Objectives -->
-							<div class="prop-detail-field">
-								<span class="prop-detail-label">Aim &amp; Objectives</span>
-								<div class="prop-detail-value multiline scrollable">1. To design a web-based project management system for supervising final year projects
-2. To implement NLP-based similarity detection using sentence embeddings
-3. To evaluate system effectiveness through comprehensive testing</div>
-							</div>
+						<!-- ═══════════════════════════════════════════════
+                         KEY FIX: no update attribute at all.
+                         Bean calls PrimeFaces.current().ajax().update()
+                         from Java — no XHTML naming scope issues.
+                         ═══════════════════════════════════════════════ -->
+						<p:column headerText="" style="width:80px;text-align:center;">
+							<p:commandButton value="View" update="@form"
+								actionListener="#{proposalBean.displayProposalDialog(entry)}"
+								oncomplete="PF('proposalDetailDlg').show()"
+								styleClass="btn-view" />
+						</p:column>
 
-							<!-- Methodology -->
-							<div class="prop-detail-field">
-								<span class="prop-detail-label">Methodology</span>
-								<div class="prop-detail-value multiline">The system will adopt an agile development methodology. The backend will be built using Java EE with PrimeFaces for the UI. NLP similarity detection will leverage LangChain4j with Ollama embeddings stored in PostgreSQL using the pgvector extension. Cosine similarity will be computed between proposal embeddings to flag potentially duplicated topics.</div>
-							</div>
+					</p:dataTable>
+				</div>
 
-							<!-- Similarity banner (rendered if similar project exists) -->
-							<div class="prop-detail-similarity">
-								<div class="prop-sim-score high">0.87</div>
-								<div class="prop-sim-info">
-									<div class="sim-label">High similarity detected with an existing project</div>
-									<div class="sim-hint">Your proposal closely matches a previously submitted project. Click Compare to see details.</div>
-								</div>
-							</div>
+			</div>
 
+
+			<p:dialog widgetVar="proposalDetailDlg" id="proposalDetailDlg"
+				modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+				draggable="true" closable="true" header="Proposal Details"
+				styleClass="prop-dlg">
+
+				<p:outputPanel id="proposalDetailPanel" layout="block">
+
+					<div class="dlg-body">
+
+						<div class="dlg-meta">
+							<h:outputText
+								styleClass="badge badge-#{proposalBean.entry.status}"
+								value="#{proposalBean.entry.status}" />
+							<span class="dlg-meta-date"> &#128197;&#160;<h:outputText
+									value="#{proposalBean.entry.getCreatedDate()}" />
+							</span>
 						</div>
 
-						<!-- Footer buttons -->
-						<div class="prop-detail-footer">
-							<p:commandButton value="Close" type="button"
-								onclick="PF('proposalDetailDlg').hide();"
-								styleClass="btn-close-dlg" />
-							<p:commandButton value="&#128270; Compare with Similar Project"
-								ajax="false"
-								action="/online/proposal/compare.xhtml?faces-redirect=true"
-								styleClass="btn-compare" />
+						<div class="dlg-field">
+							<span class="dlg-label">Project Title</span>
+							<div class="dlg-value">
+								<h:outputText value="#{proposalBean.entry.title}" />
+							</div>
 						</div>
 
-					</p:outputPanel>
+						<div class="dlg-field">
+							<span class="dlg-label">Problem Statement</span>
+							<div class="dlg-value multi">
+								<h:outputText value="#{proposalBean.entry.problemStatement}" />
+							</div>
+						</div>
 
-				</p:dialog>
+						<div class="dlg-field">
+							<span class="dlg-label">Aim &amp; Objectives</span>
+							<div class="dlg-value multi">
+								<h:outputText value="#{proposalBean.entry.objectives}" />
+							</div>
+						</div>
 
-			</h:form>
+						<div class="dlg-field">
+							<span class="dlg-label">Methodology</span>
+							<div class="dlg-value multi">
+								<h:outputText value="#{proposalBean.entry.methodology}" />
+							</div>
+						</div>
+
+						<h:panelGroup
+							rendered="#{not empty proposalBean.entry.supervisorComment}">
+							<div class="dlg-field">
+								<span class="dlg-label">Supervisor Comment</span>
+								<div class="dlg-value">
+									<h:outputText value="#{proposalBean.entry.supervisorComment}" />
+								</div>
+							</div>
+						</h:panelGroup>
+
+						<h:panelGroup
+							rendered="#{proposalBean.entry.similarityScore != null
+                                              and proposalBean.entry.similarityScore > 0}">
+							<div
+								class="dlg-sim #{proposalBean.entry.similarityScore >= 0.80 ? 'high' :
+                                              proposalBean.entry.similarityScore >= 0.60 ? 'med' : 'low'}">
+								<div class="sim-bubble">
+									<h:outputText value="#{proposalBean.entry.similarityScore}">
+										<f:convertNumber maxFractionDigits="2" />
+									</h:outputText>
+								</div>
+								<div class="sim-text">
+									<div class="sim-head">
+										<h:outputText
+											value="High similarity — closely matches an existing project"
+											rendered="#{proposalBean.entry.similarityScore >= 0.80}" />
+										<h:outputText
+											value="Moderate similarity with an existing project"
+											rendered="#{proposalBean.entry.similarityScore >= 0.60
+                                                              and proposalBean.entry.similarityScore lt 0.80}" />
+										<h:outputText value="Proposal appears mostly original"
+											rendered="#{proposalBean.entry.similarityScore lt 0.60}" />
+										
+									</div>
+									<div class="sim-sub">Click Compare to view the matching
+										project.</div>
+								</div>
+							</div>
+						</h:panelGroup>
+
+					</div>
+
+					<div class="dlg-footer">
+						<p:commandButton value="Close" type="button"
+							onclick="PF('proposalDetailDlg').hide();" styleClass="btn-ghost" />
+						<p:commandButton value="&#128270; Compare Similar" ajax="false"
+							action="#{proposalBean.compareSimilar}"
+							rendered="#{proposalBean.entry.similarityScore != null
+                                                 and proposalBean.entry.similarityScore > 0}"
+							styleClass="btn-primary" />
+						<p:commandButton value="&#128270; Submit to Supervisor" ajax="false"
+							action="#{proposalBean.submitToSupervisor}"
+							rendered="#{proposalBean.entry.status == 'DRAFT'}"
+							styleClass="btn-primary" />
+					</div>
+
+				</p:outputPanel>
+			</p:dialog>
 
 		</ui:define>
 

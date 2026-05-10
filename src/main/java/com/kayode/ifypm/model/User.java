@@ -23,7 +23,6 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
@@ -48,9 +47,9 @@ public class User extends AbstractEntity {
 	private String department;
 	private Long supervisorId;
 	private Long projectlId;
-	@Enumerated(EnumType.STRING) 
+	@Enumerated(EnumType.STRING)
 	private Status projectStatus = Status.NOT_STARTED;
-	
+
 
 	// @NotNull
 	@Column(name = "password")
@@ -66,7 +65,7 @@ public class User extends AbstractEntity {
 	// "userid") }, schema = "public2")
 //	@CollectionTable(name = "userroles", joinColumns = { @JoinColumn(name = "userid") })
 	@CollectionTable(
-		    name = "user_roles",                             
+		    name = "user_roles",
 		    joinColumns = { @JoinColumn(name = "username",    // join by username, not userid
 		                   referencedColumnName = "username") }
 		)
@@ -269,7 +268,7 @@ public class User extends AbstractEntity {
 	public void setProjectStatus(Status projectStatus) {
 		this.projectStatus = projectStatus;
 	}
-	
-	
+
+
 
 }

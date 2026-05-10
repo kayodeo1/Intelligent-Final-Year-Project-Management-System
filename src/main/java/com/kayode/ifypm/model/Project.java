@@ -1,22 +1,16 @@
 /**
- * 
+ *
  */
 package com.kayode.ifypm.model;
 
 
+import java.util.Date;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import com.kayode.ifypm.model.AbstractEntity;
-import jakarta.validation.constraints.NotNull;
-import java.util.Date;
 
 /**
  * @author AAfolayan

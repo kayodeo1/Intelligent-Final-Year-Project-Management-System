@@ -1,23 +1,18 @@
 /**
- * 
+ *
  */
 package com.kayode.ifypm.model;
 
 
-import jakarta.persistence.Entity;
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Index;
+import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import com.kayode.ifypm.model.AbstractEntity;
-import jakarta.validation.constraints.NotNull;
-import java.util.Date;
 
 /**
  * @author AAfolayan
@@ -42,7 +37,7 @@ private String methodology;
 private Status status;
 @Column(columnDefinition = "TEXT")
 private String supervisorComment;
-private String similarityScore;
+private double similarityScore;
 private Long mostSimilarProposalId;
 private Long mostSimilarProjectId;
 private String submittedAt;
@@ -177,13 +172,13 @@ public void setStatus(Status status) {
 }/**
  * @return the similarityScore
  */
-public String getSimilarityScore(){
+public double getSimilarityScore(){
 	return similarityScore;
 }
 /**
  * @param similarityScore the similarityScore to set
  */
-public void setSimilarityScore(String similarityScore) {
+public void setSimilarityScore(double similarityScore) {
 	this.similarityScore = similarityScore;
 }
 @PrePersist

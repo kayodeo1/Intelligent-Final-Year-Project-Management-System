@@ -1,24 +1,21 @@
 /**
- * 
+ *
  */
 package com.kayode.ifypm.lazymodel;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
-import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kayode.ifypm.constants.QueryType;
-import com.kayode.ifypm.model.Proposal;
 import com.kayode.ifypm.model.PagedList;
-import com.kayode.ifypm.model.Status;
+import com.kayode.ifypm.model.Proposal;
 import com.kayode.ifypm.service.ProposalService;
 
 /**
@@ -27,6 +24,10 @@ import com.kayode.ifypm.service.ProposalService;
  */
 public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ProposalService service;
 	private QueryType query;
 	private Long userId;
@@ -47,14 +48,17 @@ public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 
 	@Override
 	public Proposal getRowData(String rowKey) {
-		// LOG.info("getRowData method invoked!");
-		for (Proposal r : list) {
-			if ((r.getId()).equals(rowKey))
-				return r;
-		}
+	    List<Proposal> data = (List<Proposal>) getWrappedData();
+	    if (data == null || rowKey == null) return null;
 
-		return null;
+	    for (Proposal r : data) {
+	        if (rowKey.equals(String.valueOf(r.getId()))) {
+	            return r;
+	        }
+	    }
+	    return null;
 	}
+
 
 	@Override
 	public String getRowKey(Proposal r) {
@@ -84,16 +88,18 @@ public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 			// rowCount
 			int dataSize = pagedList.getCount();// data.size();
 			this.setRowCount(dataSize);
+			this.list = pagedList.getList();
+			data = pagedList.getList();
 
 			// LOG.info("count >>> " + dataSize + " , pagedList.getList() >>> "
 			// + pagedList.getList().size());
 
-			return pagedList.getList();
+			return data;
 
 		} catch (Exception e) {
 			LOG.error("oops error encountered while paginating Proposal entries!!!", e);
 			e.printStackTrace();
-			return new ArrayList<Proposal>();
+			return new ArrayList<>();
 		}
 	}
 

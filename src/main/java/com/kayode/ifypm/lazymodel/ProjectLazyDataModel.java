@@ -1,24 +1,21 @@
 /**
- * 
+ *
  */
 package com.kayode.ifypm.lazymodel;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
-import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kayode.ifypm.constants.QueryType;
-import com.kayode.ifypm.model.Project;
 import com.kayode.ifypm.model.PagedList;
-import com.kayode.ifypm.model.Status;
+import com.kayode.ifypm.model.Project;
 import com.kayode.ifypm.service.ProjectService;
 
 /**
@@ -43,8 +40,9 @@ public class ProjectLazyDataModel extends LazyDataModel<Project> {
 	public Project getRowData(String rowKey) {
 		// LOG.info("getRowData method invoked!");
 		for (Project r : list) {
-			if ((r.getId()).equals(rowKey))
+			if ((r.getId()).equals(rowKey)) {
 				return r;
+			}
 		}
 
 		return null;
@@ -83,7 +81,7 @@ public class ProjectLazyDataModel extends LazyDataModel<Project> {
 		} catch (Exception e) {
 			LOG.error("oops error encountered while paginating Project entries!!!", e);
 			e.printStackTrace();
-			return new ArrayList<Project>();
+			return new ArrayList<>();
 		}
 	}
 

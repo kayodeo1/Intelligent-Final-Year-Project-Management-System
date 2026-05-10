@@ -280,7 +280,10 @@
 					<div class="col-label">
 						<span class="col-label-dot proposal"></span> <span
 							class="col-label-title">Submitted Proposal <span
-							class="col-label-sub">— by Adewale Kayode</span>
+							class="col-label-sub">— #{proposalBean.entry.studentName}</span>
+							<span
+							class="col-label-title">—  #{proposalBean.entry.status}</span>
+							
 						</span>
 					</div>
 
@@ -315,7 +318,13 @@
 					<div class="col-label">
 						<span class="col-label-dot project"></span> <span
 							class="col-label-title">Matched Project <span
-							class="col-label-sub">— by Chinedu Okafor (2024)</span>
+							class="col-label-sub">—  #{proposalBean.similarProposal.studentName}</span>
+							<span
+							class="col-label-title">—  #{proposalBean.similarProposal.status}</span>
+							
+							
+							<h:outputText styleClass="badge badge-#{entry.status}"
+								value="#{entry.status}" />
 						</span>
 					</div>
 

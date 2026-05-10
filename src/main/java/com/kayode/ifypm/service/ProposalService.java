@@ -1,34 +1,20 @@
 /**
- * 
+ *
  */
 package com.kayode.ifypm.service;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import jakarta.ejb.Stateless;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-
-//import org.apache.commons.io.FileUtils;
-//import org.apache.shiro.SecurityUtils;
-//import org.apache.shiro.crypto.hash.Sha256Hash;
-import org.eclipse.persistence.config.CacheUsage;
-import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.kayode.ifypm.model.Proposal;
+
 import com.kayode.ifypm.model.PagedList;
+import com.kayode.ifypm.model.Proposal;
+
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 
 /**
  * @author AAfolayan
@@ -54,8 +40,9 @@ public class ProposalService {
 		StringBuilder sb = new StringBuilder("[");
 		for (int i = 0; i < embedding.length; i++) {
 			sb.append(embedding[i]);
-			if (i < embedding.length - 1)
+			if (i < embedding.length - 1) {
 				sb.append(",");
+			}
 		}
 		sb.append("]");
 		String vectorLiteral = sb.toString();
@@ -75,7 +62,7 @@ public class ProposalService {
 	}
 
 	public PagedList<Proposal> fetchProposal(int first, int pageSize) {
-		PagedList<Proposal> list = new PagedList<Proposal>();
+		PagedList<Proposal> list = new PagedList<>();
 		TypedQuery<Proposal> query = em.createQuery("select s from Proposal s order by s.createdDate desc",
 				Proposal.class);
 		query.setFirstResult(first).setMaxResults(pageSize);
@@ -88,7 +75,7 @@ public class ProposalService {
 		return list;
 	}
 	public PagedList<Proposal> fetchStudentProposal(int first, int pageSize, Long studentId) {
-		PagedList<Proposal> list = new PagedList<Proposal>();
+		PagedList<Proposal> list = new PagedList<>();
 		TypedQuery<Proposal> query = em.createQuery("select s from Proposal s WHERE s.studentId =:id order by s.createdDate desc",
 				Proposal.class);
 		query.setParameter("id", studentId);

@@ -1,15 +1,19 @@
 package com.kayode.ifypm.model;
+import org.postgresql.util.PGobject;
+
 import com.pgvector.PGvector;
+
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import org.postgresql.util.PGobject;
 
 @Converter
 public class VectorConverter implements AttributeConverter<float[], PGobject> {
 
     @Override
     public PGobject convertToDatabaseColumn(float[] vector) {
-        if (vector == null) return null;
+        if (vector == null) {
+			return null;
+		}
         try {
             PGvector pgVector = new PGvector(vector);
             PGobject obj = new PGobject();
@@ -23,7 +27,9 @@ public class VectorConverter implements AttributeConverter<float[], PGobject> {
 
     @Override
     public float[] convertToEntityAttribute(PGobject obj) {
-        if (obj == null || obj.getValue() == null) return null;
+        if (obj == null || obj.getValue() == null) {
+			return null;
+		}
         try {
             PGvector pgVector = new PGvector(obj.getValue());
             return pgVector.toArray();
