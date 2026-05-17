@@ -18,6 +18,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -33,37 +35,38 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "USER_")
 public class User extends AbstractEntity {
 
-	// @Id
-	// @GeneratedValue(generator = "user_id_seq", strategy =
-	// GenerationType.SEQUENCE)
-	// @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq",
-	// schema = "public2", allocationSize = 1)
-	// @Column(name = "id")
-	// private Long id;
 
 	@NotNull
 	@Column(unique = true, name = "username")
 	private String username;
 	private String department;
-	private Long supervisorId;
 	private Long projectlId;
+
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "supervisor_username", referencedColumnName = "username")
+	private User supervisor;  // null if this user IS a supervisor
+
+	@OneToMany(mappedBy = "supervisor", fetch = FetchType.LAZY)
+	private List<User> supervisedStudents;  // empty if this user is a student
 	@Enumerated(EnumType.STRING)
 	private Status projectStatus = Status.NOT_STARTED;
-
+	private Status proposalStatus = Status.NOT_STARTED;
+	
+	@OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+	private List<Proposal> proposals;
 
 	// @NotNull
 	@Column(name = "password")
 	private String password;
-	private String firstName;
-	private String lastName;
+	private String firstname;
+	private String lastname;
 	@Enumerated(EnumType.STRING)
 	private Status status;
 
 	@ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
-	// @CollectionTable(name = "userroles", joinColumns = { @JoinColumn(name =
-	// "userid") }, schema = "public2")
-//	@CollectionTable(name = "userroles", joinColumns = { @JoinColumn(name = "userid") })
+
 	@CollectionTable(
 		    name = "user_roles",
 		    joinColumns = { @JoinColumn(name = "username",    // join by username, not userid
@@ -71,6 +74,8 @@ public class User extends AbstractEntity {
 		)
 	@Column(name = "role")
 	private List<Role> roles;
+
+
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdDate;
@@ -209,28 +214,20 @@ public class User extends AbstractEntity {
 				|| lowerWord.equals("prof");
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getFirstname() {
+		return firstname;
 	}
 
 	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+		this.firstname = firstName;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getLastname() {
+		return lastname;
 	}
 
 	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public Long getSupervisorId() {
-		return supervisorId;
-	}
-
-	public void setSupervisorId(Long supervisorId) {
-		this.supervisorId = supervisorId;
+		this.lastname = lastName;
 	}
 
 	public Long getProjectlId() {
@@ -269,6 +266,42 @@ public class User extends AbstractEntity {
 		this.projectStatus = projectStatus;
 	}
 
+	public Status getProposalStatus() {
+		return proposalStatus;
+	}
 
+	public void setProposalStatus(Status proposalStatus) {
+		this.proposalStatus = proposalStatus;
+	}
+
+	public String getFullName() {
+		return firstname + " " + lastname;
+	}
+
+	public User getSupervisor() {
+		return supervisor;
+	}
+
+	public void setSupervisor(User supervisor) {
+		this.supervisor = supervisor;
+	}
+
+	public List<User> getSupervisedStudents() {
+		return supervisedStudents;
+	}
+
+	public void setSupervisedStudents(List<User> supervisedStudents) {
+		this.supervisedStudents = supervisedStudents;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+	
+	
 
 }

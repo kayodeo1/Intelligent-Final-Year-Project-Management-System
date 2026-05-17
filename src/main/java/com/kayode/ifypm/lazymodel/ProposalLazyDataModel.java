@@ -25,7 +25,7 @@ import com.kayode.ifypm.service.ProposalService;
 public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private ProposalService service;
@@ -48,8 +48,10 @@ public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 
 	@Override
 	public Proposal getRowData(String rowKey) {
-	    List<Proposal> data = (List<Proposal>) getWrappedData();
-	    if (data == null || rowKey == null) return null;
+	    List<Proposal> data = getWrappedData();
+	    if (data == null || rowKey == null) {
+			return null;
+		}
 
 	    for (Proposal r : data) {
 	        if (rowKey.equals(String.valueOf(r.getId()))) {

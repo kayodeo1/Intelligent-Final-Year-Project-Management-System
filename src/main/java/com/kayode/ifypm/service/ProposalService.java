@@ -76,8 +76,9 @@ public class ProposalService {
 	}
 	public PagedList<Proposal> fetchStudentProposal(int first, int pageSize, Long studentId) {
 		PagedList<Proposal> list = new PagedList<>();
-		TypedQuery<Proposal> query = em.createQuery("select s from Proposal s WHERE s.studentId =:id order by s.createdDate desc",
-				Proposal.class);
+		TypedQuery<Proposal> query = em.createQuery(
+		        "SELECT p FROM Proposal p WHERE p.student.id = :id ORDER BY p.createdDate DESC",
+		        Proposal.class);
 		query.setParameter("id", studentId);
 		query.setFirstResult(first).setMaxResults(pageSize);
 		List<Proposal> res = query.getResultList();

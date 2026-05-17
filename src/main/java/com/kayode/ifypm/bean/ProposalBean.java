@@ -14,7 +14,6 @@ import org.apache.shiro.subject.Subject;
 //import org.apache.shiro.subject.Subject;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
-import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,6 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
 import dev.langchain4j.store.embedding.CosineSimilarity;
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.context.Flash;
 import jakarta.faces.view.ViewScoped;
@@ -108,7 +106,7 @@ public class ProposalBean implements Serializable {
             this.entry = (Proposal) Faces.getFlash().get("entry");
             LOG.info("current proposal retrieved >>> " + entry);
 			this.sim = (double) Faces.getFlash().get("similarityScore");
-			
+
 		}else {
 			LOG.info("No similar proposal found in flash scope.");
 		}
@@ -121,10 +119,10 @@ public class ProposalBean implements Serializable {
 		Faces.getFlash().put("similarProposal", sim);
 		Faces.getFlash().put("similarityScore", p.getSimilarityScore());
 
-		
+
 		return "compare";
-		
-		
+
+
 	}
 	public void newProposalView() {
 		System.out.println("new proposal view invoked");
@@ -152,7 +150,7 @@ public class ProposalBean implements Serializable {
 //
 //
 //	}
-	
+
 
 	public String submit() {
 		String proposal = "Title: " + title + "\n\n" + "Methodology: " + methodology + "\n\n" + "Problem Statement: "
@@ -164,8 +162,7 @@ public class ProposalBean implements Serializable {
 		entry.setMethodology(methodology);
 		entry.setProblemStatement(problemStatement);
 		entry.setObjectives(objective1 + "\n\n" + objective2 + "\n\n" + objective3);
-		entry.setStudentId(this.currentUser.getId());
-		entry.setStudentName(this.currentUser.getFirstName() + " " + this.currentUser.getLastName());
+		entry.setStudent(currentUser);
 		Embedding embedding = model.embed(proposal).content();
         entry.setEmbedding(embedding.vector());
         entry.setStatus(Status.DRAFT);
@@ -197,7 +194,7 @@ public class ProposalBean implements Serializable {
 				this.entry.setSimilarityScore(sim);
 				this.entry.setStatus(Status.DISALLOWED);
 				proposalService.updateProposal(this.entry);
-				
+
 
 				return "compare";
 			}else {
@@ -286,8 +283,8 @@ public class ProposalBean implements Serializable {
 		this.entry = e;
 		System.out.println(entry.getObjectives());
 		LOG.info("entry selected:  id -> " + this.entry.getId());
-		
-	    
+
+
 
 	}
 

@@ -614,7 +614,7 @@ body {
 						<div class="avatar-circle">
 							<ui:insert name="user_initials">AK</ui:insert>
 						</div>
-						<span class="user-name"> <ui:insert name="user_fullname">Adewale Kayode</ui:insert>
+						<span class="user-name"> <ui:insert name="user_fullname">#{dashboardBean.currentUser.getFullName()}</ui:insert>
 						</span> <span class="dropdown-arrow">&#9662;</span>
 					</button>
 					<div class="dropdown-menu" id="profileDropdown">
@@ -653,19 +653,19 @@ body {
 			<p:outputPanel rendered="#{loginBean.isSupervisor()}">
 
 				<ul class="sidebar-nav">
-					<li><p:link href="/fypms/online/template/dashboard.xhtml"
+					<li><p:link href="/fypms/online/supervisor/dashboard.xhtml"
 							class="sidebar-item active">
 							<span class="icon">&#9632;</span> Dashboard
                 </p:link></li>
-					<li><p:link href="/fypms//online/proposal/submit.xhtml"
+					<li><p:link href="/fypms//online/supervisor/proposals.xhtml"
 							class="sidebar-item">
-							<span class="icon">&#128196;</span> My Proposal
+							<span class="icon">&#128196;</span> Proposals
                 </p:link></li>
 					<li><a href="#" class="sidebar-item"> <span class="icon">&#128193;</span>
-							My Project
+							Projects
 					</a></li>
 					<li><a href="#" class="sidebar-item"> <span class="icon">&#128209;</span>
-							Chapters
+							Students
 					</a></li>
 				</ul>
 			</p:outputPanel>
@@ -682,7 +682,7 @@ body {
 			<ui:insert name="student_name">
 				<!-- Welcome Banner -->
 				<div class="welcome-banner">
-					<h1>Welcome back, Adewale</h1>
+					<h1>Welcome back, #{dashboardBean.currentUser.getFullName()}</h1>
 					<p>Here's an overview of your project status</p>
 				</div>
 			</ui:insert>
@@ -699,7 +699,7 @@ body {
 								class="status-card-icon">&#128203;</span>
 						</div>
 						<div class="status-card-value">
-							<span class="badge badge-submitted">Submitted</span>
+							<span class="badge badge-submitted">#{dashboardBean.currentUser.proposalStatus}</span>
 						</div>
 					</div>
 
@@ -709,7 +709,7 @@ body {
 							<span class="status-card-label">Supervisor</span> <span
 								class="status-card-icon">&#128104;&#8205;&#127891;</span>
 						</div>
-						<div class="status-card-value">Dr. Oladipo A.</div>
+						<div class="status-card-value">#{dashboardBean.currentUser.getSupervisor().getFullName()}</div>
 						<div style="font-size: 0.8rem; color: var(--grey-mid);">Computer
 							Science Dept.</div>
 					</div>
@@ -721,7 +721,7 @@ body {
 								class="status-card-icon">&#128193;</span>
 						</div>
 						<div class="status-card-value">
-							<span class="badge badge-in-progress">In Progress</span>
+							<span class="badge badge-in-progress">#{dashboardBean.currentUser.getProjectStatus()}</span>
 						</div>
 					</div>
 

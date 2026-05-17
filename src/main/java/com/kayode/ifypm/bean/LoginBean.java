@@ -11,8 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kayode.ifypm.model.Constants;
+import com.kayode.ifypm.model.User;
+import com.kayode.ifypm.service.UserService;
 
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
@@ -26,11 +29,11 @@ public class LoginBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	public static final String APP_BASE_NAME = Constants.APP_BASE_NAME;
-
 	private static final String STUDENT_DASHBOARD_URL = APP_BASE_NAME + "/online/template/dashboard.xhtml?faces-redirect=true";
 	private static final String SUPERVISOR_DASHBOARD_URL = APP_BASE_NAME + "/online/supervisor/dashboard.xhtml?faces-redirect=true";
 	private static final String ADMIN_DASHBOARD_URL = APP_BASE_NAME + "/online/admin/dashboard.xhtml?faces-redirect=true";
 	private Subject subject = SecurityUtils.getSubject();
+	
 
 	public void logout() {
 		this.subject = SecurityUtils.getSubject();
@@ -64,6 +67,7 @@ public class LoginBean implements Serializable {
 				}
 			} catch (org.apache.shiro.authc.AuthenticationException e) {
 				LOG.info("Login failed for user: " + username + ". Reason: " + e.getMessage());
+				System.out.println(e.getMessage()+"\n");
 				Messages.addFlashGlobalError("Invalid username or password. Please try again.");
 			}
 		}
@@ -96,4 +100,7 @@ public class LoginBean implements Serializable {
 		this.password = password;
 	}
 
+	
+
+	
 }

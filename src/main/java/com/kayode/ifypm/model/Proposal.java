@@ -9,6 +9,9 @@ import java.util.Date;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Temporal;
@@ -24,8 +27,6 @@ public class Proposal extends AbstractEntity {
 private Date createdDate;
 @Temporal(TemporalType.TIMESTAMP)
 private Date lastModifiedDate;
-private Long studentId;
-private Long supervisorId;
 @Column(columnDefinition = "TEXT")
 private String title;
 @Column(columnDefinition = "TEXT")
@@ -41,25 +42,16 @@ private double similarityScore;
 private Long mostSimilarProposalId;
 private Long mostSimilarProjectId;
 private String submittedAt;
-public String studentName;
 
 @Column(name = "embedding", columnDefinition = "vector(768)")
 @Convert(converter = VectorConverter.class)
 private float[] embedding;
 
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "student", referencedColumnName = "username")
+private User student; 
 
 /**
- * @return the studentId
- */
-public Long getStudentId(){
-	return studentId;
-}
-/**
- * @param studentId the studentId to set
- */
-public void setStudentId(Long studentId) {
-	this.studentId = studentId;
-}/**
  * @return the problemStatement
  */
 public String getProblemStatement(){
@@ -114,17 +106,6 @@ public Long getMostSimilarProposalId(){
  */
 public void setMostSimilarProposalId(Long mostSimilarProposalId) {
 	this.mostSimilarProposalId = mostSimilarProposalId;
-}/**
- * @return the supervisorId
- */
-public Long getSupervisorId(){
-	return supervisorId;
-}
-/**
- * @param supervisorId the supervisorId to set
- */
-public void setSupervisorId(Long supervisorId) {
-	this.supervisorId = supervisorId;
 }/**
  * @return the title
  */
@@ -213,17 +194,12 @@ public Date getCreatedDate() {
 public void setCreatedDate(Date createdDate) {
 	this.createdDate = createdDate;
 }
-/**
- * @return the studentName
- */
-public String getStudentName() {
-	return studentName;
+
+public User getStudent() {
+	return student;
 }
-/**
- * @param studentName the studentName to set
- */
-public void setStudentName(String studentName) {
-	this.studentName = studentName;
+public void setStudent(User student) {
+	this.student = student;
 }
 
 
