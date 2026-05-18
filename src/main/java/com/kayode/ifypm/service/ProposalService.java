@@ -91,6 +91,24 @@ public class ProposalService {
 
 		return list;
 	}
+	
+	public PagedList<Proposal> fetchSupervisorProposal(int first, int pageSize, Long supervisorId) {
+		PagedList<Proposal> list = new PagedList<>();
+		TypedQuery<Proposal> query = em.createQuery(
+		        "SELECT p FROM Proposal p WHERE p.student.supervisor.id = :id AND p.status !=:draft ORDER BY p.createdDate DESC",
+		        Proposal.class);
+		query.setParameter("id", supervisorId);
+		query.setParameter("draft", Status.DRAFT);
+
+		query.setFirstResult(first).setMaxResults(pageSize);
+		List<Proposal> res = query.getResultList();
+		list.setList(res);
+
+		Number count = fetchSupervisorProposalCount(supervisorId);
+		list.setCount(count.intValue());
+
+		return list;
+	}
 
 
 	public Number fetchProposalCount() {
@@ -99,4 +117,11 @@ public class ProposalService {
 		return res;
 	}
 
+	public Number fetchSupervisorProposalCount(Long supervisorId) {
+		TypedQuery<Number> query = em.createQuery("select count(s.id) from Proposal s WHERE s.student.supervisor.id = :id AND s.status !=:draft", Number.class);
+		query.setParameter("id", supervisorId);
+		query.setParameter("draft", Status.DRAFT);
+		Number res = query.getSingleResult();
+		return res;
+	}
 }

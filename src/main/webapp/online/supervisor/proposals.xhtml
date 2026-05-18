@@ -1,492 +1,917 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 <h:head>
-    <f:metadata>
-        <f:viewAction action="#{proposalBean.listProposal()}" />
-    </f:metadata>
+	<f:metadata>
+		<f:viewAction action="#{supervisorBean.listProposal()}" />
+	</f:metadata>
+	<h:outputStylesheet library="primefaces" name="theme.css" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com"
+		crossorigin="anonymous" />
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap" />
 </h:head>
 
 <h:body>
-    <ui:composition template="/online/template/dashboard.xhtml">
+	<ui:composition template="/online/template/dashboard.xhtml">
 
-        <ui:define name="user_initials">OA</ui:define>
-        <ui:define name="user_fullname">Dr. Oladipo A.</ui:define>
-        <ui:define name="student_name">Dr. Oladipo</ui:define>
+		<ui:define name="user_initials">OA</ui:define>
+		<ui:define name="user_fullname">Dr. Oladipo A.</ui:define>
+		<ui:define name="student_name">Dr. Oladipo</ui:define>
 
-        <ui:define name="dashboard_body">
+		<ui:define name="dashboard_body">
 
-            <style>
-                /* ===== SUPERVISOR PROPOSALS PAGE ===== */
-                .page-title-bar {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    margin-bottom: 1.5rem;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                }
-                .page-title-bar h2 {
-                    font-family: 'Georgia', 'Times New Roman', serif;
-                    font-size: 1.4rem;
-                    font-weight: 700;
-                    color: #1B3A6B;
-                }
-                .page-title-bar p {
-                    font-size: 0.85rem;
-                    color: #9AA3B2;
-                    margin-top: 0.2rem;
-                }
+			<style>
+/* ============================================================
+                   VARIABLES
+                   ============================================================ */
+:root {
+	--navy: #1B3A6B;
+	--navy-mid: #2E5399;
+	--navy-light: #D6E4F7;
+	--gold: #C9A84C;
+	--gold-light: #F5EDD6;
+	--red: #C0392B;
+	--red-light: #FDECEA;
+	--green: #2E7D52;
+	--green-light: #D4EDDA;
+	--amber: #B45309;
+	--amber-light: #FEF3C7;
+	--ink: #1A202C;
+	--ink-mid: #4A5568;
+	--border: #E5E9F0;
+	--surface: #F7F8FC;
+	--white: #FFFFFF;
+	--radius: 8px;
+	--shadow-sm: 0 1px 4px rgba(10, 22, 40, 0.07);
+	--shadow-md: 0 4px 16px rgba(10, 22, 40, 0.10);
+}
 
-                /* Stats row */
-                .stats-row {
-                    display: flex;
-                    gap: 1rem;
-                    margin-bottom: 1.5rem;
-                    flex-wrap: wrap;
-                }
-                .stat-chip {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    background: #FFFFFF;
-                    border: 1px solid #E5E9F0;
-                    border-radius: 6px;
-                    padding: 0.55rem 1rem;
-                    font-size: 0.82rem;
-                    font-weight: 600;
-                    box-shadow: 0 1px 3px rgba(10,22,40,0.05);
-                }
-                .stat-chip .stat-count {
-                    font-size: 1.1rem;
-                    font-weight: 800;
-                }
-                .stat-chip.pending .stat-count  { color: #2E5399; }
-                .stat-chip.approved .stat-count  { color: #2E7D52; }
-                .stat-chip.rejected .stat-count  { color: #C0392B; }
+/* ============================================================
+                   PAGE SHELL
+                   ============================================================ */
+.proposals-page {
+	font-family: 'DM Sans', sans-serif;
+	padding: 0.25rem 0;
+}
 
-                /* Table wrapper */
-                .table-card {
-                    background: #FFFFFF;
-                    border: 1px solid #E5E9F0;
-                    border-radius: 8px;
-                    box-shadow: 0 1px 4px rgba(10,22,40,0.06);
-                    overflow: hidden;
-                }
-                .table-card-header {
-                    font-family: 'Georgia', 'Times New Roman', serif;
-                    font-size: 1.05rem;
-                    font-weight: 600;
-                    color: #1B3A6B;
-                    padding: 1rem 1.25rem 0.75rem;
-                    border-bottom: 2px solid #C9A84C;
-                }
-                .table-card-body {
-                    padding: 0;
-                }
+/* ============================================================
+                   PAGE HEADER
+                   ============================================================ */
+.page-header {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	margin-bottom: 1.75rem;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
 
-                /* Custom table styles */
-                .sv-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    font-size: 0.875rem;
-                }
-                .sv-table thead tr {
-                    background: #1B3A6B;
-                    color: #FFFFFF;
-                }
-                .sv-table thead th {
-                    padding: 0.8rem 1rem;
-                    text-align: left;
-                    font-weight: 600;
-                    font-size: 0.8rem;
-                    letter-spacing: 0.3px;
-                    text-transform: uppercase;
-                }
-                .sv-table tbody tr {
-                    border-bottom: 1px solid #E5E9F0;
-                    transition: background 0.15s;
-                }
-                .sv-table tbody tr:hover { background: #F7F8FC; }
-                .sv-table tbody td {
-                    padding: 0.8rem 1rem;
-                    color: #4A5568;
-                    vertical-align: middle;
-                }
-                .sv-table .title-cell {
-                    font-weight: 600;
-                    color: #1A202C;
-                    max-width: 280px;
-                }
+.page-header-left h2 {
+	font-family: 'Playfair Display', Georgia, serif;
+	font-size: 1.55rem;
+	font-weight: 700;
+	color: var(--navy);
+	margin: 0 0 0.2rem;
+	line-height: 1.2;
+}
 
-                /* Badges */
-                .badge {
-                    display: inline-block;
-                    padding: 0.2rem 0.65rem;
-                    border-radius: 20px;
-                    font-size: 0.72rem;
-                    font-weight: 600;
-                    letter-spacing: 0.3px;
-                    white-space: nowrap;
-                }
-                .badge-submitted { background: #D6E4F7; color: #1B3A6B; }
-                .badge-approved  { background: #D4EDDA; color: #2E7D52; }
-                .badge-rejected  { background: #FDECEA; color: #C0392B; }
-                .badge-draft     { background: #E5E9F0; color: #4A5568; }
+.page-header-left p {
+	font-size: 0.84rem;
+	color: var(--ink-mid);
+	margin: 0;
+	font-weight: 300;
+}
 
-                /* Similarity in table */
-                .sim-cell {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-                .sim-dot {
-                    width: 8px;
-                    height: 8px;
-                    border-radius: 50%;
-                    flex-shrink: 0;
-                }
-                .sim-dot.high   { background: #C0392B; }
-                .sim-dot.medium { background: #B45309; }
-                .sim-dot.low    { background: #2E7D52; }
-                .sim-value {
-                    font-weight: 700;
-                    font-size: 0.85rem;
-                }
-                .sim-value.high   { color: #C0392B; }
-                .sim-value.medium { color: #B45309; }
-                .sim-value.low    { color: #2E7D52; }
+.header-accent {
+	display: block;
+	width: 36px;
+	height: 3px;
+	background: var(--gold);
+	border-radius: 2px;
+	margin-top: 0.55rem;
+}
 
-                /* Action buttons */
-                .action-btns {
-                    display: flex;
-                    gap: 0.45rem;
-                }
-                .btn-sm {
-                    padding: 0.35rem 0.75rem;
-                    border-radius: 4px;
-                    font-size: 0.78rem;
-                    font-weight: 600;
-                    border: none;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    white-space: nowrap;
-                }
-                .btn-sm-approve {
-                    background: #1B3A6B;
-                    color: #FFFFFF;
-                }
-                .btn-sm-approve:hover { background: #2E5399; }
-                .btn-sm-reject {
-                    background: transparent;
-                    color: #C0392B;
-                    border: 1.5px solid #C0392B;
-                }
-                .btn-sm-reject:hover {
-                    background: #C0392B;
-                    color: #FFFFFF;
-                }
-                .btn-sm-view {
-                    background: transparent;
-                    color: #1B3A6B;
-                    border: 1.5px solid #E5E9F0;
-                }
-                .btn-sm-view:hover {
-                    border-color: #1B3A6B;
-                    background: #D6E4F7;
-                }
+/* ============================================================
+                   STAT CHIPS
+                   ============================================================ */
+.stats-row {
+	display: flex;
+	gap: 0.85rem;
+	margin-bottom: 1.75rem;
+	flex-wrap: wrap;
+}
 
-                /* Feedback dialog */
-                .feedback-field {
-                    margin-bottom: 1rem;
-                }
-                .feedback-label {
-                    display: block;
-                    font-size: 0.82rem;
-                    font-weight: 600;
-                    color: #4A5568;
-                    margin-bottom: 0.35rem;
-                }
-                .feedback-textarea {
-                    width: 100%;
-                    min-height: 100px;
-                    padding: 0.65rem 0.85rem;
-                    border: 1.5px solid #E5E9F0;
-                    border-radius: 4px;
-                    font-size: 0.9rem;
-                    color: #1A202C;
-                    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-                    resize: vertical;
-                    box-sizing: border-box;
-                }
-                .feedback-textarea:focus {
-                    outline: none;
-                    border-color: #1B3A6B;
-                    box-shadow: 0 0 0 3px rgba(27,58,107,0.1);
-                }
-                .feedback-actions {
-                    display: flex;
-                    gap: 0.65rem;
-                    padding-top: 0.5rem;
-                    border-top: 1px solid #E5E9F0;
-                }
-                .btn-confirm-approve {
-                    background: #1B3A6B; color: #FFFFFF; border: none;
-                    padding: 0.6rem 1.4rem; border-radius: 4px;
-                    font-size: 0.88rem; font-weight: 600; cursor: pointer;
-                }
-                .btn-confirm-approve:hover { background: #2E5399; }
-                .btn-confirm-reject {
-                    background: #C0392B; color: #FFFFFF; border: none;
-                    padding: 0.6rem 1.4rem; border-radius: 4px;
-                    font-size: 0.88rem; font-weight: 600; cursor: pointer;
-                }
-                .btn-confirm-reject:hover { background: #a93226; }
+.stat-chip {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	background: var(--white);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 0.7rem 1.1rem;
+	box-shadow: var(--shadow-sm);
+	min-width: 160px;
+	position: relative;
+	overflow: hidden;
+}
 
-                /* Responsive */
-                @media (max-width: 900px) {
-                    .stats-row { flex-direction: column; }
-                    .sv-table { font-size: 0.8rem; }
-                    .action-btns { flex-direction: column; }
-                }
-            </style>
+.stat-chip::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 3px;
+}
 
-            <!-- ===== PAGE HEADER ===== -->
-            <div class="page-title-bar">
-                <div>
-                    <h2>Student Proposals</h2>
-                    <p>Review, approve, or reject submitted proposals</p>
-                </div>
-            </div>
+.stat-chip.pending::before {
+	background: var(--navy);
+}
 
-            <!-- ===== STATS CHIPS ===== -->
-            <div class="stats-row">
-                <div class="stat-chip pending">
-                    <span class="stat-count">5</span>
-                    <span>Pending Review</span>
-                </div>
-                <div class="stat-chip approved">
-                    <span class="stat-count">12</span>
-                    <span>Approved</span>
-                </div>
-                <div class="stat-chip rejected">
-                    <span class="stat-count">3</span>
-                    <span>Rejected</span>
-                </div>
-            </div>
+.stat-chip.approved::before {
+	background: var(--green);
+}
 
-            <h:form id="svForm" prependId="false">
-                <p:messages id="sv_msg" globalOnly="true" />
+.stat-chip.rejected::before {
+	background: var(--red);
+}
 
-                <!-- ===== PROPOSALS TABLE ===== -->
-                <div class="table-card">
-                    <div class="table-card-header">All Proposals</div>
-                    <div class="table-card-body">
-                        <table class="sv-table">
-                            <thead>
-                                <tr>
-                                    <th>Student</th>
-                                    <th>Title</th>
-                                    <th>Status</th>
-                                    <th>Similarity</th>
-                                    <th>Submitted</th>
-                                    <th style="text-align:center;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Row 1 — high similarity, submitted -->
-                                <tr>
-                                    <td>Adewale Kayode</td>
-                                    <td class="title-cell">Intelligent Student Project Management System Using NLP-Based Duplicate Detection</td>
-                                    <td><span class="badge badge-submitted">Submitted</span></td>
-                                    <td>
-                                        <div class="sim-cell">
-                                            <span class="sim-dot high"></span>
-                                            <span class="sim-value high">0.84</span>
-                                        </div>
-                                    </td>
-                                    <td>28 Feb 2026</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button type="button" class="btn-sm btn-sm-view"
-                                                    onclick="PF('approveDialog').show();">
-                                                &#10003; Approve
-                                            </button>
-                                            <button type="button" class="btn-sm btn-sm-reject"
-                                                    onclick="PF('rejectDialog').show();">
-                                                &#10007; Reject
-                                            </button>
-                                            <a href="#{request.contextPath}/online/proposal/compare.xhtml"
-                                               class="btn-sm btn-sm-view">
-                                                &#128270; Compare
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
+.stat-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.95rem;
+	flex-shrink: 0;
+}
 
-                                <!-- Row 2 — low similarity, submitted -->
-                                <tr>
-                                    <td>Fatima Bello</td>
-                                    <td class="title-cell">Smart Attendance System Using Facial Recognition and IoT</td>
-                                    <td><span class="badge badge-submitted">Submitted</span></td>
-                                    <td>
-                                        <div class="sim-cell">
-                                            <span class="sim-dot low"></span>
-                                            <span class="sim-value low">0.31</span>
-                                        </div>
-                                    </td>
-                                    <td>01 Mar 2026</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button type="button" class="btn-sm btn-sm-view"
-                                                    onclick="PF('approveDialog').show();">
-                                                &#10003; Approve
-                                            </button>
-                                            <button type="button" class="btn-sm btn-sm-reject"
-                                                    onclick="PF('rejectDialog').show();">
-                                                &#10007; Reject
-                                            </button>
-                                            <a href="#" class="btn-sm btn-sm-view">&#128270; Compare</a>
-                                        </div>
-                                    </td>
-                                </tr>
+.stat-chip.pending  .stat-icon {
+	background: var(--navy-light);
+}
 
-                                <!-- Row 3 — medium similarity, submitted -->
-                                <tr>
-                                    <td>Chukwuemeka Obi</td>
-                                    <td class="title-cell">Blockchain-Based Certificate Verification Platform for Nigerian Universities</td>
-                                    <td><span class="badge badge-submitted">Submitted</span></td>
-                                    <td>
-                                        <div class="sim-cell">
-                                            <span class="sim-dot medium"></span>
-                                            <span class="sim-value medium">0.71</span>
-                                        </div>
-                                    </td>
-                                    <td>02 Mar 2026</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button type="button" class="btn-sm btn-sm-view"
-                                                    onclick="PF('approveDialog').show();">
-                                                &#10003; Approve
-                                            </button>
-                                            <button type="button" class="btn-sm btn-sm-reject"
-                                                    onclick="PF('rejectDialog').show();">
-                                                &#10007; Reject
-                                            </button>
-                                            <a href="#" class="btn-sm btn-sm-view">&#128270; Compare</a>
-                                        </div>
-                                    </td>
-                                </tr>
+.stat-chip.approved .stat-icon {
+	background: var(--green-light);
+}
 
-                                <!-- Row 4 — approved -->
-                                <tr>
-                                    <td>Ngozi Eze</td>
-                                    <td class="title-cell">AI-Powered Crop Disease Detection for Smallholder Farmers</td>
-                                    <td><span class="badge badge-approved">Approved</span></td>
-                                    <td>
-                                        <div class="sim-cell">
-                                            <span class="sim-dot low"></span>
-                                            <span class="sim-value low">0.22</span>
-                                        </div>
-                                    </td>
-                                    <td>20 Feb 2026</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <a href="#" class="btn-sm btn-sm-view">&#128270; View</a>
-                                        </div>
-                                    </td>
-                                </tr>
+.stat-chip.rejected .stat-icon {
+	background: var(--red-light);
+}
 
-                                <!-- Row 5 — rejected -->
-                                <tr>
-                                    <td>Taiwo Adeyemi</td>
-                                    <td class="title-cell">Online Voting System for Student Union Elections</td>
-                                    <td><span class="badge badge-rejected">Rejected</span></td>
-                                    <td>
-                                        <div class="sim-cell">
-                                            <span class="sim-dot high"></span>
-                                            <span class="sim-value high">0.89</span>
-                                        </div>
-                                    </td>
-                                    <td>18 Feb 2026</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <a href="#" class="btn-sm btn-sm-view">&#128270; Compare</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+.stat-text {
+	display: flex;
+	flex-direction: column;
+}
 
-                <!-- ===== APPROVE DIALOG ===== -->
-                <p:dialog header="Approve Proposal"
-                          widgetVar="approveDialog" id="approveDialog"
-                          modal="true" showEffect="fade" hideEffect="fade"
-                          width="480" responsive="true" closable="true">
-                    <p:outputPanel id="approvePanel" style="padding: 1.25rem;">
-                        <div class="feedback-field">
-                            <label class="feedback-label">Comment (optional)</label>
-                            <p:inputTextarea id="approveComment"
-                                             value="#{proposalBean.entry.supervisorComment}"
-                                             rows="4"
-                                             placeholder="Add a note for the student..."
-                                             styleClass="feedback-textarea" />
-                        </div>
-                        <div class="feedback-actions">
-                            <p:commandButton id="confirmApprove"
-                                             value="Confirm Approval"
-                                             actionListener="#{proposalBean.updateProposal}"
-                                             process="approvePanel"
-                                             update="sv_msg"
-                                             oncomplete="PF('approveDialog').hide();"
-                                             styleClass="btn-confirm-approve" />
-                        </div>
-                    </p:outputPanel>
-                </p:dialog>
+.stat-count {
+	font-size: 1.3rem;
+	font-weight: 700;
+	line-height: 1.1;
+	font-family: 'Playfair Display', serif;
+}
 
-                <!-- ===== REJECT DIALOG ===== -->
-                <p:dialog header="Reject Proposal"
-                          widgetVar="rejectDialog" id="rejectDialog"
-                          modal="true" showEffect="fade" hideEffect="fade"
-                          width="480" responsive="true" closable="true">
-                    <p:outputPanel id="rejectPanel" style="padding: 1.25rem;">
-                        <div class="feedback-field">
-                            <label class="feedback-label">
-                                Reason for rejection <span style="color: #C0392B;">*</span>
-                            </label>
-                            <p:inputTextarea id="rejectComment"
-                                             value="#{proposalBean.entry.supervisorComment}"
-                                             required="true"
-                                             requiredMessage="Please provide a reason for rejection"
-                                             rows="4"
-                                             placeholder="Explain why this proposal is being rejected..."
-                                             styleClass="feedback-textarea" />
-                            <p:message id="m_rejectComment" for="rejectComment"
-                                       style="font-size: 0.8rem; color: #C0392B;" />
-                        </div>
-                        <div class="feedback-actions">
-                            <p:commandButton id="confirmReject"
-                                             value="Confirm Rejection"
-                                             actionListener="#{proposalBean.updateProposal}"
-                                             process="rejectPanel"
-                                             update="rejectPanel,sv_msg"
-                                             oncomplete="if(!args.validationFailed) PF('rejectDialog').hide();"
-                                             styleClass="btn-confirm-reject" />
-                        </div>
-                    </p:outputPanel>
-                </p:dialog>
+.stat-chip.pending  .stat-count {
+	color: var(--navy);
+}
 
-            </h:form>
+.stat-chip.approved .stat-count {
+	color: var(--green);
+}
 
-        </ui:define>
+.stat-chip.rejected .stat-count {
+	color: var(--red);
+}
 
-    </ui:composition>
+.stat-label {
+	font-size: 0.75rem;
+	color: var(--ink-mid);
+	font-weight: 400;
+	margin-top: 0.05rem;
+}
+
+/* ============================================================
+                   TABLE CARD WRAPPER
+                   ============================================================ */
+.table-card {
+	background: var(--white);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow-sm);
+	overflow: hidden;
+}
+
+.table-card-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1rem 1.4rem;
+	border-bottom: 1px solid var(--border);
+	background: var(--white);
+}
+
+.table-card-title {
+	font-family: 'Playfair Display', serif;
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--navy);
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.table-card-title::before {
+	content: '';
+	display: inline-block;
+	width: 3px;
+	height: 16px;
+	background: var(--gold);
+	border-radius: 2px;
+}
+
+/* ============================================================
+                   PRIMEFACES DATATABLE OVERRIDES
+                   ============================================================ */
+/* Header row */
+.proposals-page .ui-datatable .ui-datatable-header {
+	display: none;
+}
+
+.proposals-page .ui-datatable thead tr th, .proposals-page .ui-datatable .ui-column-header
+	{
+	background: var(--navy) !important;
+	color: var(--white) !important;
+	font-family: 'DM Sans', sans-serif !important;
+	font-size: 0.75rem !important;
+	font-weight: 600 !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.5px !important;
+	padding: 0.85rem 1rem !important;
+	border: none !important;
+	white-space: nowrap;
+}
+/* Zebra + hover */
+.proposals-page .ui-datatable tbody tr {
+	border-bottom: 1px solid var(--border);
+	transition: background 0.15s;
+}
+
+.proposals-page .ui-datatable tbody tr:hover, .proposals-page .ui-datatable tbody tr.ui-state-hover
+	{
+	background: var(--surface) !important;
+}
+
+.proposals-page .ui-datatable tbody td {
+	padding: 0.85rem 1rem !important;
+	font-size: 0.875rem !important;
+	color: var(--ink-mid);
+	border: none !important;
+	vertical-align: middle !important;
+}
+/* Paginator */
+.proposals-page .ui-paginator {
+	background: var(--surface) !important;
+	border-top: 1px solid var(--border) !important;
+	border-bottom: none !important;
+	padding: 0.65rem 1rem !important;
+	font-size: 0.8rem;
+	color: var(--ink-mid);
+}
+
+.proposals-page .ui-paginator .ui-paginator-page, .proposals-page .ui-paginator .ui-paginator-first,
+	.proposals-page .ui-paginator .ui-paginator-prev, .proposals-page .ui-paginator .ui-paginator-next,
+	.proposals-page .ui-paginator .ui-paginator-last {
+	background: var(--white) !important;
+	border: 1px solid var(--border) !important;
+	color: var(--navy) !important;
+	border-radius: 4px !important;
+	margin: 0 2px !important;
+	min-width: 28px;
+	height: 28px;
+	font-size: 0.78rem !important;
+	font-weight: 600;
+}
+
+.proposals-page .ui-paginator .ui-state-active {
+	background: var(--navy) !important;
+	color: var(--white) !important;
+	border-color: var(--navy) !important;
+}
+
+.proposals-page .ui-paginator .ui-paginator-current {
+	color: var(--ink-mid) !important;
+	font-size: 0.78rem !important;
+	padding: 0 0.5rem;
+}
+
+/* ============================================================
+                   CELL CONTENT COMPONENTS
+                   ============================================================ */
+
+/* Student cell */
+.student-cell {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+}
+
+.student-avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: var(--navy-light);
+	color: var(--navy);
+	font-size: 0.7rem;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	text-transform: uppercase;
+	border: 1.5px solid var(--border);
+}
+
+.student-name {
+	font-weight: 500;
+	color: var(--ink);
+	font-size: 0.875rem;
+}
+
+.student-matric {
+	font-size: 0.72rem;
+	color: var(--ink-mid);
+	font-weight: 300;
+}
+
+/* Title cell */
+.title-cell {
+	font-weight: 600;
+	color: var(--ink) !important;
+	max-width: 300px;
+	line-height: 1.4;
+}
+
+/* Status badges */
+.badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0.22rem 0.65rem;
+	border-radius: 20px;
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+	white-space: nowrap;
+}
+
+.badge::before {
+	content: '';
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+}
+
+.badge-submitted {
+	background: var(--navy-light);
+	color: var(--navy);
+}
+
+.badge-submitted::before {
+	background: var(--navy);
+}
+
+.badge-approved {
+	background: var(--green-light);
+	color: var(--green);
+}
+
+.badge-approved::before {
+	background: var(--green);
+}
+
+.badge-rejected {
+	background: var(--red-light);
+	color: var(--red);
+}
+
+.badge-rejected::before {
+	background: var(--red);
+}
+
+.badge-draft {
+	background: var(--border);
+	color: var(--ink-mid);
+}
+
+.badge-draft::before {
+	background: var(--ink-mid);
+}
+
+/* Similarity display */
+.sim-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.2rem 0.6rem;
+	border-radius: 4px;
+	font-size: 0.8rem;
+	font-weight: 700;
+}
+
+.sim-pill.high {
+	background: var(--red-light);
+	color: var(--red);
+}
+
+.sim-pill.medium {
+	background: var(--amber-light);
+	color: var(--amber);
+}
+
+.sim-pill.low {
+	background: var(--green-light);
+	color: var(--green);
+}
+
+.sim-pill .sim-icon {
+	font-size: 0.65rem;
+}
+
+/* Date cell */
+.date-cell {
+	font-size: 0.8rem;
+	color: var(--ink-mid);
+	white-space: nowrap;
+}
+
+/* Action buttons */
+.action-btns {
+	display: flex;
+	gap: 0.35rem;
+	align-items: center;
+}
+
+.btn-act {
+	padding: 0.32rem 0.7rem;
+	border-radius: 4px;
+	font-size: 0.76rem;
+	font-weight: 600;
+	border: none;
+	cursor: pointer;
+	transition: background 0.18s, color 0.18s, border-color 0.18s;
+	white-space: nowrap;
+	font-family: 'DM Sans', sans-serif;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	line-height: 1.5;
+}
+
+.btn-approve {
+	background: var(--navy);
+	color: var(--white);
+}
+
+.btn-approve:hover {
+	background: var(--navy-mid);
+}
+
+.btn-reject {
+	background: transparent;
+	color: var(--red);
+	border: 1.5px solid var(--red);
+}
+
+.btn-reject:hover {
+	background: var(--red);
+	color: var(--white);
+}
+
+.btn-view {
+	background: transparent;
+	color: var(--ink-mid);
+	border: 1.5px solid var(--border);
+}
+
+.btn-view:hover {
+	border-color: var(--navy-mid);
+	color: var(--navy);
+	background: var(--navy-light);
+}
+
+/* ============================================================
+                   DIALOGS
+                   ============================================================ */
+.dialog-body {
+	padding: 1.25rem;
+}
+
+.dialog-subtext {
+	font-size: 0.82rem;
+	color: var(--ink-mid);
+	margin-bottom: 1rem;
+	line-height: 1.5;
+}
+
+.proposal-ref {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--gold);
+	border-radius: 4px;
+	padding: 0.55rem 0.85rem;
+	font-size: 0.82rem;
+	font-weight: 500;
+	color: var(--ink);
+	margin-bottom: 1rem;
+	font-style: italic;
+}
+
+.field-label {
+	display: block;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--ink-mid);
+	margin-bottom: 0.35rem;
+	letter-spacing: 0.2px;
+	text-transform: uppercase;
+}
+
+.field-label span {
+	color: var(--red);
+	margin-left: 2px;
+}
+
+/* Override PrimeFaces textarea */
+.proposals-page .p-dialog-content .ui-inputtextarea, .proposals-page .ui-dialog .ui-inputtextarea
+	{
+	width: 100% !important;
+	min-height: 100px;
+	padding: 0.65rem 0.85rem !important;
+	border: 1.5px solid var(--border) !important;
+	border-radius: 4px !important;
+	font-size: 0.875rem !important;
+	color: var(--ink) !important;
+	font-family: 'DM Sans', sans-serif !important;
+	resize: vertical;
+	box-sizing: border-box;
+	transition: border-color 0.2s;
+}
+
+.proposals-page .ui-dialog .ui-inputtextarea:focus {
+	outline: none !important;
+	border-color: var(--navy) !important;
+	box-shadow: 0 0 0 3px rgba(27, 58, 107, 0.10) !important;
+}
+
+.dialog-footer {
+	display: flex;
+	gap: 0.6rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--border);
+	margin-top: 0.25rem;
+}
+
+/* Override PF commandButton in dialogs */
+.proposals-page .ui-dialog .ui-button.btn-confirm-approve,
+	.proposals-page .ui-dialog .ui-button.btn-confirm-reject {
+	border: none !important;
+	border-radius: 4px !important;
+	padding: 0.55rem 1.4rem !important;
+	font-size: 0.875rem !important;
+	font-weight: 600 !important;
+	font-family: 'DM Sans', sans-serif !important;
+	cursor: pointer;
+}
+
+.proposals-page .ui-dialog .ui-button.btn-confirm-approve {
+	background: var(--navy) !important;
+	color: var(--white) !important;
+}
+
+.proposals-page .ui-dialog .ui-button.btn-confirm-approve:hover {
+	background: var(--navy-mid) !important;
+}
+
+.proposals-page .ui-dialog .ui-button.btn-confirm-reject {
+	background: var(--red) !important;
+	color: var(--white) !important;
+}
+
+.proposals-page .ui-dialog .ui-button.btn-confirm-reject:hover {
+	background: #a93226 !important;
+}
+
+/* Dialog header override */
+.proposals-page .ui-dialog .ui-dialog-titlebar {
+	background: var(--navy) !important;
+	border-bottom: 2px solid var(--gold) !important;
+	padding: 0.85rem 1.25rem !important;
+}
+
+.proposals-page .ui-dialog .ui-dialog-titlebar .ui-dialog-title {
+	font-family: 'Playfair Display', serif !important;
+	font-size: 1rem !important;
+	color: var(--white) !important;
+	font-weight: 600 !important;
+}
+
+.proposals-page .ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close
+	{
+	color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ============================================================
+                   EMPTY STATE
+                   ============================================================ */
+.empty-state {
+	text-align: center;
+	padding: 3.5rem 2rem;
+	color: var(--ink-mid);
+}
+
+.empty-state-icon {
+	font-size: 2.5rem;
+	margin-bottom: 0.75rem;
+}
+
+.empty-state h3 {
+	font-family: 'Playfair Display', serif;
+	font-size: 1.1rem;
+	color: var(--navy);
+	margin: 0 0 0.35rem;
+}
+
+.empty-state p {
+	font-size: 0.85rem;
+	font-weight: 300;
+	margin: 0;
+}
+
+/* ============================================================
+                   RESPONSIVE
+                   ============================================================ */
+@media ( max-width : 900px) {
+	.stats-row {
+		flex-direction: column;
+	}
+	.stat-chip {
+		min-width: unset;
+	}
+	.action-btns {
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+	.proposals-page .ui-datatable tbody td {
+		padding: 0.65rem 0.6rem !important;
+	}
+}
+</style>
+
+			<div class="proposals-page">
+
+				<!-- ===== PAGE HEADER ===== -->
+				<div class="page-header">
+					<div class="page-header-left">
+						<h2>Student Proposals</h2>
+						<p>Review, approve, or reject submitted project proposals</p>
+						<span class="header-accent"></span>
+					</div>
+				</div>
+
+				<!-- ===== STAT CHIPS ===== -->
+				<div class="stats-row">
+					<div class="stat-chip pending">
+						<div class="stat-icon">📋</div>
+						<div class="stat-text">
+							<span class="stat-count">3</span> <span class="stat-label">Pending
+								Review</span>
+						</div>
+					</div>
+					<div class="stat-chip approved">
+						<div class="stat-icon">✓</div>
+						<div class="stat-text">
+							<span class="stat-count">5</span> <span class="stat-label">Approved</span>
+						</div>
+					</div>
+					<div class="stat-chip rejected">
+						<div class="stat-icon">✗</div>
+						<div class="stat-text">
+							<span class="stat-count">12</span> <span class="stat-label">Rejected</span>
+						</div>
+					</div>
+				</div>
+
+				<h:form id="svForm" prependId="false">
+					<p:messages id="sv_msg" globalOnly="true" autoUpdate="false" />
+
+					<!-- ===== TABLE CARD ===== -->
+					<div class="table-card">
+						<div class="table-card-header">
+							<span class="table-card-title">All Proposals</span>
+						</div>
+
+						<p:dataTable id="proposalList" var="entry"
+							value="#{supervisorBean.lazyModel}" paginator="true" rows="5"
+							paginatorPosition="bottom"
+							currentPageReportTemplate="Showing {startRecord}–{endRecord} of {totalRecords}"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+							rowsPerPageTemplate="5,10,15" lazy="true" rowKey="#{entry.id}"
+							styleClass="sv-dtable" tableStyle="width:100%" emptyMessage=" ">
+
+							<!-- STUDENT -->
+							<p:column headerText="Student" style="width:180px;">
+								<div class="student-cell">
+									<div class="student-avatar">KO</div>
+									<div>
+										<div class="student-name">#{entry.student.getFullName()}</div>
+										<div class="student-matric">#{entry.student.username}</div>
+									</div>
+								</div>
+							</p:column>
+
+							<!-- TITLE -->
+							<p:column headerText="Proposal Title">
+								<span class="title-cell">#{entry.title}</span>
+							</p:column>
+
+							<!-- STATUS -->
+							<p:column headerText="Status" style="width:120px;">
+								<span
+									class="badge
+                                    #{entry.status == 'SUBMITTED' ? 'badge-submitted' :
+                                      entry.status == 'APPROVED'  ? 'badge-approved'  :
+                                      entry.status == 'REJECTED'  ? 'badge-rejected'  : 'badge-draft'}">
+									#{entry.status } </span>
+							</p:column>
+
+							<!-- SIMILARITY -->
+							<p:column headerText="Similarity" style="width:110px;">
+								<span
+									class="sim-pill
+                                    #{entry.similarityScore >= 0.82 ? 'high' :
+                                      entry.similarityScore >= 0.65 ? 'medium' : 'low'}">
+									<span class="sim-icon"> #{entry.similarityScore >= 0.82
+										? '▲' : entry.similarityScore >= 0.65 ? '●' : '▼'} </span>
+									#{entry.similarityScore}
+								</span>
+							</p:column>
+
+							<!-- SUBMITTED DATE -->
+							<p:column headerText="Submitted" style="width:120px;">
+								<span class="date-cell"> <h:outputText
+										value="#{entry.createdDate}">
+										<f:convertDateTime pattern="dd MMM yyyy" />
+									</h:outputText>
+								</span>
+							</p:column>
+
+							<!-- ACTIONS -->
+							<p:column headerText="Actions"
+								style="width:200px; text-align:center;">
+								<div class="action-btns">
+									<p:commandButton value="👁 View" update="@form"
+										actionListener="#{proposalBean.displayProposalDialog(entry)}"
+										oncomplete="PF('proposalDetailDlg').show()"
+										styleClass="btn-act btn-view" />
+
+
+								</div>
+							</p:column>
+
+						</p:dataTable>
+
+						<!-- Empty state (rendered when table is empty) -->
+						<h:panelGroup rendered="#{supervisorBean.lazyModel.rowCount == 0}">
+							<div class="empty-state">
+								<div class="empty-state-icon">📂</div>
+								<h3>No proposals yet</h3>
+								<p>Student proposals will appear here once submitted.</p>
+							</div>
+						</h:panelGroup>
+
+					</div>
+					<p:dialog widgetVar="proposalDetailDlg" id="proposalDetailDlg"
+						modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+						draggable="true" closable="true" header="Proposal Details"
+						styleClass="prop-dlg">
+
+						<p:outputPanel id="proposalDetailPanel" layout="block">
+
+							<div class="dlg-body">
+
+								<div class="dlg-meta">
+									<h:outputText
+										styleClass="badge badge-#{proposalBean.entry.status}"
+										value="#{proposalBean.entry.status}" />
+									<span class="dlg-meta-date"> &#128197;&#160;<h:outputText
+											value="#{proposalBean.entry.getCreatedDate()}" />
+									</span>
+								</div>
+
+								<div class="dlg-field">
+									<span class="dlg-label">Project Title</span>
+									<div class="dlg-value">
+										<h:outputText value="#{proposalBean.entry.title}" />
+									</div>
+								</div>
+
+								<div class="dlg-field">
+									<span class="dlg-label">Problem Statement</span>
+									<div class="dlg-value multi">
+										<h:outputText value="#{proposalBean.entry.problemStatement}" />
+									</div>
+								</div>
+
+								<div class="dlg-field">
+									<span class="dlg-label">Aim &amp; Objectives</span>
+									<div class="dlg-value multi">
+										<h:outputText value="#{proposalBean.entry.objectives}" />
+									</div>
+								</div>
+
+								<div class="dlg-field">
+									<span class="dlg-label">Methodology</span>
+									<div class="dlg-value multi">
+										<h:outputText value="#{proposalBean.entry.methodology}" />
+									</div>
+								</div>
+
+								<h:panelGroup
+									rendered="#{not empty proposalBean.entry.supervisorComment}">
+									<div class="dlg-field">
+										<span class="dlg-label">Supervisor Comment</span>
+										<div class="dlg-value">
+											<h:outputText value="#{proposalBean.entry.supervisorComment}" />
+										</div>
+									</div>
+								</h:panelGroup>
+
+								<h:panelGroup
+									rendered="#{proposalBean.entry.similarityScore != null
+                                              and proposalBean.entry.similarityScore > 0}">
+									<div
+										class="dlg-sim #{proposalBean.entry.similarityScore >= 0.80 ? 'high' :
+                                              proposalBean.entry.similarityScore >= 0.60 ? 'med' : 'low'}">
+										<div class="sim-bubble">
+											<h:outputText value="#{proposalBean.entry.similarityScore}">
+												<f:convertNumber maxFractionDigits="2" />
+											</h:outputText>
+										</div>
+										<div class="sim-text">
+											<div class="sim-head">
+												<h:outputText
+													value="High similarity — closely matches an existing project"
+													rendered="#{proposalBean.entry.similarityScore >= 0.80}" />
+												<h:outputText
+													value="Moderate similarity with an existing project"
+													rendered="#{proposalBean.entry.similarityScore >= 0.60
+                                                              and proposalBean.entry.similarityScore lt 0.80}" />
+												<h:outputText value="Proposal appears mostly original"
+													rendered="#{proposalBean.entry.similarityScore lt 0.60}" />
+
+											</div>
+											<div class="sim-sub">Click Compare to view the matching
+												project.</div>
+										</div>
+									</div>
+								</h:panelGroup>
+
+							</div>
+
+							<div class="dlg-footer">
+								<p:commandButton value="Close" type="button"
+									onclick="PF('proposalDetailDlg').hide();"
+									styleClass="btn-ghost" />
+								<p:commandButton value="&#128270; Compare Similar" ajax="false"
+									action="#{proposalBean.compareSimilar}"
+									rendered="#{proposalBean.entry.similarityScore != null
+                                                 and proposalBean.entry.similarityScore > 0}"
+									styleClass="btn-primary" />
+								<p:commandButton value="&#128270; Submit to Supervisor"
+									ajax="false" action="#{proposalBean.submitToSupervisor}"
+									rendered="#{proposalBean.entry.status == 'DRAFT'}"
+									styleClass="btn-primary" />
+							</div>
+
+						</p:outputPanel>
+					</p:dialog>
+
+				</h:form>
+
+			</div>
+
+
+
+		</ui:define>
+
+	</ui:composition>
 </h:body>
 </html>

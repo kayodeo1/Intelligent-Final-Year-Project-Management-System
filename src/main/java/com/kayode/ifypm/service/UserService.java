@@ -29,5 +29,9 @@ public class UserService {
 
 
 	}
+	
+	public User update(User u) {
+		return em.merge(u);
+	}
 
 }

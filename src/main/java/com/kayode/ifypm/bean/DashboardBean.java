@@ -31,7 +31,7 @@ public class DashboardBean implements Serializable {
 	public void init() {
 		Subject subject = SecurityUtils.getSubject();
 		setCurrentUser(userService.findUserByUserName(subject.getPrincipal().toString()));
-		System.out.println(currentUser.getProposalStatus());
+
 		
 		
 		

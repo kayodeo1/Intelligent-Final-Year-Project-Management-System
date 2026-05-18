@@ -82,6 +82,9 @@ public class ProposalLazyDataModel extends LazyDataModel<Proposal> {
 			case GET_ALL_STUDENT_PROPOSAL:
 				pagedList = service.fetchStudentProposal(first, pageSize,userId);
 				break;
+			case GET_ALL_SUBMITED_PROPOSAL:
+				pagedList = service.fetchSupervisorProposal(first, pageSize,userId);
+				break;
 			default:
 				LOG.warn("query type not found! , " + query);
 				break;

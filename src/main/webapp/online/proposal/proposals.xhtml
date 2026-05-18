@@ -506,17 +506,7 @@
 }
 </style>
 
-			<!-- ═══════════════════════════════════════════════════════════
-             NO h:form HERE — template provides the form.
-             The p:commandLink logout in the sidebar needs a form too,
-             so the template must own the single top-level form.
-
-             In dashboard.xhtml, wrap <main class="main-content"> with:
-                 <h:form prependId="false" id="pageForm">
-                     ...
-                 </h:form>
-             and remove any other forms.
-             ═══════════════════════════════════════════════════════════ -->
+			
 
 			<p:ajaxStatus onstart="PF('loadDlg').show()"
 				oncomplete="PF('loadDlg').hide()" />
