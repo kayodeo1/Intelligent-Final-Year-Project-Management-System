@@ -9,7 +9,7 @@
 <h:body>
 	<ui:composition template="/online/template/dashboard.xhtml">
 
-		<ui:define name="student_name">Adewale</ui:define>
+		<ui:define name="student_name">#{dashboardBean.currentUser.getFullName()}</ui:define>
 
 		<ui:define name="dashboard_body">
 
@@ -280,7 +280,7 @@
 					<div class="col-label">
 						<span class="col-label-dot proposal"></span> <span
 							class="col-label-title">Submitted Proposal <span
-							class="col-label-sub">— #{proposalBean.entry.studentName}</span>
+							class="col-label-sub">— #{proposalBean.entry.student.getFullName()}</span>
 							<span
 							class="col-label-title">—  #{proposalBean.entry.status}</span>
 							
@@ -318,7 +318,7 @@
 					<div class="col-label">
 						<span class="col-label-dot project"></span> <span
 							class="col-label-title">Matched Project <span
-							class="col-label-sub">—  #{proposalBean.similarProposal.studentName}</span>
+							class="col-label-sub">—  #{proposalBean.similarProposal.student.getFullName()}</span>
 							<span
 							class="col-label-title">—  #{proposalBean.similarProposal.status}</span>
 							

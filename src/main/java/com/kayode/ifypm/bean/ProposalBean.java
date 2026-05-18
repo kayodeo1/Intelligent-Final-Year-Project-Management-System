@@ -207,6 +207,14 @@ public class ProposalBean implements Serializable {
 
 
 	}
+	public void submitToSupervisor() {
+		entry.setStatus(Status.SUBMITTED);
+		proposalService.updateProposal(entry);
+		currentUser.setProposalStatus(Status.SUBMITTED);
+		currentUser.setProjectStatus(Status.PROPOSAL_PENDING);
+		Messages.addFlashGlobalInfo("proposal has been submited to supervisor for review!");
+		
+	}
 
 	public void listProposal() {
 		LOG.info("listProposal invoked!!!");

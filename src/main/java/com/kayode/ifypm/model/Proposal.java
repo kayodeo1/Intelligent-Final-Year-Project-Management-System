@@ -9,6 +9,7 @@ import java.util.Date;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -35,6 +36,7 @@ private String problemStatement;
 private String objectives;
 @Column(columnDefinition = "TEXT")
 private String methodology;
+@Enumerated
 private Status status;
 @Column(columnDefinition = "TEXT")
 private String supervisorComment;
