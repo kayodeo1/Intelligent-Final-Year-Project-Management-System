@@ -490,3 +490,76 @@
     </ui:composition>
 </h:body>
 </html>
+
+
+	<!-- ===== APPROVE DIALOG ===== -->
+					<p:dialog header="Approve Proposal" widgetVar="approveDialog"
+						id="approveDialog" modal="true" showEffect="fade" dynamic="true"
+						hideEffect="fade" width="500" responsive="true" closable="true"
+						appendTo="@(body)">
+
+						<p:outputPanel id="approvePanel">
+							<div class="dialog-body">
+								<p class="dialog-subtext">You are about to approve the
+									following proposal. This action will notify the student and
+									mark the proposal as approved.</p>
+								<div class="proposal-ref">"#{supervisorBean.entry.title}"
+								</div>
+
+								<div style="margin-bottom: 1rem;">
+									<label class="field-label">Supervisor Comment <span
+										style="color: var(--ink-mid); text-transform: none; font-weight: 400;">(optional)</span></label>
+									<p:inputTextarea id="approveComment"
+										value="#{supervisorBean.entry.supervisorComment}" rows="4"
+										placeholder="Add a note for the student…" style="width:100%;" />
+								</div>
+
+								<div class="dialog-footer">
+									<p:commandButton id="confirmApprove" value="Confirm Approval"
+										actionListener="#{supervisorBean.approveProposal}"
+										process="approvePanel" update="sv_msg proposalList"
+										oncomplete="PF('approveDialog').hide();"
+										styleClass="btn-confirm-approve" />
+								</div>
+							</div>
+						</p:outputPanel>
+					</p:dialog>
+
+
+					<!-- ===== REJECT DIALOG ===== -->
+					<p:dialog header="Reject Proposal" widgetVar="rejectDialog"
+						id="rejectDialog" modal="true" showEffect="fade" hideEffect="fade"
+						width="500" responsive="true" closable="true" appendTo="@(body)">
+
+						<p:outputPanel id="rejectPanel">
+							<div class="dialog-body">
+								<p class="dialog-subtext">Please provide a clear reason for
+									rejection. This feedback will be shared with the student so
+									they can revise and resubmit.</p>
+								<div class="proposal-ref">"#{supervisorBean.entry.title}"
+								</div>
+
+								<div style="margin-bottom: 1rem;">
+									<label class="field-label"> Reason for Rejection <span>*</span>
+									</label>
+									<p:inputTextarea id="rejectComment"
+										value="#{supervisorBean.entry.supervisorComment}"
+										required="true"
+										requiredMessage="Please provide a reason for rejection."
+										rows="4"
+										placeholder="Explain why this proposal is being rejected…"
+										style="width:100%;" />
+									<p:message for="rejectComment"
+										style="font-size:0.78rem; color:var(--red); display:block; margin-top:0.3rem;" />
+								</div>
+
+								<div class="dialog-footer">
+									<p:commandButton id="confirmReject" value="Confirm Rejection"
+										actionListener="#{supervisorBean.rejectProposal}"
+										process="rejectPanel" update="rejectPanel sv_msg proposalList"
+										oncomplete="if(!args.validationFailed) PF('rejectDialog').hide();"
+										styleClass="btn-confirm-reject" />
+								</div>
+							</div>
+						</p:outputPanel>
+					</p:dialog>

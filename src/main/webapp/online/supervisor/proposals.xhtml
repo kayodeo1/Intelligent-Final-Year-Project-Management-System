@@ -496,20 +496,228 @@
 }
 
 .btn-view {
-	background: transparent;
-	color: var(--ink-mid);
-	border: 1.5px solid var(--border);
+	background: var(--white) !important;
+	border: 1px solid var(--border) !important;
+	border-radius: 6px !important;
+	color: var(--ink-mid) !important;
+	font-size: 0.78rem !important;
+	font-weight: 600 !important;
+	padding: 0.32rem 0.85rem !important;
+	transition: all 0.15s !important;
+	cursor: pointer !important;
 }
 
 .btn-view:hover {
-	border-color: var(--navy-mid);
-	color: var(--navy);
-	background: var(--navy-light);
+	background: var(--surface) !important;
+	border-color: var(--ink-mid) !important;
+}
+
+.ui-button.btn-view .ui-button-text {
+	padding: 0 0.25rem !important;
 }
 
 /* ============================================================
                    DIALOGS
                    ============================================================ */
+.proposals-page .prop-dlg.ui-dialog {
+	border: none !important;
+	border-radius: 14px !important;
+	box-shadow: 0 16px 56px rgba(12, 27, 51, .20) !important;
+	width: min(700px, 96vw) !important;
+}
+
+.proposals-page .ui-dialog.prop-dlg .ui-dialog-titlebar {
+	background: var(--ink) !important;
+	border: none !important;
+	border-radius: 14px 14px 0 0 !important;
+	padding: 1.1rem 1.6rem !important;
+}
+
+.proposals-page .ui-dialog.prop-dlg .ui-dialog-titlebar .ui-dialog-title {
+	font-family: 'Georgia', serif !important;
+	font-size: 1.05rem !important;
+	font-weight: 700 !important;
+	color: var(--gold) !important;
+}
+
+.proposals-page .ui-dialog.prop-dlg .ui-dialog-titlebar .ui-dialog-titlebar-close {
+	color: #8A94A6 !important;
+}
+
+.proposals-page .ui-dialog.prop-dlg .ui-dialog-titlebar .ui-dialog-titlebar-close:hover {
+	color: #fff !important;
+}
+
+.proposals-page .prop-dlg .ui-dialog-content {
+	padding: 0 !important;
+	background: #FAFAF7 !important;
+	max-height: 74vh !important;
+	overflow-y: auto !important;
+}
+
+.dlg-body {
+	padding: 1.5rem 1.8rem 0.5rem;
+}
+
+.dlg-meta {
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+	margin-bottom: 1.4rem;
+	padding-bottom: 1.1rem;
+	border-bottom: 1px solid var(--border);
+	flex-wrap: wrap;
+}
+
+.dlg-meta-date {
+	font-size: 0.77rem;
+	color: #8A94A6;
+}
+
+.dlg-field {
+	margin-bottom: 1.15rem;
+}
+
+.dlg-label {
+	display: block;
+	font-size: 0.68rem;
+	font-weight: 600;
+	color: #8A94A6;
+	text-transform: uppercase;
+	letter-spacing: 0.55px;
+	margin-bottom: 0.38rem;
+}
+
+.dlg-value {
+	background: var(--white);
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	padding: 0.75rem 1rem;
+	font-size: 0.875rem;
+	color: var(--ink);
+	line-height: 1.65;
+}
+
+.dlg-value.multi {
+	white-space: pre-wrap;
+	min-height: 58px;
+}
+
+.dlg-sim {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	border-radius: 6px;
+	padding: 0.9rem 1.1rem;
+	margin-bottom: 1.15rem;
+}
+
+.dlg-sim.high {
+	background: var(--red-light);
+	border: 1px solid #F5C6CB;
+}
+
+.dlg-sim.med {
+	background: var(--amber-light);
+	border: 1px solid #FDE68A;
+}
+
+.dlg-sim.low {
+	background: var(--green-light);
+	border: 1px solid #A7F3C9;
+}
+
+.sim-bubble {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.78rem;
+	font-weight: 700;
+}
+
+.dlg-sim.high .sim-bubble {
+	background: #FDECEA;
+	color: var(--red);
+	border: 2px solid var(--red);
+}
+
+.dlg-sim.med .sim-bubble {
+	background: #FEF3C7;
+	color: var(--amber);
+	border: 2px solid var(--amber);
+}
+
+.dlg-sim.low .sim-bubble {
+	background: var(--green-light);
+	color: var(--green);
+	border: 2px solid var(--green);
+}
+
+.sim-text .sim-head {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--ink);
+}
+
+.sim-text .sim-sub {
+	font-size: 0.73rem;
+	color: #8A94A6;
+	margin-top: 0.12rem;
+}
+
+.dlg-footer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 0.65rem;
+	padding: 1rem 1.8rem;
+	border-top: 1px solid var(--border);
+	background: var(--white);
+	border-radius: 0 0 14px 14px;
+}
+
+.btn-primary, .ui-button.btn-primary {
+	background: var(--navy) !important;
+	color: #fff !important;
+	border: none !important;
+	border-radius: 6px !important;
+	padding: 0.58rem 1.25rem !important;
+	font-size: 0.82rem !important;
+	font-weight: 600 !important;
+	transition: all 0.2s !important;
+	cursor: pointer !important;
+}
+
+.btn-primary:hover, .ui-button.btn-primary:hover {
+	background: var(--navy-mid) !important;
+	transform: translateY(-1px) !important;
+}
+
+.btn-ghost, .ui-button.btn-ghost {
+	background: var(--white) !important;
+	color: var(--ink-mid) !important;
+	border: 1px solid var(--border) !important;
+	border-radius: 6px !important;
+	padding: 0.58rem 1.25rem !important;
+	font-size: 0.82rem !important;
+	font-weight: 600 !important;
+	transition: all 0.15s !important;
+	cursor: pointer !important;
+}
+
+.btn-ghost:hover, .ui-button.btn-ghost:hover {
+	background: var(--surface) !important;
+	border-color: var(--ink-mid) !important;
+}
+
+.ui-button.btn-primary .ui-button-text, .ui-button.btn-ghost .ui-button-text {
+	padding: 0 !important;
+}
+
 .dialog-body {
 	padding: 1.25rem;
 }
@@ -777,10 +985,10 @@
 							<p:column headerText="Actions"
 								style="width:200px; text-align:center;">
 								<div class="action-btns">
-									<p:commandButton value="👁 View" update="@form"
+									<p:commandButton value="View" update="@form"
 										actionListener="#{proposalBean.displayProposalDialog(entry)}"
 										oncomplete="PF('proposalDetailDlg').show()"
-										styleClass="btn-act btn-view" />
+										styleClass="btn-view" />
 
 
 								</div>
