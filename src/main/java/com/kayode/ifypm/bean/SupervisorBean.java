@@ -230,6 +230,19 @@ public class SupervisorBean implements Serializable {
         return APP_BASE_NAME + "/online/proposal/compare.xhtml?faces-redirect=true";
     }
 
+    // ── Chapter preview helpers ───────────────────────────────────────────────
+
+    public boolean isChapterPdf() {
+        return selectedChapter != null
+            && selectedChapter.getFileName() != null
+            && selectedChapter.getFileName().toLowerCase().endsWith(".pdf");
+    }
+
+    public String getChapterFileUrl() {
+        if (selectedChapter == null) return "";
+        return "/chapter-file?id=" + selectedChapter.getId();
+    }
+
     // Getters / setters
     public User getCurrentUser() { return currentUser; }
     public void setCurrentUser(User u) { this.currentUser = u; }

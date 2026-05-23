@@ -229,7 +229,7 @@
                                                  action="#{supervisorBean.viewChapter(ch)}"
                                                  update="chapterDetailPanel"
                                                  oncomplete="PF('chapterDlg').show()"
-                                                 process="@none"
+                                                 process="@this"
                                                  styleClass="btn-view"/>
                             </p:column>
 
@@ -250,82 +250,118 @@
                           modal="true" showEffect="fade" hideEffect="fade"
                           resizable="false" draggable="true" closable="true"
                           header="Chapter Review" styleClass="chap-page"
-                          style="width:min(580px,96vw)">
+                          width="940">
 
                     <p:outputPanel id="chapterDetailPanel" layout="block">
                         <h:panelGroup rendered="#{supervisorBean.selectedChapter != null}">
-                            <div class="dlg-body">
 
-                                <div class="dlg-field">
-                                    <span class="dlg-label">Student</span>
-                                    <div class="dlg-value">#{supervisorBean.selectedChapter.studentName}</div>
-                                </div>
+                            <div style="display:flex;gap:1.25rem;align-items:flex-start;">
 
-                                <div style="display:flex;gap:1rem;">
-                                    <div class="dlg-field" style="flex:0 0 80px;">
-                                        <span class="dlg-label">Chapter</span>
-                                        <div class="dlg-value" style="text-align:center;font-size:1.1rem;font-weight:700;">
-                                            #{supervisorBean.selectedChapter.chapterNumber}
+                                <!-- Left: metadata + actions -->
+                                <div style="width:280px;flex-shrink:0;">
+                                    <div class="dlg-body" style="padding-right:0;">
+
+                                        <div class="dlg-field">
+                                            <span class="dlg-label">Student</span>
+                                            <div class="dlg-value">#{supervisorBean.selectedChapter.studentName}</div>
                                         </div>
+
+                                        <div style="display:flex;gap:0.75rem;">
+                                            <div class="dlg-field" style="flex:0 0 68px;">
+                                                <span class="dlg-label">Ch.</span>
+                                                <div class="dlg-value" style="text-align:center;font-size:1.1rem;font-weight:700;">
+                                                    #{supervisorBean.selectedChapter.chapterNumber}
+                                                </div>
+                                            </div>
+                                            <div class="dlg-field" style="flex:1;">
+                                                <span class="dlg-label">Title</span>
+                                                <div class="dlg-value">#{supervisorBean.selectedChapter.title}</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="dlg-field">
+                                            <span class="dlg-label">File</span>
+                                            <div class="dlg-value" style="font-size:0.8rem;word-break:break-all;">
+                                                &#128196;&#160;#{supervisorBean.selectedChapter.fileName}
+                                            </div>
+                                        </div>
+
+                                        <div class="dlg-field">
+                                            <span class="dlg-label">Status</span>
+                                            <div class="dlg-value">
+                                                <span class="badge badge-#{supervisorBean.selectedChapter.status}">
+                                                    #{supervisorBean.selectedChapter.status}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <h:panelGroup rendered="#{not empty supervisorBean.selectedChapter.supervisorComment}">
+                                            <div class="dlg-field">
+                                                <span class="dlg-label">Previous Comment</span>
+                                                <div class="dlg-value" style="font-size:0.8rem;">
+                                                    #{supervisorBean.selectedChapter.supervisorComment}
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+
+                                        <div class="dlg-field" style="margin-top:0.75rem;">
+                                            <label class="dlg-label">
+                                                Feedback
+                                                <span style="color:var(--red);font-size:0.68rem;">(required if returning)</span>
+                                            </label>
+                                            <p:inputTextarea value="#{supervisorBean.chapterRejectComment}"
+                                                             rows="4" style="width:100%;"/>
+                                        </div>
+
                                     </div>
-                                    <div class="dlg-field" style="flex:1;">
-                                        <span class="dlg-label">Title</span>
-                                        <div class="dlg-value">#{supervisorBean.selectedChapter.title}</div>
+
+                                    <div class="dlg-footer" style="flex-direction:column;align-items:stretch;gap:0.5rem;">
+                                        <p:commandButton value="&#10003; Approve"
+                                                         action="#{supervisorBean.approveChapter}"
+                                                         process="@form"
+                                                         update="chapterList chap_msg chapterDetailPanel"
+                                                         oncomplete="PF('chapterDlg').hide()"
+                                                         rendered="#{supervisorBean.selectedChapter.status == 'SUBMITTED'}"
+                                                         styleClass="btn-approve" style="width:100%;"/>
+                                        <p:commandButton value="&#10007; Return to Student"
+                                                         action="#{supervisorBean.rejectChapter}"
+                                                         process="@form"
+                                                         update="chapterList chap_msg chapterDetailPanel"
+                                                         oncomplete="if(args &amp;&amp; !args.validationFailed) PF('chapterDlg').hide()"
+                                                         rendered="#{supervisorBean.selectedChapter.status == 'SUBMITTED'}"
+                                                         styleClass="btn-reject" style="width:100%;"/>
+                                        <p:commandButton value="Close" type="button"
+                                                         onclick="PF('chapterDlg').hide();"
+                                                         styleClass="btn-ghost" style="width:100%;"/>
                                     </div>
                                 </div>
 
-                                <div class="dlg-field">
-                                    <span class="dlg-label">File</span>
-                                    <div class="dlg-value">
-                                        &#128196;&#160;#{supervisorBean.selectedChapter.fileName}
-                                    </div>
+                                <!-- Right: document preview -->
+                                <div style="flex:1;min-width:0;border-left:1px solid var(--border);padding-left:1.25rem;">
+                                    <span class="dlg-label" style="display:block;margin-bottom:0.6rem;">Document Preview</span>
+
+                                    <!-- PDF iframe viewer -->
+                                    <h:panelGroup rendered="#{supervisorBean.chapterPdf}">
+                                        <iframe src="#{request.contextPath}#{supervisorBean.chapterFileUrl}"
+                                                width="100%" height="520"
+                                                style="border:1px solid var(--border);border-radius:6px;display:block;"/>
+                                    </h:panelGroup>
+
+                                    <!-- Non-PDF notice -->
+                                    <h:panelGroup rendered="#{not supervisorBean.chapterPdf}">
+                                        <div style="background:var(--navy-light);border-radius:8px;
+                                                    padding:2rem 1.5rem;text-align:center;color:var(--navy-mid);">
+                                            <div style="font-size:2.5rem;margin-bottom:0.5rem;">&#128196;</div>
+                                            <div style="font-weight:600;color:var(--navy);margin-bottom:0.25rem;">
+                                                #{supervisorBean.selectedChapter.fileName}
+                                            </div>
+                                            <div style="font-size:0.81rem;">
+                                                In-browser preview is only available for PDF files.
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
                                 </div>
 
-                                <div class="dlg-field">
-                                    <span class="dlg-label">Status</span>
-                                    <div class="dlg-value">
-                                        <span class="badge badge-#{supervisorBean.selectedChapter.status}">
-                                            #{supervisorBean.selectedChapter.status}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <h:panelGroup rendered="#{not empty supervisorBean.selectedChapter.supervisorComment}">
-                                    <div class="dlg-field">
-                                        <span class="dlg-label">Previous Comment</span>
-                                        <div class="dlg-value">#{supervisorBean.selectedChapter.supervisorComment}</div>
-                                    </div>
-                                </h:panelGroup>
-
-                                <div class="dlg-field" style="margin-top:0.75rem;">
-                                    <label class="dlg-label">
-                                        Feedback / Comments
-                                        <span style="color:var(--red);font-size:0.72rem;">(required if rejecting)</span>
-                                    </label>
-                                    <p:inputTextarea value="#{supervisorBean.chapterRejectComment}"
-                                                     rows="3" style="width:100%;"/>
-                                </div>
-
-                            </div>
-
-                            <div class="dlg-footer">
-                                <p:commandButton value="Close" type="button"
-                                                 onclick="PF('chapterDlg').hide();"
-                                                 styleClass="btn-ghost"/>
-                                <p:commandButton value="&#10003; Approve"
-                                                 action="#{supervisorBean.approveChapter}"
-                                                 process="@form"
-                                                 update="chapterList chap_msg chapterDetailPanel"
-                                                 oncomplete="PF('chapterDlg').hide()"
-                                                 rendered="#{supervisorBean.selectedChapter.status == 'SUBMITTED'}"
-                                                 styleClass="btn-approve"/>
-                                <p:commandButton value="&#10007; Return to Student"
-                                                 action="#{supervisorBean.rejectChapter}"
-                                                 process="@form"
-                                                 update="chapterList chap_msg chapterDetailPanel"
-                                                 oncomplete="if(args &amp;&amp; !args.validationFailed) PF('chapterDlg').hide()"
-                                                 rendered="#{supervisorBean.selectedChapter.status == 'SUBMITTED'}"
-                                                 styleClass="btn-reject"/>
                             </div>
                         </h:panelGroup>
                     </p:outputPanel>

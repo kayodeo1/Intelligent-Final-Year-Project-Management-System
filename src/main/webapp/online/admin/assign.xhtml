@@ -96,6 +96,49 @@
             .summary-chip.warn { background:var(--gold-light);color:#7A5A00;border-color:#E8C96A; }
             .summary-chip.ok { background:var(--green-light);color:var(--green);border-color:#A7F3C9; }
 
+            /* Random assign panel */
+            .random-panel {
+                background:var(--white);border:1px solid var(--border);
+                border-radius:var(--radius);padding:1rem 1.4rem;
+                margin-bottom:1.25rem;box-shadow:var(--shadow-sm);
+            }
+            .random-panel-title {
+                font-family:'Playfair Display',serif;font-size:0.88rem;font-weight:700;
+                color:var(--navy);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;
+            }
+            .random-panel-title::before {
+                content:'';display:inline-block;width:3px;height:12px;
+                background:var(--gold);border-radius:2px;
+            }
+            .sv-checkbox-grid {
+                display:flex;flex-wrap:wrap;gap:0.5rem 1.5rem;margin-bottom:0.9rem;
+            }
+            .assign-page .ui-chkbox .ui-chkbox-box {
+                border:2px solid var(--border)!important;border-radius:4px!important;
+            }
+            .assign-page .ui-chkbox .ui-chkbox-box.ui-state-active {
+                background:var(--navy)!important;border-color:var(--navy)!important;
+            }
+            .assign-page .ui-selectmanycheckbox .ui-chkbox-label {
+                font-size:0.84rem!important;color:var(--ink)!important;
+                font-family:'DM Sans',sans-serif!important;
+            }
+            .random-hint { font-size:0.77rem;color:var(--ink-mid);margin-bottom:0.85rem; }
+            .btn-green,.ui-button.btn-green {
+                background:var(--green)!important;color:#fff!important;border:none!important;
+                border-radius:6px!important;padding:0.52rem 1.1rem!important;font-size:0.82rem!important;
+                font-weight:600!important;cursor:pointer!important;font-family:'DM Sans',sans-serif!important;
+            }
+            .btn-green:hover,.ui-button.btn-green:hover { filter:brightness(1.1); }
+            .ui-button.btn-green .ui-button-text { padding:0!important; }
+            .btn-red,.ui-button.btn-red {
+                background:var(--red)!important;color:#fff!important;border:none!important;
+                border-radius:6px!important;padding:0.52rem 1.1rem!important;font-size:0.82rem!important;
+                font-weight:600!important;cursor:pointer!important;font-family:'DM Sans',sans-serif!important;
+            }
+            .btn-red:hover,.ui-button.btn-red:hover { filter:brightness(1.1); }
+            .ui-button.btn-red .ui-button-text { padding:0!important; }
+
             .table-card {
                 background:var(--white);border:1px solid var(--border);
                 border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;
@@ -168,7 +211,7 @@
                     <span class="gold-bar"></span>
                 </div>
 
-                <!-- Controls bar -->
+                <!-- Session selector -->
                 <div class="controls-bar">
                     <div class="ctrl-group">
                         <span class="ctrl-label">Academic Session</span>
@@ -179,26 +222,37 @@
                                            itemLabel="#{sess}" itemValue="#{sess}"/>
                         </p:selectOneMenu>
                     </div>
-
-                    <div class="ctrl-group">
-                        <span class="ctrl-label">Bulk Assign Unassigned To</span>
-                        <p:selectOneMenu value="#{assignmentBean.bulkSupervisorId}" style="min-width:220px">
-                            <f:selectItem itemLabel="— Select Supervisor —" itemValue="#{null}"/>
-                            <f:selectItems value="#{assignmentBean.supervisors}" var="sv"
-                                           itemLabel="#{sv.fullName}" itemValue="#{sv.id}"/>
-                        </p:selectOneMenu>
-                    </div>
-                    <p:commandButton value="Assign All Unassigned"
-                                     action="#{assignmentBean.bulkAssign}"
-                                     update="studentsPanel msgs"
-                                     process="@form"
-                                     styleClass="btn-navy"
-                                     rendered="#{not empty assignmentBean.students}"/>
                 </div>
 
-                <!-- Students panel -->
+                <!-- Students panel — everything that depends on the loaded list lives here -->
                 <p:outputPanel id="studentsPanel" layout="block">
 
+                    <!-- Random assignment panel: shown only when there are unassigned students -->
+                    <h:panelGroup rendered="#{not empty assignmentBean.students and assignmentBean.countUnassigned() > 0}">
+                        <div class="random-panel">
+                            <div class="random-panel-title">&#127922; Random Bulk Assignment</div>
+                            <p class="random-hint">
+                                Tick the supervisors to include, then click <strong>Randomly Distribute</strong>.
+                                The #{assignmentBean.countUnassigned()} unassigned student(s) will be shuffled
+                                and distributed evenly across the selected supervisors.
+                            </p>
+                            <div class="sv-checkbox-grid">
+                                <p:selectManyCheckbox value="#{assignmentBean.selectedSupervisorsForRandom}"
+                                                      layout="grid" columns="3">
+                                    <f:selectItems value="#{assignmentBean.supervisors}" var="sv"
+                                                   itemLabel="#{sv.fullName} (#{not empty sv.department ? sv.department : 'No dept.'})"
+                                                   itemValue="#{sv.id}"/>
+                                </p:selectManyCheckbox>
+                            </div>
+                            <p:commandButton value="&#127922; Randomly Distribute #{assignmentBean.countUnassigned()} Student(s)"
+                                             action="#{assignmentBean.randomAssign}"
+                                             process="@form"
+                                             update="studentsPanel msgs"
+                                             styleClass="btn-green"/>
+                        </div>
+                    </h:panelGroup>
+
+                    <!-- Summary bar -->
                     <h:panelGroup rendered="#{not empty assignmentBean.students}">
                         <div class="summary-bar">
                             <span class="summary-chip">#{assignmentBean.students.size()} students</span>
@@ -218,8 +272,15 @@
                             <span class="table-card-title">
                                 Students
                                 <h:outputText rendered="#{not empty assignmentBean.students}"
-                                              value=" (#{assignmentBean.selectedSession != null and not empty assignmentBean.selectedSession ? assignmentBean.selectedSession : 'All Sessions'})"/>
+                                              value=" (#{not empty assignmentBean.selectedSession ? assignmentBean.selectedSession : 'All Sessions'})"/>
                             </span>
+                            <!-- Deassign all button: only when at least one student is assigned -->
+                            <h:panelGroup rendered="#{not empty assignmentBean.students and assignmentBean.countAssigned() > 0}">
+                                <p:commandButton value="&#10006; Deassign All (#{assignmentBean.countAssigned()})"
+                                                 type="button"
+                                                 styleClass="btn-outline-navy btn-sm"
+                                                 onclick="PF('deassignConfirmDlg').show()"/>
+                            </h:panelGroup>
                         </div>
 
                         <h:panelGroup rendered="#{not empty assignmentBean.students}">
@@ -262,7 +323,7 @@
                                 <p:column headerText="Assign Supervisor" style="width:220px;">
                                     <p:selectOneMenu value="#{assignmentBean.selectedSupervisorIds[s.id]}"
                                                      style="width:100%">
-                                        <f:selectItem itemLabel="— Unassigned —" itemValue="#{null}"/>
+                                        <f:selectItem itemLabel="— Unassigned —" itemValue=""/>
                                         <f:selectItems value="#{assignmentBean.supervisors}" var="sv"
                                                        itemLabel="#{sv.fullName}" itemValue="#{sv.id}"/>
                                     </p:selectOneMenu>
@@ -290,6 +351,25 @@
 
                     </div>
                 </p:outputPanel>
+
+                <!-- Deassign-all confirmation dialog -->
+                <p:confirmDialog id="deassignConfirmDlg"
+                                 widgetVar="deassignConfirmDlg"
+                                 header="Deassign All Supervisors"
+                                 message="Are you sure? This will remove the supervisor from every assigned student in the current view. This cannot be undone."
+                                 severity="alert"
+                                 closable="true">
+                    <p:commandButton value="Yes, Deassign All"
+                                     action="#{assignmentBean.deassignAll}"
+                                     process="@form"
+                                     update="studentsPanel msgs"
+                                     styleClass="btn-red"
+                                     onclick="PF('deassignConfirmDlg').hide()"/>
+                    <p:commandButton value="Cancel"
+                                     type="button"
+                                     styleClass="btn-outline-navy"
+                                     onclick="PF('deassignConfirmDlg').hide()"/>
+                </p:confirmDialog>
 
             </h:form>
         </div>

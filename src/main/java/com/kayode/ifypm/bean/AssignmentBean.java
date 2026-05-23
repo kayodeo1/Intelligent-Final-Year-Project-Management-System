@@ -2,9 +2,11 @@ package com.kayode.ifypm.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.omnifaces.util.Messages;
 import org.slf4j.Logger;
@@ -34,11 +36,13 @@ public class AssignmentBean implements Serializable {
     private List<String> sessions = new ArrayList<>();
     private String selectedSession;
 
-    // studentId → supervisorId (null = unassigned)
-    private Map<Long, Long> selectedSupervisorIds = new HashMap<>();
+    // studentId → supervisorId as String (null or "" = unassigned)
+    // String avoids JSF type-erasure: Map<Long,Long> loses generics at runtime and
+    // JSF puts submitted String values in, causing ClassCastException on read-back.
+    private Map<Long, String> selectedSupervisorIds = new HashMap<>();
 
-    // for bulk assign
-    private Long bulkSupervisorId;
+    // for random bulk assign
+    private List<Long> selectedSupervisorsForRandom = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -55,13 +59,14 @@ public class AssignmentBean implements Serializable {
         selectedSupervisorIds.clear();
         for (User s : students) {
             selectedSupervisorIds.put(s.getId(),
-                s.getSupervisor() != null ? s.getSupervisor().getId() : null);
+                s.getSupervisor() != null ? String.valueOf(s.getSupervisor().getId()) : null);
         }
     }
 
     public void saveAssignment(Long studentId) {
         try {
-            Long svId = selectedSupervisorIds.get(studentId);
+            String svIdStr = selectedSupervisorIds.get(studentId);
+            Long svId = (svIdStr == null || svIdStr.isBlank()) ? null : Long.parseLong(svIdStr);
             User student = findStudentById(studentId);
             if (student == null) {
                 Messages.addGlobalError("Student not found.");
@@ -88,31 +93,71 @@ public class AssignmentBean implements Serializable {
         }
     }
 
-    public void bulkAssign() {
-        if (bulkSupervisorId == null) {
-            Messages.addGlobalError("Please select a supervisor for bulk assignment.");
+    public void randomAssign() {
+        if (selectedSupervisorsForRandom == null || selectedSupervisorsForRandom.isEmpty()) {
+            Messages.addGlobalError("Please select at least one supervisor.");
             return;
         }
-        User supervisor = findSupervisorById(bulkSupervisorId);
-        if (supervisor == null) {
-            Messages.addGlobalError("Selected supervisor not found.");
+        // Use selectedSupervisorIds map (populated during loadStudents) — avoids lazy-load issues
+        List<User> unassigned = students.stream()
+            .filter(s -> { String v = selectedSupervisorIds.get(s.getId()); return v == null || v.isBlank(); })
+            .collect(java.util.stream.Collectors.toList());
+        if (unassigned.isEmpty()) {
+            Messages.addGlobalInfo("All students in this session are already assigned.");
+            return;
+        }
+        List<User> targets = supervisors.stream()
+            .filter(sv -> selectedSupervisorsForRandom.contains(sv.getId()))
+            .collect(java.util.stream.Collectors.toList());
+        if (targets.isEmpty()) {
+            Messages.addGlobalError("None of the selected supervisors were found.");
+            return;
+        }
+        Random rng = new Random();
+        Collections.shuffle(unassigned, rng);   // randomise student order
+        Collections.shuffle(targets, rng);       // randomise which supervisor is "first"
+        int svCount = targets.size();
+        try {
+            for (int i = 0; i < unassigned.size(); i++) {
+                User student = unassigned.get(i);
+                User supervisor = targets.get(i % svCount);
+                student.setSupervisor(supervisor);
+                userService.update(student);
+            }
+            Messages.addGlobalInfo(unassigned.size() + " student(s) randomly distributed across "
+                + svCount + " supervisor(s).");
+            selectedSupervisorsForRandom.clear();
+            loadStudents();
+        } catch (Exception e) {
+            LOG.error("Random assign error", e);
+            Messages.addGlobalError("Random assignment failed: " + e.getMessage());
+        }
+    }
+
+    public void deassignAll() {
+        if (students.isEmpty()) {
+            Messages.addGlobalError("No students loaded. Select a session first.");
             return;
         }
         int count = 0;
         try {
             for (User s : students) {
-                if (s.getSupervisor() == null) {
-                    s.setSupervisor(supervisor);
+                String v = selectedSupervisorIds.get(s.getId());
+                if (v != null && !v.isBlank()) {
+                    s.setSupervisor(null);
                     userService.update(s);
-                    selectedSupervisorIds.put(s.getId(), bulkSupervisorId);
                     count++;
                 }
             }
-            Messages.addGlobalInfo(count + " unassigned student(s) assigned to " + supervisor.getFullName() + ".");
+            if (count == 0) {
+                Messages.addGlobalInfo("No students were assigned — nothing to deassign.");
+            } else {
+                Messages.addGlobalInfo(count + " student(s) deassigned from their supervisors.");
+            }
             loadStudents();
         } catch (Exception e) {
-            LOG.error("Error bulk assigning", e);
-            Messages.addGlobalError("Bulk assignment failed: " + e.getMessage());
+            LOG.error("deassignAll error", e);
+            Messages.addGlobalError("Failed to deassign students: " + e.getMessage());
         }
     }
 
@@ -125,11 +170,20 @@ public class AssignmentBean implements Serializable {
     }
 
     public boolean isUnassigned(User s) {
-        return s.getSupervisor() == null;
+        String v = selectedSupervisorIds.get(s.getId());
+        return v == null || v.isBlank();
     }
 
     public long countUnassigned() {
-        return students.stream().filter(s -> s.getSupervisor() == null).count();
+        return students.stream()
+            .filter(s -> { String v = selectedSupervisorIds.get(s.getId()); return v == null || v.isBlank(); })
+            .count();
+    }
+
+    public long countAssigned() {
+        return students.stream()
+            .filter(s -> { String v = selectedSupervisorIds.get(s.getId()); return v != null && !v.isBlank(); })
+            .count();
     }
 
     // Getters / setters
@@ -138,8 +192,8 @@ public class AssignmentBean implements Serializable {
     public List<String> getSessions() { return sessions; }
     public String getSelectedSession() { return selectedSession; }
     public void setSelectedSession(String s) { this.selectedSession = s; }
-    public Map<Long, Long> getSelectedSupervisorIds() { return selectedSupervisorIds; }
-    public void setSelectedSupervisorIds(Map<Long, Long> m) { this.selectedSupervisorIds = m; }
-    public Long getBulkSupervisorId() { return bulkSupervisorId; }
-    public void setBulkSupervisorId(Long id) { this.bulkSupervisorId = id; }
+    public Map<Long, String> getSelectedSupervisorIds() { return selectedSupervisorIds; }
+    public void setSelectedSupervisorIds(Map<Long, String> m) { this.selectedSupervisorIds = m; }
+    public List<Long> getSelectedSupervisorsForRandom() { return selectedSupervisorsForRandom; }
+    public void setSelectedSupervisorsForRandom(List<Long> ids) { this.selectedSupervisorsForRandom = ids; }
 }

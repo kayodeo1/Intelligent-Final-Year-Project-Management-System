@@ -41,7 +41,6 @@ public class Constants {
 		APP_BASE_NAME = rs.getString("app.base.name");
 		EMBEDDING_MODEL_NAME = rs.getString("app.ai.embeddingmodel.name");
 		EMBEDDING_MODEL_URL = rs.getString("app.ai.embeddingmodel.url");
-
-
+		UPLOAD_PATH_DIR = rs.getString("upload.dir");
 	}
 }
