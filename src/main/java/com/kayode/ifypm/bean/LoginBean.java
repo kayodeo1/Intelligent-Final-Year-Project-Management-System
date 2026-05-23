@@ -81,6 +81,10 @@ public class LoginBean implements Serializable {
 	public boolean isSupervisor() {
 		return subject.hasRole("SUPERVISOR");
 	}
+
+	public boolean isAdmin() {
+		return subject.hasRole("ADMIN");
+	}
 	private String username;
 	private String password;
 

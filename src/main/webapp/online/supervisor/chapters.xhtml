@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <f:metadata>
+        <f:viewAction action="#{supervisorBean.loadChapters}"/>
+    </f:metadata>
+    <h:outputStylesheet library="primefaces" name="theme.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap"/>
+</h:head>
+<h:body>
+<ui:composition template="/online/template/dashboard.xhtml">
+
+    <ui:define name="student_name">
+        <div class="welcome-banner">
+            <h1>Chapter Submissions</h1>
+            <p>Review and approve chapter submissions from your students</p>
+        </div>
+    </ui:define>
+
+    <ui:define name="dashboard_body">
+        <style>
+            :root {
+                --navy:#1B3A6B;--navy-mid:#2E5399;--navy-light:#D6E4F7;
+                --gold:#C9A84C;--gold-light:#FDF3D7;
+                --green:#2E7D52;--green-light:#D1FAE5;
+                --red:#C0392B;--red-light:#FDECEA;
+                --amber:#B45309;--amber-light:#FEF3C7;
+                --ink:#1A202C;--ink-mid:#4A5568;
+                --border:#E5E9F0;--surface:#F7F8FC;--white:#FFFFFF;
+                --radius:8px;--shadow-sm:0 1px 4px rgba(10,22,40,.07);
+            }
+            .chap-page { font-family:'DM Sans',sans-serif; }
+            .page-header { margin-bottom:1.5rem; }
+            .page-header h2 {
+                font-family:'Playfair Display',serif;
+                font-size:1.5rem;font-weight:700;color:var(--navy);margin:0 0 0.2rem;
+            }
+            .page-header p { font-size:0.83rem;color:var(--ink-mid);margin:0; }
+            .gold-bar { display:block;width:36px;height:3px;background:var(--gold);border-radius:2px;margin-top:0.5rem; }
+
+            .table-card {
+                background:var(--white);border:1px solid var(--border);
+                border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;
+            }
+            .table-card-header {
+                display:flex;align-items:center;justify-content:space-between;
+                padding:0.9rem 1.4rem;border-bottom:1px solid var(--border);
+            }
+            .table-card-title {
+                font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--navy);
+                display:flex;align-items:center;gap:0.5rem;
+            }
+            .table-card-title::before {
+                content:'';display:inline-block;width:3px;height:14px;
+                background:var(--gold);border-radius:2px;
+            }
+
+            .chap-page .ui-datatable thead tr th {
+                background:var(--navy)!important;color:#fff!important;
+                font-size:0.71rem!important;font-weight:600!important;
+                text-transform:uppercase!important;letter-spacing:0.4px!important;
+                padding:0.7rem 1rem!important;border:none!important;
+                font-family:'DM Sans',sans-serif!important;
+            }
+            .chap-page .ui-datatable tbody tr { border-bottom:1px solid var(--border); }
+            .chap-page .ui-datatable tbody tr:hover { background:var(--surface)!important; }
+            .chap-page .ui-datatable tbody tr.ui-state-highlight { background:var(--navy-light)!important; }
+            .chap-page .ui-datatable tbody td {
+                padding:0.65rem 1rem!important;font-size:0.84rem!important;
+                color:var(--ink-mid);border:none!important;vertical-align:middle!important;
+            }
+            .chap-page .ui-paginator {
+                background:var(--surface)!important;border-top:1px solid var(--border)!important;
+                padding:0.6rem 1rem!important;font-size:0.77rem;
+            }
+
+            .badge {
+                display:inline-flex;align-items:center;gap:0.3rem;
+                padding:0.2rem 0.65rem;border-radius:20px;
+                font-size:0.72rem;font-weight:600;white-space:nowrap;
+            }
+            .badge::before { content:'';width:5px;height:5px;border-radius:50%; }
+            .badge-SUBMITTED { background:var(--navy-light);color:var(--navy); }
+            .badge-SUBMITTED::before { background:var(--navy); }
+            .badge-APPROVED { background:var(--green-light);color:var(--green); }
+            .badge-APPROVED::before { background:var(--green); }
+            .badge-REJECTED { background:var(--red-light);color:var(--red); }
+            .badge-REJECTED::before { background:var(--red); }
+
+            .chap-num {
+                width:30px;height:30px;border-radius:50%;
+                background:var(--navy-light);color:var(--navy);
+                font-size:0.78rem;font-weight:700;
+                display:inline-flex;align-items:center;justify-content:center;
+            }
+
+            .empty-state { text-align:center;padding:3rem 2rem;color:var(--ink-mid); }
+            .empty-state-icon { font-size:2.2rem;margin-bottom:0.6rem; }
+            .empty-state h3 { font-family:'Playfair Display',serif;font-size:1rem;color:var(--navy);margin:0 0 0.3rem; }
+            .empty-state p { font-size:0.83rem;margin:0; }
+
+            /* Dialog styles */
+            .chap-page .ui-dialog .ui-dialog-titlebar {
+                background:var(--navy)!important;border-bottom:2px solid var(--gold)!important;
+                padding:0.85rem 1.25rem!important;
+            }
+            .chap-page .ui-dialog .ui-dialog-title {
+                font-family:'Playfair Display',serif!important;font-size:1rem!important;
+                color:#fff!important;font-weight:600!important;
+            }
+            .chap-page .ui-dialog .ui-dialog-titlebar-close { color:rgba(255,255,255,0.7)!important; }
+            .dlg-body { padding:1.25rem 1.5rem 0.5rem; }
+            .dlg-field { margin-bottom:1rem; }
+            .dlg-label {
+                display:block;font-size:0.68rem;font-weight:600;color:#8A94A6;
+                text-transform:uppercase;letter-spacing:0.55px;margin-bottom:0.35rem;
+            }
+            .dlg-value {
+                background:var(--surface);border:1px solid var(--border);border-radius:6px;
+                padding:0.65rem 1rem;font-size:0.875rem;color:var(--ink);line-height:1.5;
+            }
+            .dlg-footer {
+                display:flex;align-items:center;justify-content:flex-end;gap:0.65rem;
+                padding:0.9rem 1.5rem;border-top:1px solid var(--border);background:var(--white);
+            }
+            .btn-view,.ui-button.btn-view {
+                background:var(--white)!important;color:var(--ink-mid)!important;
+                border:1px solid var(--border)!important;border-radius:6px!important;
+                padding:0.3rem 0.75rem!important;font-size:0.78rem!important;font-weight:600!important;
+                cursor:pointer!important;
+            }
+            .btn-view:hover,.ui-button.btn-view:hover { background:var(--surface)!important;border-color:var(--ink-mid)!important; }
+            .ui-button.btn-view .ui-button-text { padding:0!important; }
+            .btn-ghost,.ui-button.btn-ghost {
+                background:var(--white)!important;color:var(--ink-mid)!important;
+                border:1px solid var(--border)!important;border-radius:6px!important;
+                padding:0.52rem 1.1rem!important;font-size:0.82rem!important;font-weight:600!important;
+            }
+            .btn-approve,.ui-button.btn-approve {
+                background:var(--navy)!important;color:#fff!important;border:none!important;
+                border-radius:6px!important;padding:0.52rem 1.1rem!important;
+                font-size:0.82rem!important;font-weight:600!important;
+            }
+            .btn-approve:hover,.ui-button.btn-approve:hover { background:var(--navy-mid)!important; }
+            .btn-reject,.ui-button.btn-reject {
+                background:var(--red)!important;color:#fff!important;border:none!important;
+                border-radius:6px!important;padding:0.52rem 1.1rem!important;
+                font-size:0.82rem!important;font-weight:600!important;
+            }
+            .btn-reject:hover,.ui-button.btn-reject:hover { background:#a93226!important; }
+            .ui-button.btn-ghost .ui-button-text,
+            .ui-button.btn-approve .ui-button-text,
+            .ui-button.btn-reject .ui-button-text { padding:0!important; }
+            .chap-page .ui-dialog .ui-inputtextarea {
+                width:100%!important;min-height:90px;
+                padding:0.6rem 0.85rem!important;border:1.5px solid var(--border)!important;
+                border-radius:4px!important;font-size:0.875rem!important;
+                color:var(--ink)!important;font-family:'DM Sans',sans-serif!important;
+                resize:vertical;box-sizing:border-box;
+            }
+        </style>
+
+        <div class="chap-page">
+            <div class="page-header">
+                <h2>&#128209; Chapter Submissions</h2>
+                <p>Review chapter documents submitted by your students.</p>
+                <span class="gold-bar"></span>
+            </div>
+
+            <h:form id="chapForm" prependId="false">
+                <p:messages id="chap_msg" globalOnly="true" autoUpdate="false" closable="true"/>
+
+                <div class="table-card">
+                    <div class="table-card-header">
+                        <span class="table-card-title">All Chapter Submissions</span>
+                    </div>
+
+                    <h:panelGroup rendered="#{not empty supervisorBean.chapters}">
+                        <p:dataTable id="chapterList" var="ch"
+                                     value="#{supervisorBean.chapters}"
+                                     paginator="true" rows="12"
+                                     paginatorPosition="bottom"
+                                     currentPageReportTemplate="Showing {startRecord}–{endRecord} of {totalRecords}"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     tableStyle="width:100%" emptyMessage=" " sortMode="single">
+
+                            <p:column headerText="#" style="width:40px;text-align:center;">
+                                <h:outputText value="#{chapterList.rowIndex + 1}"
+                                              style="color:#9AA3B2;font-size:0.77rem;"/>
+                            </p:column>
+
+                            <p:column headerText="Student" sortBy="#{ch.studentName}">
+                                <h:outputText value="#{ch.studentName}"
+                                              style="font-weight:600;color:var(--ink);"/>
+                            </p:column>
+
+                            <p:column headerText="Ch." style="width:55px;text-align:center;" sortBy="#{ch.chapterNumber}">
+                                <span class="chap-num">#{ch.chapterNumber}</span>
+                            </p:column>
+
+                            <p:column headerText="Title" sortBy="#{ch.title}">
+                                <h:outputText value="#{ch.title}"/>
+                            </p:column>
+
+                            <p:column headerText="File" style="width:160px;">
+                                <h:outputText value="#{ch.fileName}"
+                                              style="font-size:0.78rem;color:var(--ink-mid);"/>
+                            </p:column>
+
+                            <p:column headerText="Status" style="width:120px;">
+                                <span class="badge badge-#{ch.status}">#{ch.status}</span>
+                            </p:column>
+
+                            <p:column headerText="Submitted" style="width:115px;" sortBy="#{ch.createdDate}">
+                                <h:outputText value="#{ch.createdDate}">
+                                    <f:convertDateTime pattern="dd MMM yyyy"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column style="width:90px;text-align:center;">
+                                <p:commandButton value="Review"
+                                                 action="#{supervisorBean.viewChapter(ch)}"
+                                                 update="chapterDetailPanel"
+                                                 oncomplete="PF('chapterDlg').show()"
+                                                 process="@none"
+                                                 styleClass="btn-view"/>
+                            </p:column>
+
+                        </p:dataTable>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{empty supervisorBean.chapters}">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">&#128209;</div>
+                            <h3>No submissions yet</h3>
+                            <p>Chapter submissions from your students will appear here.</p>
+                        </div>
+                    </h:panelGroup>
+                </div>
+
+                <!-- Chapter Detail Dialog -->
+                <p:dialog widgetVar="chapterDlg" id="chapterDlg"
+                          modal="true" showEffect="fade" hideEffect="fade"
+                          resizable="false" draggable="true" closable="true"
+                          header="Chapter Review" styleClass="chap-page"
+                          style="width:min(580px,96vw)">
+
+                    <p:outputPanel id="chapterDetailPanel" layout="block">
+                        <h:panelGroup rendered="#{supervisorBean.selectedChapter != null}">
+                            <div class="dlg-body">
+
+                                <div class="dlg-field">
+                                    <span class="dlg-label">Student</span>
+                                    <div class="dlg-value">#{supervisorBean.selectedChapter.studentName}</div>
+                                </div>
+
+                                <div style="display:flex;gap:1rem;">
+                                    <div class="dlg-field" style="flex:0 0 80px;">
+                                        <span class="dlg-label">Chapter</span>
+                                        <div class="dlg-value" style="text-align:center;font-size:1.1rem;font-weight:700;">
+                                            #{supervisorBean.selectedChapter.chapterNumber}
+                                        </div>
+                                    </div>
+                                    <div class="dlg-field" style="flex:1;">
+                                        <span class="dlg-label">Title</span>
+                                        <div class="dlg-value">#{supervisorBean.selectedChapter.title}</div>
+                                    </div>
+                                </div>
+
+                                <div class="dlg-field">
+                                    <span class="dlg-label">File</span>
+                                    <div class="dlg-value">
+                                        &#128196;&#160;#{supervisorBean.selectedChapter.fileName}
+                                    </div>
+                                </div>
+
+                                <div class="dlg-field">
+                                    <span class="dlg-label">Status</span>
+                                    <div class="dlg-value">
+                                        <span class="badge badge-#{supervisorBean.selectedChapter.status}">
+                                            #{supervisorBean.selectedChapter.status}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <h:panelGroup rendered="#{not empty supervisorBean.selectedChapter.supervisorComment}">
+                                    <div class="dlg-field">
+                                        <span class="dlg-label">Previous Comment</span>
+                                        <div class="dlg-value">#{supervisorBean.selectedChapter.supervisorComment}</div>
+                                    </div>
+                                </h:panelGroup>
+
+                                <div class="dlg-field" style="margin-top:0.75rem;">
+                                    <label class="dlg-label">
+                                        Feedback / Comments
+                                        <span style="color:var(--red);font-size:0.72rem;">(required if rejecting)</span>
+                                    </label>
+                                    <p:inputTextarea value="#{supervisorBean.chapterRejectComment}"
+                                                     rows="3" style="width:100%;"/>
+                                </div>
+
+                            </div>
+
+                            <div class="dlg-footer">
+                                <p:commandButton value="Close" type="button"
+                                                 onclick="PF('chapterDlg').hide();"
+                                                 styleClass="btn-ghost"/>
+                                <p:commandButton value="&#10003; Approve"
+                                                 action="#{supervisorBean.approveChapter}"
+                                                 process="@form"
+                                                 update="chapterList chap_msg chapterDetailPanel"
+                                                 oncomplete="PF('chapterDlg').hide()"
+                                                 rendered="#{supervisorBean.selectedChapter.status == 'SUBMITTED'}"
+                                                 styleClass="btn-approve"/>
+                                <p:commandButton value="&#10007; Return to Student"
+                                                 action="#{supervisorBean.rejectChapter}"
+                                                 process="@form"
+                                                 update="chapterList chap_msg chapterDetailPanel"
+                                                 oncomplete="if(args &amp;&amp; !args.validationFailed) PF('chapterDlg').hide()"
+                                                 rendered="#{supervisorBean.selectedChapter.status == 'SUBMITTED'}"
+                                                 styleClass="btn-reject"/>
+                            </div>
+                        </h:panelGroup>
+                    </p:outputPanel>
+
+                </p:dialog>
+
+            </h:form>
+        </div>
+
+    </ui:define>
+</ui:composition>
+</h:body>
+</html>

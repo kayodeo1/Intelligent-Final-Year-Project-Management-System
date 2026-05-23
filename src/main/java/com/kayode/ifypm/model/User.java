@@ -41,6 +41,8 @@ public class User extends AbstractEntity {
 	private String username;
 	private String department;
 	private Long projectlId;
+	private String session;        // academic session, e.g. "2023/2024"
+	private String matricNumber;   // e.g. "CSC/2022/045"
 
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -301,7 +303,21 @@ public class User extends AbstractEntity {
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
-	
-	
+
+	public String getSession() {
+		return session;
+	}
+
+	public void setSession(String session) {
+		this.session = session;
+	}
+
+	public String getMatricNumber() {
+		return matricNumber;
+	}
+
+	public void setMatricNumber(String matricNumber) {
+		this.matricNumber = matricNumber;
+	}
 
 }

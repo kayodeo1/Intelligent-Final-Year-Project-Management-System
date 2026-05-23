@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <h:outputStylesheet library="primefaces" name="theme.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap"/>
+</h:head>
+
+<h:body>
+<ui:composition template="/online/template/dashboard.xhtml">
+
+    <ui:define name="student_name">
+        <div class="welcome-banner">
+            <h1>Supervisor Management</h1>
+            <p>Register and manage project supervisors</p>
+        </div>
+    </ui:define>
+
+    <ui:define name="dashboard_body">
+
+        <style>
+            :root {
+                --navy: #1B3A6B; --navy-mid: #2E5399; --navy-light: #D6E4F7;
+                --gold: #C9A84C; --gold-light: #FDF3D7;
+                --green: #2E7D52; --green-light: #D1FAE5;
+                --red: #C0392B; --red-light: #FDECEA;
+                --ink: #1A202C; --ink-mid: #4A5568;
+                --border: #E5E9F0; --surface: #F7F8FC; --white: #FFFFFF;
+                --radius: 8px;
+                --shadow-sm: 0 1px 4px rgba(10,22,40,.07);
+            }
+
+            .mgmt-header {
+                display: flex; align-items: flex-end;
+                justify-content: space-between;
+                margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+            }
+            .mgmt-header-left h2 {
+                font-family: 'Playfair Display', Georgia, serif;
+                font-size: 1.5rem; font-weight: 700;
+                color: var(--navy); margin: 0 0 0.2rem;
+            }
+            .mgmt-header-left p { font-size: 0.83rem; color: var(--ink-mid); margin: 0; }
+            .header-gold-bar {
+                display: block; width: 36px; height: 3px;
+                background: var(--gold); border-radius: 2px; margin-top: 0.5rem;
+            }
+            .mgmt-header-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+            .btn-navy, .ui-button.btn-navy {
+                background: var(--navy) !important; color: #fff !important;
+                border: none !important; border-radius: 6px !important;
+                padding: 0.55rem 1.15rem !important; font-size: 0.82rem !important;
+                font-weight: 600 !important; cursor: pointer !important;
+                font-family: 'DM Sans', sans-serif !important; transition: background 0.2s !important;
+            }
+            .btn-navy:hover, .ui-button.btn-navy:hover { background: var(--navy-mid) !important; }
+            .btn-outline-navy, .ui-button.btn-outline-navy {
+                background: var(--white) !important; color: var(--navy) !important;
+                border: 1.5px solid var(--navy) !important; border-radius: 6px !important;
+                padding: 0.53rem 1.1rem !important; font-size: 0.82rem !important;
+                font-weight: 600 !important; cursor: pointer !important;
+                font-family: 'DM Sans', sans-serif !important; transition: all 0.2s !important;
+            }
+            .btn-outline-navy:hover, .ui-button.btn-outline-navy:hover {
+                background: var(--navy) !important; color: #fff !important;
+            }
+            .btn-ghost, .ui-button.btn-ghost {
+                background: var(--white) !important; color: var(--ink-mid) !important;
+                border: 1px solid var(--border) !important; border-radius: 6px !important;
+                padding: 0.55rem 1.15rem !important; font-size: 0.82rem !important;
+                font-weight: 600 !important; cursor: pointer !important;
+                font-family: 'DM Sans', sans-serif !important;
+            }
+            .btn-ghost:hover, .ui-button.btn-ghost:hover { background: var(--surface) !important; }
+            .ui-button.btn-navy .ui-button-text,
+            .ui-button.btn-outline-navy .ui-button-text,
+            .ui-button.btn-ghost .ui-button-text { padding: 0 !important; }
+
+            /* STAT CHIPS */
+            .sup-stats-row { display: flex; gap: 0.85rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+            .sup-chip {
+                display: flex; align-items: center; gap: 0.75rem;
+                background: var(--white); border: 1px solid var(--border);
+                border-radius: var(--radius); padding: 0.75rem 1.2rem;
+                box-shadow: var(--shadow-sm); min-width: 160px;
+                position: relative; overflow: hidden;
+            }
+            .sup-chip::before {
+                content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+                width: 3px; background: var(--navy);
+            }
+            .sup-chip-icon {
+                width: 38px; height: 38px; border-radius: 8px;
+                background: var(--navy-light); color: var(--navy);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 1rem; flex-shrink: 0;
+            }
+            .sup-chip-text { display: flex; flex-direction: column; }
+            .sup-chip-count {
+                font-family: 'Playfair Display', serif;
+                font-size: 1.4rem; font-weight: 700; color: var(--navy); line-height: 1.1;
+            }
+            .sup-chip-label { font-size: 0.75rem; color: var(--ink-mid); margin-top: 0.05rem; }
+
+            /* TABLE CARD */
+            .table-card {
+                background: var(--white); border: 1px solid var(--border);
+                border-radius: var(--radius); box-shadow: var(--shadow-sm);
+                overflow: hidden; margin-bottom: 1.5rem;
+            }
+            .table-card-header {
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 1rem 1.4rem; border-bottom: 1px solid var(--border);
+            }
+            .table-card-title {
+                font-family: 'Playfair Display', serif;
+                font-size: 1rem; font-weight: 700; color: var(--navy);
+                display: flex; align-items: center; gap: 0.5rem;
+            }
+            .table-card-title::before {
+                content: ''; display: inline-block; width: 3px; height: 16px;
+                background: var(--gold); border-radius: 2px;
+            }
+            .tbl-count-pill {
+                background: var(--gold-light); color: var(--gold);
+                font-size: 0.73rem; font-weight: 700;
+                padding: 0.18rem 0.6rem; border-radius: 20px; margin-left: 0.5rem;
+            }
+
+            /* PF DATATABLE OVERRIDES */
+            .supervisors-page .ui-datatable .ui-datatable-header { display: none; }
+            .supervisors-page .ui-datatable thead tr th {
+                background: var(--navy) !important; color: #fff !important;
+                font-size: 0.73rem !important; font-weight: 600 !important;
+                text-transform: uppercase !important; letter-spacing: 0.4px !important;
+                padding: 0.8rem 1rem !important; border: none !important;
+                font-family: 'DM Sans', sans-serif !important; white-space: nowrap;
+            }
+            .supervisors-page .ui-datatable tbody tr {
+                border-bottom: 1px solid var(--border);
+                transition: background 0.14s; cursor: pointer;
+            }
+            .supervisors-page .ui-datatable tbody tr:hover,
+            .supervisors-page .ui-datatable tbody tr.ui-state-hover { background: var(--surface) !important; }
+            .supervisors-page .ui-datatable tbody tr.ui-state-highlight {
+                background: var(--gold-light) !important;
+            }
+            .supervisors-page .ui-datatable tbody td {
+                padding: 0.85rem 1rem !important; font-size: 0.86rem !important;
+                color: var(--ink-mid); border: none !important; vertical-align: middle !important;
+            }
+            .supervisors-page .ui-paginator {
+                background: var(--surface) !important;
+                border-top: 1px solid var(--border) !important; border-bottom: none !important;
+                padding: 0.65rem 1rem !important; font-size: 0.78rem;
+            }
+            .supervisors-page .ui-paginator .ui-paginator-page,
+            .supervisors-page .ui-paginator .ui-paginator-first,
+            .supervisors-page .ui-paginator .ui-paginator-prev,
+            .supervisors-page .ui-paginator .ui-paginator-next,
+            .supervisors-page .ui-paginator .ui-paginator-last {
+                background: var(--white) !important; border: 1px solid var(--border) !important;
+                color: var(--navy) !important; border-radius: 4px !important;
+                margin: 0 2px !important; min-width: 28px; height: 28px;
+                font-size: 0.78rem !important; font-weight: 600;
+            }
+            .supervisors-page .ui-paginator .ui-state-active {
+                background: var(--navy) !important; color: #fff !important; border-color: var(--navy) !important;
+            }
+            .supervisors-page .ui-paginator .ui-paginator-current {
+                color: var(--ink-mid) !important; font-size: 0.78rem !important; padding: 0 0.5rem;
+            }
+
+            /* CELL COMPONENTS */
+            .user-cell { display: flex; align-items: center; gap: 0.65rem; }
+            .user-avatar {
+                width: 36px; height: 36px; border-radius: 50%;
+                background: var(--gold-light); color: var(--gold);
+                font-size: 0.72rem; font-weight: 700;
+                display: flex; align-items: center; justify-content: center;
+                flex-shrink: 0; border: 1.5px solid #F0D890; text-transform: uppercase;
+            }
+            .user-avatar.navy { background: var(--navy-light); color: var(--navy); border-color: var(--border); }
+            .user-avatar.lg { width: 52px; height: 52px; font-size: 1rem; }
+            .user-name { font-weight: 600; color: var(--ink); font-size: 0.875rem; }
+            .user-sub  { font-size: 0.72rem; color: var(--ink-mid); margin-top: 1px; }
+            .students-count {
+                display: inline-flex; align-items: center; justify-content: center;
+                width: 28px; height: 28px; border-radius: 50%;
+                background: var(--navy-light); color: var(--navy);
+                font-size: 0.78rem; font-weight: 700;
+            }
+            .status-badge {
+                display: inline-flex; align-items: center; gap: 0.3rem;
+                padding: 0.2rem 0.6rem; border-radius: 20px;
+                font-size: 0.72rem; font-weight: 600;
+            }
+            .status-badge.enabled  { background: var(--green-light); color: var(--green); }
+            .status-badge.disabled { background: var(--red-light);   color: var(--red); }
+            .status-badge.default  { background: var(--border);       color: var(--ink-mid); }
+
+            /* DIALOGS */
+            .supervisors-page .ui-dialog .ui-dialog-titlebar {
+                background: var(--navy) !important;
+                border-bottom: 2px solid var(--gold) !important;
+                padding: 0.9rem 1.3rem !important;
+            }
+            .supervisors-page .ui-dialog .ui-dialog-titlebar .ui-dialog-title {
+                font-family: 'Playfair Display', serif !important;
+                font-size: 1rem !important; color: #fff !important; font-weight: 700 !important;
+            }
+            .supervisors-page .ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close {
+                color: rgba(255,255,255,0.7) !important;
+            }
+            .supervisors-page .ui-dialog .ui-dialog-content {
+                padding: 1.4rem 1.6rem !important; background: var(--surface) !important;
+            }
+
+            /* FORM */
+            .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.25rem; }
+            .form-grid .full { grid-column: 1 / -1; }
+            .field { display: flex; flex-direction: column; gap: 0.3rem; }
+            .field label {
+                font-size: 0.75rem; font-weight: 600; color: var(--ink-mid);
+                text-transform: uppercase; letter-spacing: 0.3px;
+            }
+            .field label .req { color: var(--red); margin-left: 2px; }
+            .supervisors-page .ui-dialog .ui-inputtext {
+                width: 100% !important; padding: 0.6rem 0.85rem !important;
+                border: 1.5px solid var(--border) !important; border-radius: 5px !important;
+                font-size: 0.875rem !important; color: var(--ink) !important;
+                font-family: 'DM Sans', sans-serif !important;
+                background: var(--white) !important; box-sizing: border-box;
+                transition: border-color 0.2s !important;
+            }
+            .supervisors-page .ui-dialog .ui-inputtext:focus {
+                outline: none !important; border-color: var(--navy) !important;
+                box-shadow: 0 0 0 3px rgba(27,58,107,.09) !important;
+            }
+            .dlg-footer {
+                display: flex; justify-content: flex-end; gap: 0.6rem;
+                padding-top: 1.1rem; border-top: 1px solid var(--border); margin-top: 0.5rem;
+            }
+
+            /* UPLOAD ZONE */
+            .upload-hint {
+                background: var(--white); border: 1.5px dashed var(--border);
+                border-radius: 6px; padding: 1.1rem 1.25rem;
+                margin-bottom: 1rem; font-size: 0.83rem; color: var(--ink-mid); line-height: 1.7;
+            }
+            .upload-hint code {
+                display: block; margin-top: 0.5rem; font-size: 0.78rem;
+                color: var(--navy); background: var(--navy-light);
+                padding: 0.35rem 0.65rem; border-radius: 4px; font-family: monospace;
+            }
+            .supervisors-page .ui-fileupload-buttonbar { background: transparent !important; border: none !important; padding: 0 !important; }
+            .supervisors-page .ui-fileupload-content { border: none !important; background: transparent !important; padding: 0 !important; }
+            .supervisors-page .ui-fileupload .ui-button {
+                background: var(--navy) !important; color: #fff !important;
+                border: none !important; border-radius: 5px !important;
+                font-size: 0.82rem !important; font-weight: 600 !important;
+                font-family: 'DM Sans', sans-serif !important;
+            }
+            .supervisors-page .ui-fileupload .ui-button:hover { background: var(--navy-mid) !important; }
+            .supervisors-page .ui-fileupload-files { display: none; }
+
+            /* EMPTY STATE */
+            .empty-state { text-align: center; padding: 3.5rem 2rem; color: var(--ink-mid); }
+            .empty-state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+            .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--navy); margin: 0 0 0.35rem; }
+            .empty-state p { font-size: 0.85rem; margin: 0; }
+
+            /* DETAIL DIALOG STYLES */
+            .detail-profile-card {
+                display: flex; align-items: center; gap: 1rem;
+                background: var(--white); border: 1px solid var(--border);
+                border-radius: var(--radius); padding: 1rem 1.2rem;
+                margin-bottom: 1.2rem; box-shadow: var(--shadow-sm);
+            }
+            .detail-profile-info .detail-name {
+                font-family: 'Playfair Display', serif;
+                font-size: 1.1rem; font-weight: 700; color: var(--navy);
+                margin: 0 0 0.15rem;
+            }
+            .detail-profile-info .detail-meta {
+                font-size: 0.8rem; color: var(--ink-mid); margin: 0;
+            }
+            .detail-info-grid {
+                display: grid; grid-template-columns: 1fr 1fr;
+                gap: 0.6rem 1.2rem; margin-top: 0.75rem;
+            }
+            .detail-info-item { display: flex; flex-direction: column; gap: 0.15rem; }
+            .detail-info-label {
+                font-size: 0.68rem; font-weight: 700; color: var(--ink-mid);
+                text-transform: uppercase; letter-spacing: 0.4px;
+            }
+            .detail-info-value { font-size: 0.84rem; color: var(--ink); font-weight: 500; }
+
+            .section-header {
+                display: flex; align-items: center; gap: 0.5rem;
+                font-family: 'Playfair Display', serif;
+                font-size: 0.9rem; font-weight: 700; color: var(--navy);
+                margin: 1.2rem 0 0.75rem; padding-bottom: 0.45rem;
+                border-bottom: 1px solid var(--border);
+            }
+            .section-header::before {
+                content: ''; display: inline-block;
+                width: 3px; height: 14px;
+                background: var(--gold); border-radius: 2px;
+            }
+
+            .no-data-note {
+                background: var(--white); border: 1px dashed var(--border);
+                border-radius: var(--radius); padding: 0.85rem 1rem;
+                font-size: 0.83rem; color: var(--ink-mid); text-align: center;
+            }
+
+            /* Inner dialog tables */
+            .supervisors-page .ui-datatable.detail-table thead tr th {
+                background: var(--surface) !important; color: var(--navy) !important;
+                font-size: 0.71rem !important; border-bottom: 1px solid var(--border) !important;
+                padding: 0.55rem 0.8rem !important;
+            }
+            .supervisors-page .ui-datatable.detail-table tbody td {
+                padding: 0.65rem 0.8rem !important; font-size: 0.82rem !important;
+            }
+            .supervisors-page .ui-datatable.detail-table tbody tr { cursor: pointer; }
+
+            /* Proposal status badges */
+            .prop-badge {
+                display: inline-flex; align-items: center;
+                padding: 0.15rem 0.5rem; border-radius: 20px;
+                font-size: 0.7rem; font-weight: 600;
+            }
+            .prop-badge.APPROVED  { background: var(--green-light); color: var(--green); }
+            .prop-badge.REJECTED  { background: var(--red-light); color: var(--red); }
+            .prop-badge.SUBMITTED { background: var(--navy-light); color: var(--navy); }
+            .prop-badge.DRAFT     { background: var(--border); color: var(--ink-mid); }
+
+            /* Project card */
+            .project-card {
+                background: var(--white); border: 1px solid var(--border);
+                border-radius: var(--radius); padding: 0.85rem 1rem;
+                box-shadow: var(--shadow-sm);
+                display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem;
+            }
+
+            @media (max-width: 860px) {
+                .form-grid { grid-template-columns: 1fr; }
+                .sup-stats-row { flex-direction: column; }
+                .mgmt-header { flex-direction: column; align-items: flex-start; }
+                .detail-info-grid { grid-template-columns: 1fr; }
+                .project-card { grid-template-columns: 1fr; }
+            }
+        </style>
+
+        <div class="supervisors-page">
+
+            <!-- ===== MAIN FORM: messages + stat chip + table + detail dialogs ===== -->
+            <h:form id="supervisorsForm" prependId="false">
+                <p:messages id="msgs" autoUpdate="false" closable="true"/>
+
+                <!-- PAGE HEADER -->
+                <div class="mgmt-header">
+                    <div class="mgmt-header-left">
+                        <h2>&#128104;&#8205;&#127979; Supervisor Management</h2>
+                        <p>Register and manage project supervisors</p>
+                        <span class="header-gold-bar"></span>
+                    </div>
+                    <div class="mgmt-header-actions">
+                        <p:commandButton value="&#8679; Upload CSV"
+                                         styleClass="btn-outline-navy"
+                                         onclick="PF('supUploadDlg').show(); return false;"
+                                         type="button"/>
+                        <p:commandButton value="&#43; Add Supervisor"
+                                         styleClass="btn-navy"
+                                         onclick="PF('addSupervisorDlg').show(); return false;"
+                                         type="button"/>
+                    </div>
+                </div>
+
+                <!-- SUPERVISORS PANEL (stat + table, updated together) -->
+                <p:outputPanel id="supervisorsPanel" layout="block">
+
+                    <!-- STAT CHIP -->
+                    <div class="sup-stats-row">
+                        <div class="sup-chip">
+                            <div class="sup-chip-icon">&#128101;</div>
+                            <div class="sup-chip-text">
+                                <span class="sup-chip-count">#{adminSupervisorBean.supervisorCount}</span>
+                                <span class="sup-chip-label">Total Supervisors</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABLE CARD -->
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <span class="table-card-title">
+                                All Supervisors
+                                <span class="tbl-count-pill">#{adminSupervisorBean.supervisorCount}</span>
+                            </span>
+                        </div>
+
+                        <p:dataTable id="supervisorsTable" var="sv"
+                                     value="#{adminSupervisorBean.supervisors}"
+                                     selectionMode="single"
+                                     selection="#{adminSupervisorBean.selectedSupervisor}"
+                                     rowKey="#{sv.id}"
+                                     paginator="true" rows="10"
+                                     paginatorPosition="bottom"
+                                     currentPageReportTemplate="Showing {startRecord}–{endRecord} of {totalRecords}"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="10,20,50"
+                                     tableStyle="width:100%" emptyMessage=" "
+                                     sortMode="single">
+
+                            <p:ajax event="rowSelect"
+                                    listener="#{adminSupervisorBean.onSupervisorSelect}"
+                                    update="supervisorDetailContent"
+                                    oncomplete="PF('supervisorDetailDlg').show()"/>
+
+                            <p:column headerText="#" style="width:46px; text-align:center;">
+                                <h:outputText value="#{supervisorsTable.rowIndex + 1}"
+                                              style="color:#9AA3B2; font-size:0.78rem;"/>
+                            </p:column>
+
+                            <p:column headerText="Name / Email" sortBy="#{sv.lastname}">
+                                <div class="user-cell">
+                                    <div class="user-avatar">
+                                        <h:outputText value="#{not empty sv.firstname ? sv.firstname.substring(0,1) : '?'}"/>
+                                        <h:outputText value="#{not empty sv.lastname  ? sv.lastname.substring(0,1)  : ''}"/>
+                                    </div>
+                                    <div>
+                                        <div class="user-name">#{sv.fullName}</div>
+                                        <div class="user-sub">#{sv.email}</div>
+                                    </div>
+                                </div>
+                            </p:column>
+
+                            <p:column headerText="Username" sortBy="#{sv.username}" style="width:140px;">
+                                <h:outputText value="#{sv.username}" style="font-size:0.82rem;"/>
+                            </p:column>
+
+                            <p:column headerText="Department" sortBy="#{sv.department}" style="width:180px;">
+                                <h:outputText value="#{empty sv.department ? '—' : sv.department}"
+                                              style="font-size:0.82rem;"/>
+                            </p:column>
+
+                            <p:column headerText="Students" style="width:95px; text-align:center;">
+                                <span class="students-count">
+                                    <h:outputText value="#{adminSupervisorBean.getStudentCount(sv.id)}"/>
+                                </span>
+                            </p:column>
+
+                            <p:column headerText="Status" style="width:100px;">
+                                <span class="status-badge #{sv.status != null and sv.status.name() == 'ENABLED' ? 'enabled' : (sv.status != null and sv.status.name() == 'DISABLED' ? 'disabled' : 'default')}">
+                                    <h:outputText value="#{empty sv.status ? 'N/A' : sv.status}"/>
+                                </span>
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <h:panelGroup rendered="#{empty adminSupervisorBean.supervisors}">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">&#128104;&#8205;&#127979;</div>
+                                <h3>No supervisors found</h3>
+                                <p>Add supervisors using the button above.</p>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+
+                </p:outputPanel>
+
+                <!-- ===== SUPERVISOR DETAIL DIALOG ===== -->
+                <p:dialog id="supervisorDetailDlg" widgetVar="supervisorDetailDlg"
+                          header="Supervisor Profile"
+                          modal="true" showEffect="fade" hideEffect="fade"
+                          resizable="false" draggable="false"
+                          style="width:min(760px,95vw)">
+                    <p:outputPanel id="supervisorDetailContent" layout="block">
+                        <h:panelGroup rendered="#{adminSupervisorBean.selectedSupervisor != null}">
+
+                            <!-- Profile card -->
+                            <div class="detail-profile-card">
+                                <div class="user-avatar lg">
+                                    <h:outputText value="#{not empty adminSupervisorBean.selectedSupervisor.firstname ? adminSupervisorBean.selectedSupervisor.firstname.substring(0,1) : '?'}"/>
+                                    <h:outputText value="#{not empty adminSupervisorBean.selectedSupervisor.lastname  ? adminSupervisorBean.selectedSupervisor.lastname.substring(0,1)  : ''}"/>
+                                </div>
+                                <div class="detail-profile-info">
+                                    <p class="detail-name">#{adminSupervisorBean.selectedSupervisor.fullName}</p>
+                                    <p class="detail-meta">#{adminSupervisorBean.selectedSupervisor.email}</p>
+                                    <div class="detail-info-grid">
+                                        <div class="detail-info-item">
+                                            <span class="detail-info-label">Username</span>
+                                            <span class="detail-info-value">#{adminSupervisorBean.selectedSupervisor.username}</span>
+                                        </div>
+                                        <div class="detail-info-item">
+                                            <span class="detail-info-label">Department</span>
+                                            <span class="detail-info-value">#{empty adminSupervisorBean.selectedSupervisor.department ? '—' : adminSupervisorBean.selectedSupervisor.department}</span>
+                                        </div>
+                                        <div class="detail-info-item">
+                                            <span class="detail-info-label">Students Assigned</span>
+                                            <span class="detail-info-value">#{adminSupervisorBean.selectedSupervisorStudents.size()}</span>
+                                        </div>
+                                        <div class="detail-info-item">
+                                            <span class="detail-info-label">Status</span>
+                                            <span class="status-badge #{adminSupervisorBean.selectedSupervisor.status != null and adminSupervisorBean.selectedSupervisor.status.name() == 'ENABLED' ? 'enabled' : 'default'}">
+                                                <h:outputText value="#{adminSupervisorBean.selectedSupervisor.status}"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Assigned students -->
+                            <div class="section-header">
+                                Assigned Students
+                                <span class="tbl-count-pill" style="background:var(--navy-light);color:var(--navy);">#{adminSupervisorBean.selectedSupervisorStudents.size()}</span>
+                            </div>
+                            <h:panelGroup rendered="#{not empty adminSupervisorBean.selectedSupervisorStudents}">
+                                <p:dataTable id="svStudentsTable" var="ss"
+                                             value="#{adminSupervisorBean.selectedSupervisorStudents}"
+                                             selectionMode="single"
+                                             rowKey="#{ss.id}"
+                                             styleClass="detail-table"
+                                             tableStyle="width:100%"
+                                             emptyMessage="No students assigned.">
+                                    <p:ajax event="rowSelect"
+                                            listener="#{adminSupervisorBean.onSupervisorStudentSelect}"
+                                            update="studentDetailContent"
+                                            oncomplete="PF('supervisorDetailDlg').hide(); PF('studentDetailDlg').show()"/>
+                                    <p:column headerText="Name">
+                                        <div class="user-cell">
+                                            <div class="user-avatar navy" style="width:28px;height:28px;font-size:0.65rem;">
+                                                <h:outputText value="#{not empty ss.firstname ? ss.firstname.substring(0,1) : '?'}"/>
+                                                <h:outputText value="#{not empty ss.lastname  ? ss.lastname.substring(0,1)  : ''}"/>
+                                            </div>
+                                            <div>
+                                                <div class="user-name" style="font-size:0.83rem;">#{ss.fullName}</div>
+                                                <div class="user-sub">#{ss.email}</div>
+                                            </div>
+                                        </div>
+                                    </p:column>
+                                    <p:column headerText="Matric" style="width:120px;">
+                                        <h:outputText value="#{empty ss.matricNumber ? '—' : ss.matricNumber}"
+                                                      style="font-size:0.81rem;"/>
+                                    </p:column>
+                                    <p:column headerText="Session" style="width:100px;">
+                                        <span class="status-badge default" style="font-size:0.7rem; border-radius:4px;">
+                                            <h:outputText value="#{empty ss.session ? '—' : ss.session}"/>
+                                        </span>
+                                    </p:column>
+                                    <p:column headerText="Status" style="width:90px;">
+                                        <span class="status-badge #{ss.status != null and ss.status.name() == 'ENABLED' ? 'enabled' : 'default'}" style="font-size:0.7rem;">
+                                            <h:outputText value="#{ss.status}"/>
+                                        </span>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{empty adminSupervisorBean.selectedSupervisorStudents}">
+                                <div class="no-data-note">No students assigned to this supervisor yet.</div>
+                            </h:panelGroup>
+
+                        </h:panelGroup>
+                    </p:outputPanel>
+                </p:dialog>
+
+                <!-- ===== STUDENT DETAIL DIALOG (opened from supervisor's student table) ===== -->
+                <p:dialog id="studentDetailDlg" widgetVar="studentDetailDlg"
+                          header="Student Profile"
+                          modal="true" showEffect="fade" hideEffect="fade"
+                          resizable="false" draggable="false"
+                          style="width:min(720px,95vw)">
+                    <p:outputPanel id="studentDetailContent" layout="block">
+                        <h:panelGroup rendered="#{adminSupervisorBean.selectedStudent != null}">
+
+                            <!-- Profile card -->
+                            <div class="detail-profile-card">
+                                <div class="user-avatar lg navy">
+                                    <h:outputText value="#{not empty adminSupervisorBean.selectedStudent.firstname ? adminSupervisorBean.selectedStudent.firstname.substring(0,1) : '?'}"/>
+                                    <h:outputText value="#{not empty adminSupervisorBean.selectedStudent.lastname  ? adminSupervisorBean.selectedStudent.lastname.substring(0,1)  : ''}"/>
+                                </div>
+                                <div class="detail-profile-info">
+                                    <p class="detail-name">#{adminSupervisorBean.selectedStudent.fullName}</p>
+                                    <p class="detail-meta">#{adminSupervisorBean.selectedStudent.email}</p>
+                                    <div class="detail-info-grid">
+                                        <div class="detail-info-item">
+                                            <span class="detail-info-label">Matric Number</span>
+                                            <span class="detail-info-value">#{empty adminSupervisorBean.selectedStudent.matricNumber ? '—' : adminSupervisorBean.selectedStudent.matricNumber}</span>
+                                        </div>
+                                        <div class="detail-info-item">
+                                            <span class="detail-info-label">Department</span>
+                                            <span class="detail-info-value">#{empty adminSupervisorBean.selectedStudent.department ? '—' : adminSupervisorBean.selectedStudent.department}</span>
+                                        </div>
+                                        <div class="detail-info-item">
+                                            <span class="detail-info-label">Session</span>
+                                            <span class="detail-info-value">#{empty adminSupervisorBean.selectedStudent.session ? '—' : adminSupervisorBean.selectedStudent.session}</span>
+                                        </div>
+                                        <div class="detail-info-item">
+                                            <span class="detail-info-label">Status</span>
+                                            <span class="status-badge #{adminSupervisorBean.selectedStudent.status != null and adminSupervisorBean.selectedStudent.status.name() == 'ENABLED' ? 'enabled' : 'default'}">
+                                                <h:outputText value="#{adminSupervisorBean.selectedStudent.status}"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Proposals -->
+                            <div class="section-header">Proposals</div>
+                            <h:panelGroup rendered="#{not empty adminSupervisorBean.selectedStudentProposals}">
+                                <p:dataTable var="pr"
+                                             value="#{adminSupervisorBean.selectedStudentProposals}"
+                                             styleClass="detail-table"
+                                             tableStyle="width:100%"
+                                             emptyMessage="No proposals.">
+                                    <p:column headerText="Title">
+                                        <h:outputText value="#{empty pr.title ? '(Untitled)' : pr.title}"
+                                                      style="font-size:0.83rem;"/>
+                                    </p:column>
+                                    <p:column headerText="Status" style="width:100px;">
+                                        <span class="prop-badge #{pr.status != null ? pr.status.name() : 'DRAFT'}">
+                                            <h:outputText value="#{pr.status != null ? pr.status : 'DRAFT'}"/>
+                                        </span>
+                                    </p:column>
+                                    <p:column headerText="Similarity" style="width:90px; text-align:center;">
+                                        <h:outputText value="#{pr.similarityScore > 0 ? pr.similarityScore * 100 : 0}"
+                                                      style="font-size:0.82rem;">
+                                            <f:convertNumber maxFractionDigits="1" type="number"/>
+                                        </h:outputText>
+                                        <h:outputText value="%" rendered="#{pr.similarityScore > 0}" style="font-size:0.82rem;"/>
+                                    </p:column>
+                                    <p:column headerText="Submitted" style="width:110px;">
+                                        <h:outputText value="#{empty pr.submittedAt ? '—' : pr.submittedAt}"
+                                                      style="font-size:0.78rem; color:var(--ink-mid);"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{empty adminSupervisorBean.selectedStudentProposals}">
+                                <div class="no-data-note">No proposals submitted yet.</div>
+                            </h:panelGroup>
+
+                            <!-- Project -->
+                            <div class="section-header">Project</div>
+                            <h:panelGroup rendered="#{adminSupervisorBean.selectedStudentProject != null}">
+                                <div class="project-card">
+                                    <div class="detail-info-item">
+                                        <span class="detail-info-label">Progress</span>
+                                        <span class="detail-info-value">#{adminSupervisorBean.selectedStudentProject.progressStatus}</span>
+                                    </div>
+                                    <div class="detail-info-item">
+                                        <span class="detail-info-label">Start Date</span>
+                                        <span class="detail-info-value">#{empty adminSupervisorBean.selectedStudentProject.startDate ? '—' : adminSupervisorBean.selectedStudentProject.startDate}</span>
+                                    </div>
+                                    <div class="detail-info-item">
+                                        <span class="detail-info-label">End Date</span>
+                                        <span class="detail-info-value">#{empty adminSupervisorBean.selectedStudentProject.endDate ? '—' : adminSupervisorBean.selectedStudentProject.endDate}</span>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{adminSupervisorBean.selectedStudentProject == null}">
+                                <div class="no-data-note">No active project.</div>
+                            </h:panelGroup>
+
+                        </h:panelGroup>
+                    </p:outputPanel>
+                </p:dialog>
+
+            </h:form>
+
+            <!-- ===== ADD SUPERVISOR DIALOG (own form, outside main form) ===== -->
+            <p:dialog header="Add New Supervisor" widgetVar="addSupervisorDlg" id="addSupervisorDlg"
+                      modal="true" showEffect="fade" hideEffect="fade"
+                      resizable="false" draggable="false"
+                      style="width:min(580px,95vw)">
+                <h:form id="addSupervisorForm" prependId="false">
+                    <div class="form-grid">
+
+                        <div class="field">
+                            <label>First Name <span class="req">*</span></label>
+                            <p:inputText value="#{adminSupervisorBean.newSupervisor.firstname}"
+                                         placeholder="e.g. Chukwuemeka" required="true"/>
+                        </div>
+                        <div class="field">
+                            <label>Last Name <span class="req">*</span></label>
+                            <p:inputText value="#{adminSupervisorBean.newSupervisor.lastname}"
+                                         placeholder="e.g. Nwosu" required="true"/>
+                        </div>
+
+                        <div class="field full">
+                            <label>Email Address <span class="req">*</span></label>
+                            <p:inputText value="#{adminSupervisorBean.newSupervisor.email}"
+                                         placeholder="e.g. dr.nwosu@university.edu.ng"
+                                         required="true"/>
+                        </div>
+
+                        <div class="field">
+                            <label>Username <span class="req">*</span></label>
+                            <p:inputText value="#{adminSupervisorBean.newSupervisor.username}"
+                                         placeholder="e.g. cnwosu" required="true"/>
+                        </div>
+                        <div class="field">
+                            <label>Password</label>
+                            <p:password value="#{adminSupervisorBean.newSupervisorPassword}"
+                                        placeholder="Leave blank to use username"
+                                        feedback="false"/>
+                        </div>
+
+                        <div class="field full">
+                            <label>Department</label>
+                            <p:inputText value="#{adminSupervisorBean.newSupervisor.department}"
+                                         placeholder="e.g. Computer Science"/>
+                        </div>
+
+                    </div>
+
+                    <div class="dlg-footer">
+                        <p:commandButton value="Cancel" type="button"
+                                         onclick="PF('addSupervisorDlg').hide();"
+                                         styleClass="btn-ghost"/>
+                        <p:commandButton value="&#10003; Save Supervisor"
+                                         action="#{adminSupervisorBean.saveSupervisor}"
+                                         update="supervisorsForm"
+                                         process="addSupervisorForm"
+                                         oncomplete="if(!args.validationFailed) PF('addSupervisorDlg').hide();"
+                                         styleClass="btn-navy"/>
+                    </div>
+                </h:form>
+            </p:dialog>
+
+            <!-- ===== UPLOAD CSV DIALOG (own form, outside main form) ===== -->
+            <p:dialog header="Upload Supervisors via CSV" widgetVar="supUploadDlg" id="supUploadDlg"
+                      modal="true" showEffect="fade" hideEffect="fade"
+                      resizable="false" draggable="false"
+                      style="width:min(560px,95vw)">
+                <h:form id="supUploadForm" prependId="false">
+
+                    <div class="upload-hint">
+                        <strong>CSV format</strong> — one supervisor per row, header row required:
+                        <code>firstname, lastname, email, username, password, department</code>
+                        <span style="display:block; margin-top:0.5rem; font-size:0.77rem;">
+                            &#8226; <em>password</em> is optional — defaults to <strong>username</strong> if empty.
+                        </span>
+                    </div>
+
+                    <div class="field" style="margin-bottom:1rem;">
+                        <label>Default Department (used when CSV row has no department)</label>
+                        <p:inputText value="#{adminSupervisorBean.uploadDefaultDepartment}"
+                                     placeholder="e.g. Computer Science"/>
+                    </div>
+
+                    <p:fileUpload listener="#{adminSupervisorBean.handleFileUpload}"
+                                  mode="advanced"
+                                  accept=".csv,text/csv"
+                                  label="Choose CSV"
+                                  uploadLabel="Upload"
+                                  cancelLabel="Clear"
+                                  allowTypes="/(\.|\/)(csv)$/"
+                                  maxFileSize="10000000"
+                                  process="@form"
+                                  update="supervisorsForm"
+                                  auto="false"
+                                  dragDropSupport="true"/>
+
+                    <div class="dlg-footer">
+                        <p:commandButton value="Close" type="button"
+                                         onclick="PF('supUploadDlg').hide();"
+                                         styleClass="btn-ghost"/>
+                    </div>
+                </h:form>
+            </p:dialog>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+</h:body>
+</html>

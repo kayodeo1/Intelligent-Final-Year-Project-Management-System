@@ -153,6 +153,14 @@ public class ProposalBean implements Serializable {
 
 
 	public String submit() {
+		if (currentUser.getProposalStatus() == Status.APPROVED) {
+			Messages.addGlobalError("Your proposal has already been approved. You cannot submit a new one.");
+			return "";
+		}
+		if (currentUser.getProposalStatus() == Status.SUBMITTED) {
+			Messages.addGlobalError("You have a proposal awaiting supervisor review. Please wait for a response.");
+			return "";
+		}
 		String proposal = "Title: " + title + "\n\n" + "Methodology: " + methodology + "\n\n" + "Problem Statement: "
 				+ problemStatement + "\n\n" + "\n\n" + "Objective 1: " + objective1 + "\n\n" + "Objective 2: "
 				+ objective2 + "\n\n" + "Objective 3: " + objective3;
@@ -208,13 +216,22 @@ public class ProposalBean implements Serializable {
 
 	}
 	public void submitToSupervisor() {
-		entry.setStatus(Status.SUBMITTED);
-		proposalService.updateProposal(entry);
-		currentUser.setProposalStatus(Status.SUBMITTED);
-		currentUser.setProjectStatus(Status.PROPOSAL_PENDING);
-		userService.update(currentUser);
-		Messages.addFlashGlobalInfo("proposal has been submited to supervisor for review!");
-		
+		try {
+			if (currentUser.getProposalStatus() == Status.APPROVED) {
+				Messages.addGlobalError("Your proposal has already been approved.");
+				return;
+			}
+			entry.setStatus(Status.SUBMITTED);
+			proposalService.updateProposal(entry);
+			currentUser.setProposalStatus(Status.SUBMITTED);
+			currentUser.setProjectStatus(Status.PROPOSAL_PENDING);
+			userService.update(currentUser);
+			Messages.addGlobalInfo("Proposal submitted to supervisor for review.");
+			listStudentsProposal();
+		} catch (Exception e) {
+			LOG.error("submitToSupervisor error", e);
+			Messages.addGlobalError("Failed to submit proposal.");
+		}
 	}
 
 	public void listProposal() {

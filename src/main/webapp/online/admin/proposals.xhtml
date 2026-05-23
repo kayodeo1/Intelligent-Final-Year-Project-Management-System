@@ -7,7 +7,7 @@
 
 <h:head>
 	<f:metadata>
-		<f:viewAction action="#{proposalBean.listStudentsProposal()}" />
+		<f:viewAction action="#{adminBean.listStudentsProposal()}" />
 	</f:metadata>
 </h:head>
 
@@ -516,172 +516,175 @@
 				<p:graphicImage library="img" name="load4.jpg" />
 			</p:dialog>
 
-			<h:form id="propForm" prependId="false">
-				<p:messages id="globalMsg" showDetail="true" closable="true"/>
+			<div class="pg">
 
-				<div class="pg">
-
-					<!-- Header -->
-					<div class="pg-head">
-						<div class="pg-head-copy">
-							<h2>My Proposals</h2>
-							<p>Track and manage your final year project proposals</p>
-						</div>
-						<p:commandButton value="+ New Proposal"
-							action="#{proposalBean.newProposalView()}" ajax="false"
-							styleClass="btn-gold" />
+				<!-- Header -->
+				<div class="pg-head">
+					<div class="pg-head-copy">
+						<h2>My Proposals</h2>
+						<p>Track and manage your final year project proposals</p>
 					</div>
-
-					<!-- Table -->
-					<div class="tbl-card">
-						<p:dataTable id="proposalList" var="entry"
-							value="#{proposalBean.lazyModel}" paginator="true" rows="5"
-							paginatorPosition="bottom"
-							currentPageReportTemplate="Showing {startRecord}–{endRecord} of {totalRecords}"
-							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-							rowsPerPageTemplate="5,10,15" lazy="true" rowKey="#{entry.id}"
-							emptyMessage="No proposals yet — click '+ New Proposal' to get started.">
-
-							<f:facet name="header">Proposal Submissions</f:facet>
-
-							<p:column headerText="Project Title">
-								<span class="cell-title"><h:outputText value="#{entry.title}"/></span>
-							</p:column>
-
-							<p:column headerText="Status" style="width:130px;">
-								<h:outputText styleClass="badge badge-#{entry.status}"
-									value="#{entry.status}" />
-							</p:column>
-
-							<p:column headerText="Supervisor Comment">
-								<span class="cell-comment">
-									<h:outputText value="#{empty entry.supervisorComment ? '—' : entry.supervisorComment}"/>
-								</span>
-							</p:column>
-
-							<p:column headerText="Submitted" style="width:140px;">
-								<span class="cell-date"><h:outputText value="#{entry.createdDate}"/></span>
-							</p:column>
-
-							<p:column headerText="" style="width:80px;text-align:center;">
-								<p:commandButton value="View"
-									update="proposalDetailPanel"
-									actionListener="#{proposalBean.displayProposalDialog(entry)}"
-									oncomplete="PF('proposalDetailDlg').show()"
-									styleClass="btn-view" />
-							</p:column>
-
-						</p:dataTable>
-					</div>
-
+					
 				</div>
 
-				<p:dialog widgetVar="proposalDetailDlg" id="proposalDetailDlg"
-					modal="true" showEffect="fade" hideEffect="fade" resizable="false"
-					draggable="true" closable="true" header="Proposal Details"
-					styleClass="prop-dlg">
+				<!-- Messages -->
+				<div class="msg-wrap">
+					<p:messages id="globalMsg" showDetail="true" />
+				</div>
 
-					<p:outputPanel id="proposalDetailPanel" layout="block">
+				<!-- Table -->
+				<div class="tbl-card">
+					<p:dataTable id="proposalList" var="entry"
+						value="#{proposalBean.lazyModel}" paginator="true" rows="5"
+						paginatorPosition="bottom"
+						currentPageReportTemplate="Showing {startRecord}–{endRecord} of {totalRecords}"
+						paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+						rowsPerPageTemplate="5,10,15" lazy="true" rowKey="#{entry.id}"
+						emptyMessage="No proposals yet — click '+ New Proposal' to get started.">
 
-						<div class="dlg-body">
+						<f:facet name="header">Proposal Submissions</f:facet>
 
-							<div class="dlg-meta">
-								<h:outputText
-									styleClass="badge badge-#{proposalBean.entry.status}"
-									value="#{proposalBean.entry.status}" />
-								<span class="dlg-meta-date"> &#128197;&#160;
-									<h:outputText value="#{proposalBean.entry.createdDate}">
-										<f:convertDateTime pattern="dd MMM yyyy"/>
-									</h:outputText>
-								</span>
+						<p:column headerText="Project Title">
+							<span class="cell-title"> <h:outputText
+									value="#{entry.title}" />
+							</span>
+						</p:column>
+
+						<p:column headerText="Status" style="width:130px;">
+							<h:outputText styleClass="badge badge-#{entry.status}"
+								value="#{entry.status}" />
+						</p:column>
+
+						<p:column headerText="Supervisor Comment">
+							<span class="cell-comment"> <h:outputText
+									value="#{empty entry.supervisorComment ? '—' : entry.supervisorComment}" />
+							</span>
+						</p:column>
+
+						<p:column headerText="Submitted" style="width:140px;">
+							<span class="cell-date"> <h:outputText
+									value="#{entry.getCreatedDate()}" />
+							</span>
+						</p:column>
+
+						
+						<p:column headerText="" style="width:80px;text-align:center;">
+							<p:commandButton value="View" update="@form"
+								actionListener="#{proposalBean.displayProposalDialog(entry)}"
+								oncomplete="PF('proposalDetailDlg').show()"
+								styleClass="btn-view" />
+						</p:column>
+
+					</p:dataTable>
+				</div>
+
+			</div>
+
+
+			<p:dialog widgetVar="proposalDetailDlg" id="proposalDetailDlg"
+				modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+				draggable="true" closable="true" header="Proposal Details"
+				styleClass="prop-dlg">
+
+				<p:outputPanel id="proposalDetailPanel" layout="block">
+
+					<div class="dlg-body">
+
+						<div class="dlg-meta">
+							<h:outputText
+								styleClass="badge badge-#{proposalBean.entry.status}"
+								value="#{proposalBean.entry.status}" />
+							<span class="dlg-meta-date"> &#128197;&#160;<h:outputText
+									value="#{proposalBean.entry.getCreatedDate()}" />
+							</span>
+						</div>
+
+						<div class="dlg-field">
+							<span class="dlg-label">Project Title</span>
+							<div class="dlg-value">
+								<h:outputText value="#{proposalBean.entry.title}" />
 							</div>
+						</div>
 
+						<div class="dlg-field">
+							<span class="dlg-label">Problem Statement</span>
+							<div class="dlg-value multi">
+								<h:outputText value="#{proposalBean.entry.problemStatement}" />
+							</div>
+						</div>
+
+						<div class="dlg-field">
+							<span class="dlg-label">Aim &amp; Objectives</span>
+							<div class="dlg-value multi">
+								<h:outputText value="#{proposalBean.entry.objectives}" />
+							</div>
+						</div>
+
+						<div class="dlg-field">
+							<span class="dlg-label">Methodology</span>
+							<div class="dlg-value multi">
+								<h:outputText value="#{proposalBean.entry.methodology}" />
+							</div>
+						</div>
+
+						<h:panelGroup
+							rendered="#{not empty proposalBean.entry.supervisorComment}">
 							<div class="dlg-field">
-								<span class="dlg-label">Project Title</span>
+								<span class="dlg-label">Supervisor Comment</span>
 								<div class="dlg-value">
-									<h:outputText value="#{proposalBean.entry.title}" />
+									<h:outputText value="#{proposalBean.entry.supervisorComment}" />
 								</div>
 							</div>
+						</h:panelGroup>
 
-							<div class="dlg-field">
-								<span class="dlg-label">Problem Statement</span>
-								<div class="dlg-value multi">
-									<h:outputText value="#{proposalBean.entry.problemStatement}" />
-								</div>
-							</div>
-
-							<div class="dlg-field">
-								<span class="dlg-label">Aim &amp; Objectives</span>
-								<div class="dlg-value multi">
-									<h:outputText value="#{proposalBean.entry.objectives}" />
-								</div>
-							</div>
-
-							<div class="dlg-field">
-								<span class="dlg-label">Methodology</span>
-								<div class="dlg-value multi">
-									<h:outputText value="#{proposalBean.entry.methodology}" />
-								</div>
-							</div>
-
-							<h:panelGroup rendered="#{not empty proposalBean.entry.supervisorComment}">
-								<div class="dlg-field">
-									<span class="dlg-label">Supervisor Comment</span>
-									<div class="dlg-value">
-										<h:outputText value="#{proposalBean.entry.supervisorComment}" />
-									</div>
-								</div>
-							</h:panelGroup>
-
-							<h:panelGroup rendered="#{proposalBean.entry.similarityScore != null
+						<h:panelGroup
+							rendered="#{proposalBean.entry.similarityScore != null
                                               and proposalBean.entry.similarityScore > 0}">
-								<div class="dlg-sim #{proposalBean.entry.similarityScore >= 0.80 ? 'high' :
+							<div
+								class="dlg-sim #{proposalBean.entry.similarityScore >= 0.80 ? 'high' :
                                               proposalBean.entry.similarityScore >= 0.60 ? 'med' : 'low'}">
-									<div class="sim-bubble">
-										<h:outputText value="#{proposalBean.entry.similarityScore}">
-											<f:convertNumber maxFractionDigits="2" />
-										</h:outputText>
-									</div>
-									<div class="sim-text">
-										<div class="sim-head">
-											<h:outputText
-												value="High similarity — closely matches an existing project"
-												rendered="#{proposalBean.entry.similarityScore >= 0.80}" />
-											<h:outputText
-												value="Moderate similarity with an existing project"
-												rendered="#{proposalBean.entry.similarityScore >= 0.60
-                                                              and proposalBean.entry.similarityScore lt 0.80}" />
-											<h:outputText value="Proposal appears mostly original"
-												rendered="#{proposalBean.entry.similarityScore lt 0.60}" />
-										</div>
-										<div class="sim-sub">Click Compare to view the matching project.</div>
-									</div>
+								<div class="sim-bubble">
+									<h:outputText value="#{proposalBean.entry.similarityScore}">
+										<f:convertNumber maxFractionDigits="2" />
+									</h:outputText>
 								</div>
-							</h:panelGroup>
+								<div class="sim-text">
+									<div class="sim-head">
+										<h:outputText
+											value="High similarity — closely matches an existing project"
+											rendered="#{proposalBean.entry.similarityScore >= 0.80}" />
+										<h:outputText
+											value="Moderate similarity with an existing project"
+											rendered="#{proposalBean.entry.similarityScore >= 0.60
+                                                              and proposalBean.entry.similarityScore lt 0.80}" />
+										<h:outputText value="Proposal appears mostly original"
+											rendered="#{proposalBean.entry.similarityScore lt 0.60}" />
+										
+									</div>
+									<div class="sim-sub">Click Compare to view the matching
+										project.</div>
+								</div>
+							</div>
+						</h:panelGroup>
 
-						</div>
+					</div>
 
-						<div class="dlg-footer">
-							<p:commandButton value="Close" type="button"
-								onclick="PF('proposalDetailDlg').hide();" styleClass="btn-ghost" />
-							<p:commandButton value="&#128270; Compare Similar" ajax="false"
-								action="#{proposalBean.compareSimilar}"
-								rendered="#{proposalBean.entry.similarityScore != null
+					<div class="dlg-footer">
+						<p:commandButton value="Close" type="button"
+							onclick="PF('proposalDetailDlg').hide();" styleClass="btn-ghost" />
+						<p:commandButton value="&#128270; Compare Similar" ajax="false"
+							action="#{proposalBean.compareSimilar}"
+							rendered="#{proposalBean.entry.similarityScore != null
                                                  and proposalBean.entry.similarityScore > 0}"
-								styleClass="btn-primary" />
-							<p:commandButton value="Submit to Supervisor"
-								action="#{proposalBean.submitToSupervisor}"
-								process="@form"
-								update="proposalList globalMsg proposalDetailPanel"
-								oncomplete="if(args &amp;&amp; !args.validationFailed) PF('proposalDetailDlg').hide()"
-								rendered="#{proposalBean.entry.status == 'DRAFT'}"
-								styleClass="btn-primary" />
-						</div>
+							styleClass="btn-primary" />
+						<p:commandButton value="&#128270; Submit to Supervisor" ajax="false"
+							action="#{proposalBean.submitToSupervisor}"
+							rendered="#{proposalBean.entry.status == 'DRAFT'}"
+							styleClass="btn-primary" />
+					</div>
 
-					</p:outputPanel>
-				</p:dialog>
-
-			</h:form>
+				</p:outputPanel>
+			</p:dialog>
 
 		</ui:define>
 

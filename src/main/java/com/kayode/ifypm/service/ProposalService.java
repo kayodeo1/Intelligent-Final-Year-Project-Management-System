@@ -55,12 +55,74 @@ public class ProposalService {
 		
 	}
 
+	public List<Proposal> findAllByStudentId(Long studentId) {
+		return em.createQuery(
+				"SELECT p FROM Proposal p WHERE p.student.id = :id ORDER BY p.createdDate DESC", Proposal.class)
+				.setParameter("id", studentId)
+				.getResultList();
+	}
+
 	public Proposal updateProposal(Proposal e) {
 		return em.merge(e);
 	}
 
 	public Proposal findProposal(Long id) {
 		return em.find(Proposal.class, id);
+	}
+
+	public Proposal findProposalWithStudent(Long id) {
+		List<Proposal> result = em.createQuery(
+			"SELECT p FROM Proposal p JOIN FETCH p.student WHERE p.id = :id", Proposal.class)
+			.setParameter("id", id)
+			.getResultList();
+		return result.isEmpty() ? null : result.get(0);
+	}
+
+	public List<Proposal> findRecentByStudentIds(List<Long> studentIds, int limit) {
+		if (studentIds == null || studentIds.isEmpty()) return java.util.List.of();
+		return em.createQuery(
+			"SELECT p FROM Proposal p WHERE p.student.id IN :ids AND p.status != :draft ORDER BY p.createdDate DESC",
+			Proposal.class)
+			.setParameter("ids", studentIds)
+			.setParameter("draft", Status.DRAFT)
+			.setMaxResults(limit)
+			.getResultList();
+	}
+
+	public long countPendingBySupervisorId(Long supervisorId) {
+		return em.createQuery(
+			"SELECT COUNT(p) FROM Proposal p WHERE p.student.supervisor.id = :id AND p.status = :status",
+			Long.class)
+			.setParameter("id", supervisorId)
+			.setParameter("status", Status.SUBMITTED)
+			.getSingleResult();
+	}
+
+	public long countApprovedBySupervisorId(Long supervisorId) {
+		return em.createQuery(
+			"SELECT COUNT(p) FROM Proposal p WHERE p.student.supervisor.id = :id AND p.status = :status",
+			Long.class)
+			.setParameter("id", supervisorId)
+			.setParameter("status", Status.APPROVED)
+			.getSingleResult();
+	}
+
+	public long countRejectedBySupervisorId(Long supervisorId) {
+		return em.createQuery(
+			"SELECT COUNT(p) FROM Proposal p WHERE p.student.supervisor.id = :id AND p.status = :status",
+			Long.class)
+			.setParameter("id", supervisorId)
+			.setParameter("status", Status.REJECTED)
+			.getSingleResult();
+	}
+
+	public long countFlaggedBySupervisorId(Long supervisorId) {
+		return em.createQuery(
+			"SELECT COUNT(p) FROM Proposal p WHERE p.student.supervisor.id = :id AND p.status = :status",
+			Long.class)
+			.setParameter("id", supervisorId)
+			.setParameter("status", Status.DISALLOWED)
+			.getSingleResult();
 	}
 
 	public PagedList<Proposal> fetchProposal(int first, int pageSize) {
@@ -72,6 +134,7 @@ public class ProposalService {
 		list.setList(res);
 
 		Number count = fetchProposalCount();
+		System.out.println("count is --->"+count);
 		list.setCount(count.intValue());
 
 		return list;

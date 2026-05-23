@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <h:outputStylesheet library="primefaces" name="theme.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap"/>
+</h:head>
+<h:body>
+<ui:composition template="/online/template/dashboard.xhtml">
+
+    <ui:define name="student_name">
+        <div class="welcome-banner">
+            <h1>Supervisor Assignment</h1>
+            <p>Assign students to supervisors by academic session</p>
+        </div>
+    </ui:define>
+
+    <ui:define name="dashboard_body">
+        <style>
+            :root {
+                --navy:#1B3A6B;--navy-mid:#2E5399;--navy-light:#D6E4F7;
+                --gold:#C9A84C;--gold-light:#FDF3D7;
+                --green:#2E7D52;--green-light:#D1FAE5;
+                --red:#C0392B;--red-light:#FDECEA;
+                --ink:#1A202C;--ink-mid:#4A5568;
+                --border:#E5E9F0;--surface:#F7F8FC;--white:#FFFFFF;
+                --radius:8px;--shadow-sm:0 1px 4px rgba(10,22,40,.07);
+            }
+            .assign-page { font-family:'DM Sans',sans-serif; }
+            .page-header { margin-bottom:1.5rem; }
+            .page-header h2 {
+                font-family:'Playfair Display',serif;
+                font-size:1.5rem;font-weight:700;color:var(--navy);margin:0 0 0.2rem;
+            }
+            .page-header p { font-size:0.83rem;color:var(--ink-mid);margin:0; }
+            .gold-bar { display:block;width:36px;height:3px;background:var(--gold);border-radius:2px;margin-top:0.5rem; }
+
+            .controls-bar {
+                display:flex;align-items:flex-end;gap:1rem;
+                background:var(--white);border:1px solid var(--border);
+                border-radius:var(--radius);padding:1rem 1.4rem;
+                margin-bottom:1.25rem;box-shadow:var(--shadow-sm);flex-wrap:wrap;
+            }
+            .ctrl-group { display:flex;flex-direction:column;gap:0.3rem; }
+            .ctrl-label { font-size:0.73rem;font-weight:700;color:var(--ink-mid);text-transform:uppercase;letter-spacing:0.4px; }
+
+            .assign-page .ui-selectonemenu {
+                min-width:200px;border:1.5px solid var(--border)!important;
+                border-radius:6px!important;background:var(--white)!important;
+            }
+            .assign-page .ui-selectonemenu .ui-selectonemenu-label {
+                font-size:0.84rem!important;color:var(--ink)!important;
+                font-family:'DM Sans',sans-serif!important;padding:0.48rem 0.85rem!important;
+                background:transparent!important;
+            }
+            .assign-page .ui-selectonemenu .ui-selectonemenu-trigger {
+                background:var(--navy)!important;border-radius:0 5px 5px 0!important;color:#fff!important;
+            }
+            .assign-page .ui-selectonemenu-panel .ui-selectonemenu-item {
+                font-size:0.84rem!important;font-family:'DM Sans',sans-serif!important;
+            }
+            .assign-page .ui-selectonemenu-panel .ui-selectonemenu-item.ui-state-highlight {
+                background:var(--navy)!important;color:#fff!important;
+            }
+
+            .btn-navy,.ui-button.btn-navy {
+                background:var(--navy)!important;color:#fff!important;border:none!important;
+                border-radius:6px!important;padding:0.52rem 1.1rem!important;font-size:0.82rem!important;
+                font-weight:600!important;cursor:pointer!important;font-family:'DM Sans',sans-serif!important;
+            }
+            .btn-navy:hover,.ui-button.btn-navy:hover { background:var(--navy-mid)!important; }
+            .btn-outline-navy,.ui-button.btn-outline-navy {
+                background:var(--white)!important;color:var(--navy)!important;
+                border:1.5px solid var(--navy)!important;border-radius:6px!important;
+                padding:0.5rem 1rem!important;font-size:0.82rem!important;
+                font-weight:600!important;cursor:pointer!important;font-family:'DM Sans',sans-serif!important;
+            }
+            .btn-sm.ui-button { padding:0.3rem 0.7rem!important;font-size:0.78rem!important; }
+            .ui-button.btn-navy .ui-button-text,
+            .ui-button.btn-outline-navy .ui-button-text { padding:0!important; }
+
+            .summary-bar {
+                display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;
+            }
+            .summary-chip {
+                background:var(--white);border:1px solid var(--border);
+                border-radius:20px;padding:0.3rem 0.9rem;
+                font-size:0.78rem;font-weight:600;color:var(--ink-mid);
+            }
+            .summary-chip.warn { background:var(--gold-light);color:#7A5A00;border-color:#E8C96A; }
+            .summary-chip.ok { background:var(--green-light);color:var(--green);border-color:#A7F3C9; }
+
+            .table-card {
+                background:var(--white);border:1px solid var(--border);
+                border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;
+            }
+            .table-card-header {
+                display:flex;align-items:center;justify-content:space-between;
+                padding:0.9rem 1.4rem;border-bottom:1px solid var(--border);
+            }
+            .table-card-title {
+                font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--navy);
+                display:flex;align-items:center;gap:0.5rem;
+            }
+            .table-card-title::before {
+                content:'';display:inline-block;width:3px;height:14px;
+                background:var(--gold);border-radius:2px;
+            }
+
+            .assign-page .ui-datatable thead tr th {
+                background:var(--navy)!important;color:#fff!important;
+                font-size:0.71rem!important;font-weight:600!important;
+                text-transform:uppercase!important;letter-spacing:0.4px!important;
+                padding:0.7rem 1rem!important;border:none!important;
+                font-family:'DM Sans',sans-serif!important;
+            }
+            .assign-page .ui-datatable tbody tr { border-bottom:1px solid var(--border); }
+            .assign-page .ui-datatable tbody tr:hover { background:var(--surface)!important; }
+            .assign-page .ui-datatable tbody td {
+                padding:0.65rem 1rem!important;font-size:0.84rem!important;
+                color:var(--ink-mid);border:none!important;vertical-align:middle!important;
+            }
+            .assign-page .ui-paginator {
+                background:var(--surface)!important;border-top:1px solid var(--border)!important;
+                padding:0.6rem 1rem!important;font-size:0.77rem;
+            }
+
+            .user-cell { display:flex;align-items:center;gap:0.6rem; }
+            .user-avatar {
+                width:32px;height:32px;border-radius:50%;
+                background:var(--navy-light);color:var(--navy);
+                font-size:0.68rem;font-weight:700;
+                display:flex;align-items:center;justify-content:center;
+                flex-shrink:0;border:1.5px solid var(--border);text-transform:uppercase;
+            }
+            .user-name { font-weight:600;color:var(--ink);font-size:0.84rem; }
+            .user-sub { font-size:0.71rem;color:var(--ink-mid);margin-top:1px; }
+            .unassigned-tag { color:#9AA3B2;font-size:0.78rem;font-style:italic; }
+
+            .empty-state { text-align:center;padding:3rem 2rem;color:var(--ink-mid); }
+            .empty-state-icon { font-size:2.2rem;margin-bottom:0.6rem; }
+            .empty-state h3 { font-family:'Playfair Display',serif;font-size:1rem;color:var(--navy);margin:0 0 0.3rem; }
+            .empty-state p { font-size:0.83rem;margin:0; }
+
+            @media(max-width:768px) { .controls-bar { flex-direction:column;align-items:stretch; } }
+        </style>
+
+        <div class="assign-page">
+
+            <h:form id="assignForm" prependId="false">
+                <p:messages id="msgs" autoUpdate="false" closable="true"/>
+
+                <p:remoteCommand name="doLoadStudents"
+                                 action="#{assignmentBean.loadStudents}"
+                                 process="@form"
+                                 update="studentsPanel msgs"/>
+
+                <!-- Page header -->
+                <div class="page-header">
+                    <h2>&#128101; Supervisor Assignment</h2>
+                    <p>Pick a session to load students, then assign supervisors row by row or in bulk.</p>
+                    <span class="gold-bar"></span>
+                </div>
+
+                <!-- Controls bar -->
+                <div class="controls-bar">
+                    <div class="ctrl-group">
+                        <span class="ctrl-label">Academic Session</span>
+                        <p:selectOneMenu value="#{assignmentBean.selectedSession}"
+                                         onchange="doLoadStudents()" style="min-width:200px">
+                            <f:selectItem itemLabel="— All Sessions —" itemValue=""/>
+                            <f:selectItems value="#{assignmentBean.sessions}" var="sess"
+                                           itemLabel="#{sess}" itemValue="#{sess}"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="ctrl-group">
+                        <span class="ctrl-label">Bulk Assign Unassigned To</span>
+                        <p:selectOneMenu value="#{assignmentBean.bulkSupervisorId}" style="min-width:220px">
+                            <f:selectItem itemLabel="— Select Supervisor —" itemValue="#{null}"/>
+                            <f:selectItems value="#{assignmentBean.supervisors}" var="sv"
+                                           itemLabel="#{sv.fullName}" itemValue="#{sv.id}"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <p:commandButton value="Assign All Unassigned"
+                                     action="#{assignmentBean.bulkAssign}"
+                                     update="studentsPanel msgs"
+                                     process="@form"
+                                     styleClass="btn-navy"
+                                     rendered="#{not empty assignmentBean.students}"/>
+                </div>
+
+                <!-- Students panel -->
+                <p:outputPanel id="studentsPanel" layout="block">
+
+                    <h:panelGroup rendered="#{not empty assignmentBean.students}">
+                        <div class="summary-bar">
+                            <span class="summary-chip">#{assignmentBean.students.size()} students</span>
+                            <span class="summary-chip warn"
+                                  rendered="#{assignmentBean.countUnassigned() > 0}">
+                                #{assignmentBean.countUnassigned()} unassigned
+                            </span>
+                            <span class="summary-chip ok"
+                                  rendered="#{assignmentBean.countUnassigned() == 0}">
+                                All assigned &#10003;
+                            </span>
+                        </div>
+                    </h:panelGroup>
+
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <span class="table-card-title">
+                                Students
+                                <h:outputText rendered="#{not empty assignmentBean.students}"
+                                              value=" (#{assignmentBean.selectedSession != null and not empty assignmentBean.selectedSession ? assignmentBean.selectedSession : 'All Sessions'})"/>
+                            </span>
+                        </div>
+
+                        <h:panelGroup rendered="#{not empty assignmentBean.students}">
+                            <p:dataTable id="assignTable" var="s"
+                                         value="#{assignmentBean.students}"
+                                         paginator="true" rows="15"
+                                         paginatorPosition="bottom"
+                                         currentPageReportTemplate="Showing {startRecord}–{endRecord} of {totalRecords}"
+                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         tableStyle="width:100%" emptyMessage=" " sortMode="single">
+
+                                <p:column headerText="#" style="width:40px;text-align:center;">
+                                    <h:outputText value="#{assignTable.rowIndex + 1}"
+                                                  style="color:#9AA3B2;font-size:0.77rem;"/>
+                                </p:column>
+
+                                <p:column headerText="Student" sortBy="#{s.lastname}">
+                                    <div class="user-cell">
+                                        <div class="user-avatar">
+                                            <h:outputText value="#{not empty s.firstname ? s.firstname.substring(0,1) : '?'}"/>
+                                            <h:outputText value="#{not empty s.lastname  ? s.lastname.substring(0,1) : ''}"/>
+                                        </div>
+                                        <div>
+                                            <div class="user-name">#{s.fullName}</div>
+                                            <div class="user-sub">#{s.email}</div>
+                                        </div>
+                                    </div>
+                                </p:column>
+
+                                <p:column headerText="Matric No." sortBy="#{s.matricNumber}" style="width:130px;">
+                                    <h:outputText value="#{empty s.matricNumber ? '—' : s.matricNumber}"
+                                                  style="font-size:0.81rem;"/>
+                                </p:column>
+
+                                <p:column headerText="Session" sortBy="#{s.session}" style="width:105px;">
+                                    <h:outputText value="#{empty s.session ? '—' : s.session}"
+                                                  style="font-size:0.81rem;"/>
+                                </p:column>
+
+                                <p:column headerText="Assign Supervisor" style="width:220px;">
+                                    <p:selectOneMenu value="#{assignmentBean.selectedSupervisorIds[s.id]}"
+                                                     style="width:100%">
+                                        <f:selectItem itemLabel="— Unassigned —" itemValue="#{null}"/>
+                                        <f:selectItems value="#{assignmentBean.supervisors}" var="sv"
+                                                       itemLabel="#{sv.fullName}" itemValue="#{sv.id}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column style="width:70px;text-align:center;">
+                                    <p:commandButton value="&#10003;"
+                                                     title="Save assignment"
+                                                     action="#{assignmentBean.saveAssignment(s.id)}"
+                                                     process="@form"
+                                                     update="studentsPanel msgs"
+                                                     styleClass="btn-navy btn-sm"/>
+                                </p:column>
+
+                            </p:dataTable>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{empty assignmentBean.students}">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">&#128101;</div>
+                                <h3>No students loaded</h3>
+                                <p>Select an academic session above to load students for assignment.</p>
+                            </div>
+                        </h:panelGroup>
+
+                    </div>
+                </p:outputPanel>
+
+            </h:form>
+        </div>
+
+    </ui:define>
+</ui:composition>
+</h:body>
+</html>

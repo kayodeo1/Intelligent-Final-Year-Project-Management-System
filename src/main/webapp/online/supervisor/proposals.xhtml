@@ -897,22 +897,24 @@
 				<!-- ===== STAT CHIPS ===== -->
 				<div class="stats-row">
 					<div class="stat-chip pending">
-						<div class="stat-icon">📋</div>
+						<div class="stat-icon">&#128203;</div>
 						<div class="stat-text">
-							<span class="stat-count">3</span> <span class="stat-label">Pending
-								Review</span>
+							<span class="stat-count">#{supervisorBean.pendingProposalCount}</span>
+							<span class="stat-label">Pending Review</span>
 						</div>
 					</div>
 					<div class="stat-chip approved">
-						<div class="stat-icon">✓</div>
+						<div class="stat-icon">&#10003;</div>
 						<div class="stat-text">
-							<span class="stat-count">5</span> <span class="stat-label">Approved</span>
+							<span class="stat-count">#{supervisorBean.approvedProposalCount}</span>
+							<span class="stat-label">Approved</span>
 						</div>
 					</div>
 					<div class="stat-chip rejected">
-						<div class="stat-icon">✗</div>
+						<div class="stat-icon">&#10007;</div>
 						<div class="stat-text">
-							<span class="stat-count">12</span> <span class="stat-label">Rejected</span>
+							<span class="stat-count">#{supervisorBean.rejectedProposalCount}</span>
+							<span class="stat-label">Rejected</span>
 						</div>
 					</div>
 				</div>
@@ -983,14 +985,13 @@
 
 							<!-- ACTIONS -->
 							<p:column headerText="Actions"
-								style="width:200px; text-align:center;">
+								style="width:140px; text-align:center;">
 								<div class="action-btns">
-									<p:commandButton value="View" update="@form"
-										actionListener="#{proposalBean.displayProposalDialog(entry)}"
+									<p:commandButton value="Review"
+										update="proposalDetailPanel"
+										actionListener="#{supervisorBean.displayProposalDialog(entry)}"
 										oncomplete="PF('proposalDetailDlg').show()"
 										styleClass="btn-view" />
-
-
 								</div>
 							</p:column>
 
@@ -1008,7 +1009,7 @@
 					</div>
 					<p:dialog widgetVar="proposalDetailDlg" id="proposalDetailDlg"
 						modal="true" showEffect="fade" hideEffect="fade" resizable="false"
-						draggable="true" closable="true" header="Proposal Details"
+						draggable="true" closable="true" header="Proposal Review"
 						styleClass="prop-dlg">
 
 						<p:outputPanel id="proposalDetailPanel" layout="block">
@@ -1017,77 +1018,89 @@
 
 								<div class="dlg-meta">
 									<h:outputText
-										styleClass="badge badge-#{proposalBean.entry.status}"
-										value="#{proposalBean.entry.status}" />
-									<span class="dlg-meta-date"> &#128197;&#160;<h:outputText
-											value="#{proposalBean.entry.getCreatedDate()}" />
+										styleClass="badge badge-#{supervisorBean.entry.status}"
+										value="#{supervisorBean.entry.status}" />
+									<span class="dlg-meta-date"> &#128197;&#160;
+										<h:outputText value="#{supervisorBean.entry.createdDate}">
+											<f:convertDateTime pattern="dd MMM yyyy"/>
+										</h:outputText>
 									</span>
+									<h:panelGroup rendered="#{supervisorBean.entry.student != null}">
+										<span class="dlg-meta-date">
+											&#128100;&#160;#{supervisorBean.entry.student.fullName}
+										</span>
+									</h:panelGroup>
 								</div>
 
 								<div class="dlg-field">
 									<span class="dlg-label">Project Title</span>
 									<div class="dlg-value">
-										<h:outputText value="#{proposalBean.entry.title}" />
+										<h:outputText value="#{supervisorBean.entry.title}" />
 									</div>
 								</div>
 
 								<div class="dlg-field">
 									<span class="dlg-label">Problem Statement</span>
 									<div class="dlg-value multi">
-										<h:outputText value="#{proposalBean.entry.problemStatement}" />
+										<h:outputText value="#{supervisorBean.entry.problemStatement}" />
 									</div>
 								</div>
 
 								<div class="dlg-field">
 									<span class="dlg-label">Aim &amp; Objectives</span>
 									<div class="dlg-value multi">
-										<h:outputText value="#{proposalBean.entry.objectives}" />
+										<h:outputText value="#{supervisorBean.entry.objectives}" />
 									</div>
 								</div>
 
 								<div class="dlg-field">
 									<span class="dlg-label">Methodology</span>
 									<div class="dlg-value multi">
-										<h:outputText value="#{proposalBean.entry.methodology}" />
+										<h:outputText value="#{supervisorBean.entry.methodology}" />
 									</div>
 								</div>
 
-								<h:panelGroup
-									rendered="#{not empty proposalBean.entry.supervisorComment}">
-									<div class="dlg-field">
-										<span class="dlg-label">Supervisor Comment</span>
-										<div class="dlg-value">
-											<h:outputText value="#{proposalBean.entry.supervisorComment}" />
-										</div>
-									</div>
-								</h:panelGroup>
-
-								<h:panelGroup
-									rendered="#{proposalBean.entry.similarityScore != null
-                                              and proposalBean.entry.similarityScore > 0}">
-									<div
-										class="dlg-sim #{proposalBean.entry.similarityScore >= 0.80 ? 'high' :
-                                              proposalBean.entry.similarityScore >= 0.60 ? 'med' : 'low'}">
+								<h:panelGroup rendered="#{supervisorBean.entry.similarityScore != null
+                                              and supervisorBean.entry.similarityScore > 0}">
+									<div class="dlg-sim #{supervisorBean.entry.similarityScore >= 0.80 ? 'high' :
+                                              supervisorBean.entry.similarityScore >= 0.60 ? 'med' : 'low'}">
 										<div class="sim-bubble">
-											<h:outputText value="#{proposalBean.entry.similarityScore}">
+											<h:outputText value="#{supervisorBean.entry.similarityScore}">
 												<f:convertNumber maxFractionDigits="2" />
 											</h:outputText>
 										</div>
 										<div class="sim-text">
 											<div class="sim-head">
-												<h:outputText
-													value="High similarity — closely matches an existing project"
-													rendered="#{proposalBean.entry.similarityScore >= 0.80}" />
-												<h:outputText
-													value="Moderate similarity with an existing project"
-													rendered="#{proposalBean.entry.similarityScore >= 0.60
-                                                              and proposalBean.entry.similarityScore lt 0.80}" />
+												<h:outputText value="High similarity — closely matches an existing project"
+													rendered="#{supervisorBean.entry.similarityScore >= 0.80}" />
+												<h:outputText value="Moderate similarity with an existing project"
+													rendered="#{supervisorBean.entry.similarityScore >= 0.60
+                                                              and supervisorBean.entry.similarityScore lt 0.80}" />
 												<h:outputText value="Proposal appears mostly original"
-													rendered="#{proposalBean.entry.similarityScore lt 0.60}" />
-
+													rendered="#{supervisorBean.entry.similarityScore lt 0.60}" />
 											</div>
-											<div class="sim-sub">Click Compare to view the matching
-												project.</div>
+											<div class="sim-sub">Click Compare to view the matching project.</div>
+										</div>
+									</div>
+								</h:panelGroup>
+
+								<!-- Reject comment / approval note -->
+								<h:panelGroup rendered="#{supervisorBean.entry.status == 'SUBMITTED'}">
+									<div class="dlg-field" style="margin-top:1rem;">
+										<label class="field-label">
+											Comments / Feedback
+											<span style="color:var(--red);font-size:0.75rem;">(required if rejecting)</span>
+										</label>
+										<p:inputTextarea value="#{supervisorBean.rejectComment}"
+											rows="3" style="width:100%;"/>
+									</div>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{not empty supervisorBean.entry.supervisorComment}">
+									<div class="dlg-field">
+										<span class="dlg-label">Previous Comment</span>
+										<div class="dlg-value">
+											<h:outputText value="#{supervisorBean.entry.supervisorComment}" />
 										</div>
 									</div>
 								</h:panelGroup>
@@ -1098,15 +1111,26 @@
 								<p:commandButton value="Close" type="button"
 									onclick="PF('proposalDetailDlg').hide();"
 									styleClass="btn-ghost" />
-								<p:commandButton value="&#128270; Compare Similar" ajax="false"
-									action="#{proposalBean.compareSimilar}"
-									rendered="#{proposalBean.entry.similarityScore != null
-                                                 and proposalBean.entry.similarityScore > 0}"
-									styleClass="btn-primary" />
-								<p:commandButton value="&#128270; Submit to Supervisor"
-									ajax="false" action="#{proposalBean.submitToSupervisor}"
-									rendered="#{proposalBean.entry.status == 'DRAFT'}"
-									styleClass="btn-primary" />
+								<p:commandButton value="&#128270; Compare"
+									ajax="false"
+									action="#{supervisorBean.compareSimilar}"
+									rendered="#{supervisorBean.entry.similarityScore != null
+                                                 and supervisorBean.entry.similarityScore > 0}"
+									styleClass="btn-ghost" />
+								<p:commandButton value="&#10003; Approve"
+									action="#{supervisorBean.approveProposal}"
+									process="@form"
+									update="proposalList sv_msg proposalDetailPanel"
+									oncomplete="PF('proposalDetailDlg').hide()"
+									rendered="#{supervisorBean.entry.status == 'SUBMITTED'}"
+									styleClass="btn-confirm-approve" />
+								<p:commandButton value="&#10007; Reject"
+									action="#{supervisorBean.rejectProposal}"
+									process="@form"
+									update="proposalList sv_msg proposalDetailPanel"
+									oncomplete="if(args &amp;&amp; !args.validationFailed) PF('proposalDetailDlg').hide()"
+									rendered="#{supervisorBean.entry.status == 'SUBMITTED'}"
+									styleClass="btn-confirm-reject" />
 							</div>
 
 						</p:outputPanel>

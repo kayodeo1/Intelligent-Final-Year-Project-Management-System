@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <h:outputStylesheet library="primefaces" name="theme.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap"/>
+</h:head>
+<h:body>
+<ui:composition template="/online/template/dashboard.xhtml">
+
+    <ui:define name="student_name">
+        <div class="welcome-banner">
+            <h1>My Chapters</h1>
+            <p>Upload and track your project chapter submissions</p>
+        </div>
+    </ui:define>
+
+    <ui:define name="dashboard_body">
+        <style>
+            :root {
+                --navy:#1B3A6B;--navy-mid:#2E5399;--navy-light:#D6E4F7;
+                --gold:#C9A84C;--gold-light:#FDF3D7;
+                --green:#2E7D52;--green-light:#D1FAE5;
+                --red:#C0392B;--red-light:#FDECEA;
+                --amber:#B45309;--amber-light:#FEF3C7;
+                --ink:#1A202C;--ink-mid:#4A5568;
+                --border:#E5E9F0;--surface:#F7F8FC;--white:#FFFFFF;
+                --radius:8px;--shadow-sm:0 1px 4px rgba(10,22,40,.07);
+            }
+            .student-chap { font-family:'DM Sans',sans-serif; }
+            .page-header { margin-bottom:1.5rem; }
+            .page-header h2 {
+                font-family:'Playfair Display',serif;
+                font-size:1.5rem;font-weight:700;color:var(--navy);margin:0 0 0.2rem;
+            }
+            .gold-bar { display:block;width:36px;height:3px;background:var(--gold);border-radius:2px;margin-top:0.5rem; }
+
+            .alert-card {
+                background:var(--amber-light);border:1px solid #FDE68A;border-radius:var(--radius);
+                padding:1.1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.85rem;
+                font-size:0.87rem;color:var(--amber);font-weight:500;
+            }
+
+            .upload-card {
+                background:var(--white);border:1px solid var(--border);
+                border-radius:var(--radius);box-shadow:var(--shadow-sm);
+                padding:1.4rem;margin-bottom:1.5rem;
+            }
+            .upload-card-title {
+                font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;
+                color:var(--navy);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;
+            }
+            .upload-card-title::before {
+                content:'';display:inline-block;width:3px;height:14px;
+                background:var(--gold);border-radius:2px;
+            }
+            .upload-fields {
+                display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem;
+            }
+            .field-group { display:flex;flex-direction:column;gap:0.3rem; }
+            .field-label { font-size:0.73rem;font-weight:700;color:var(--ink-mid);text-transform:uppercase;letter-spacing:0.4px; }
+            .field-label span { color:var(--red);margin-left:2px; }
+
+            .student-chap .ui-selectonemenu {
+                min-width:120px;border:1.5px solid var(--border)!important;
+                border-radius:6px!important;
+            }
+            .student-chap .ui-selectonemenu .ui-selectonemenu-label {
+                font-size:0.84rem!important;color:var(--ink)!important;padding:0.48rem 0.85rem!important;
+            }
+            .student-chap .ui-selectonemenu .ui-selectonemenu-trigger {
+                background:var(--navy)!important;border-radius:0 5px 5px 0!important;color:#fff!important;
+            }
+            .student-chap .ui-inputtext {
+                border:1.5px solid var(--border)!important;border-radius:6px!important;
+                padding:0.48rem 0.85rem!important;font-size:0.84rem!important;
+                font-family:'DM Sans',sans-serif!important;min-width:260px;
+            }
+            .student-chap .ui-inputtext:focus {
+                outline:none!important;border-color:var(--navy)!important;
+                box-shadow:0 0 0 3px rgba(27,58,107,0.10)!important;
+            }
+
+            /* PrimeFaces fileUpload advanced */
+            .student-chap .ui-fileupload .ui-fileupload-buttonbar {
+                background:var(--surface)!important;border:1px solid var(--border)!important;
+                border-bottom:none!important;border-radius:var(--radius) var(--radius) 0 0!important;
+                padding:0.6rem 1rem!important;gap:0.5rem;
+            }
+            .student-chap .ui-fileupload .ui-fileupload-content {
+                background:var(--white)!important;border:1px solid var(--border)!important;
+                border-radius:0 0 var(--radius) var(--radius)!important;
+                padding:1rem!important;min-height:60px;
+                text-align:center;color:var(--ink-mid);font-size:0.83rem;
+            }
+            .student-chap .ui-fileupload .ui-button {
+                border-radius:6px!important;font-size:0.8rem!important;font-weight:600!important;
+            }
+            .student-chap .ui-fileupload .ui-fileupload-choose { background:var(--navy)!important;border-color:var(--navy)!important; }
+            .student-chap .ui-fileupload .ui-fileupload-upload { background:var(--green)!important;border-color:var(--green)!important; }
+            .student-chap .ui-fileupload .ui-fileupload-cancel { background:var(--red)!important;border-color:var(--red)!important; }
+
+            /* Table */
+            .table-card {
+                background:var(--white);border:1px solid var(--border);
+                border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;
+            }
+            .table-card-header {
+                display:flex;align-items:center;justify-content:space-between;
+                padding:0.9rem 1.4rem;border-bottom:1px solid var(--border);
+            }
+            .table-card-title {
+                font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--navy);
+                display:flex;align-items:center;gap:0.5rem;
+            }
+            .table-card-title::before { content:'';display:inline-block;width:3px;height:14px;background:var(--gold);border-radius:2px; }
+
+            .student-chap .ui-datatable thead tr th {
+                background:var(--navy)!important;color:#fff!important;
+                font-size:0.71rem!important;font-weight:600!important;text-transform:uppercase!important;
+                letter-spacing:0.4px!important;padding:0.7rem 1rem!important;border:none!important;
+                font-family:'DM Sans',sans-serif!important;
+            }
+            .student-chap .ui-datatable tbody tr { border-bottom:1px solid var(--border); }
+            .student-chap .ui-datatable tbody tr:hover { background:var(--surface)!important; }
+            .student-chap .ui-datatable tbody td {
+                padding:0.65rem 1rem!important;font-size:0.84rem!important;
+                color:var(--ink-mid);border:none!important;vertical-align:middle!important;
+            }
+            .student-chap .ui-paginator {
+                background:var(--surface)!important;border-top:1px solid var(--border)!important;
+                padding:0.6rem 1rem!important;font-size:0.77rem;
+            }
+
+            .badge {
+                display:inline-flex;align-items:center;gap:0.3rem;
+                padding:0.2rem 0.65rem;border-radius:20px;font-size:0.72rem;font-weight:600;
+            }
+            .badge::before { content:'';width:5px;height:5px;border-radius:50%; }
+            .badge-SUBMITTED { background:var(--navy-light);color:var(--navy); }
+            .badge-SUBMITTED::before { background:var(--navy); }
+            .badge-APPROVED { background:var(--green-light);color:var(--green); }
+            .badge-APPROVED::before { background:var(--green); }
+            .badge-REJECTED { background:var(--red-light);color:var(--red); }
+            .badge-REJECTED::before { background:var(--red); }
+
+            .chap-num {
+                width:30px;height:30px;border-radius:50%;
+                background:var(--navy-light);color:var(--navy);
+                font-size:0.78rem;font-weight:700;
+                display:inline-flex;align-items:center;justify-content:center;
+            }
+            .chap-num.done { background:var(--green);color:#fff; }
+
+            .comment-cell {
+                font-size:0.78rem;color:var(--amber);font-style:italic;
+                max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+            }
+
+            .empty-state { text-align:center;padding:2.5rem 2rem;color:var(--ink-mid); }
+            .empty-state-icon { font-size:2rem;margin-bottom:0.5rem; }
+            .empty-state h3 { font-family:'Playfair Display',serif;font-size:0.95rem;color:var(--navy);margin:0 0 0.25rem; }
+            .empty-state p { font-size:0.83rem;margin:0; }
+
+            @media(max-width:768px) { .upload-fields { flex-direction:column;align-items:stretch; } }
+        </style>
+
+        <div class="student-chap">
+            <div class="page-header">
+                <h2>&#128209; My Chapters</h2>
+                <p>Submit chapter documents for your supervisor to review.</p>
+                <span class="gold-bar"></span>
+            </div>
+
+            <h:form id="chapForm" prependId="false" enctype="multipart/form-data">
+                <p:messages id="chap_msg" globalOnly="true" autoUpdate="false" closable="true"/>
+
+                <!-- No project warning -->
+                <h:panelGroup rendered="#{not chapterBean.hasActiveProject()}">
+                    <div class="alert-card">
+                        &#9888;&#160;
+                        You do not have an active project yet. Your supervisor must first approve your
+                        proposal before you can submit chapters.
+                    </div>
+                </h:panelGroup>
+
+                <!-- Main content -->
+                <h:panelGroup rendered="#{chapterBean.hasActiveProject()}">
+
+                    <!-- Upload section -->
+                    <div class="upload-card">
+                        <div class="upload-card-title">Upload a Chapter</div>
+                        <div class="upload-fields">
+                            <div class="field-group">
+                                <span class="field-label">Chapter No. <span>*</span></span>
+                                <p:selectOneMenu value="#{chapterBean.newChapterNumber}"
+                                                 style="min-width:100px;">
+                                    <f:selectItem itemLabel="1" itemValue="1"/>
+                                    <f:selectItem itemLabel="2" itemValue="2"/>
+                                    <f:selectItem itemLabel="3" itemValue="3"/>
+                                    <f:selectItem itemLabel="4" itemValue="4"/>
+                                    <f:selectItem itemLabel="5" itemValue="5"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="field-group" style="flex:1;">
+                                <span class="field-label">Chapter Title <span>*</span></span>
+                                <p:inputText value="#{chapterBean.newChapterTitle}"
+                                             placeholder="e.g. Introduction"
+                                             style="width:100%;"/>
+                            </div>
+                        </div>
+                        <p:fileUpload listener="#{chapterBean.handleFileUpload}"
+                                      mode="advanced"
+                                      auto="false"
+                                      multiple="false"
+                                      process="@form"
+                                      update="chapterTable chap_msg"
+                                      label="Choose Document"
+                                      uploadLabel="Upload"
+                                      cancelLabel="Clear"
+                                      allowTypes="/(\.|\/)(pdf|doc|docx)$/"/>
+                        <div style="margin-top:0.6rem;font-size:0.77rem;color:var(--ink-mid);">
+                            Accepted formats: PDF, DOC, DOCX
+                        </div>
+                    </div>
+
+                    <!-- Chapters table -->
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <span class="table-card-title">Submitted Chapters</span>
+                        </div>
+
+                        <p:outputPanel id="chapterTable" layout="block">
+                            <h:panelGroup rendered="#{not empty chapterBean.chapters}">
+                                <p:dataTable var="ch" value="#{chapterBean.chapters}"
+                                             tableStyle="width:100%" emptyMessage=" " sortMode="single">
+
+                                    <p:column headerText="Ch." style="width:55px;text-align:center;" sortBy="#{ch.chapterNumber}">
+                                        <span class="chap-num #{ch.status == 'APPROVED' ? 'done' : ''}">
+                                            #{ch.chapterNumber}
+                                        </span>
+                                    </p:column>
+
+                                    <p:column headerText="Title" sortBy="#{ch.title}">
+                                        <h:outputText value="#{ch.title}"
+                                                      style="font-weight:600;color:var(--ink);"/>
+                                    </p:column>
+
+                                    <p:column headerText="File" style="width:200px;">
+                                        <h:outputText value="#{ch.fileName}"
+                                                      style="font-size:0.78rem;"/>
+                                    </p:column>
+
+                                    <p:column headerText="Status" style="width:120px;">
+                                        <span class="badge badge-#{ch.status}">#{ch.status}</span>
+                                    </p:column>
+
+                                    <p:column headerText="Supervisor Feedback">
+                                        <h:panelGroup rendered="#{not empty ch.supervisorComment}">
+                                            <span class="comment-cell" title="#{ch.supervisorComment}">
+                                                &#128172;&#160;#{ch.supervisorComment}
+                                            </span>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{empty ch.supervisorComment}">
+                                            <span style="color:#ccc;font-size:0.77rem;">—</span>
+                                        </h:panelGroup>
+                                    </p:column>
+
+                                    <p:column headerText="Submitted" style="width:115px;" sortBy="#{ch.createdDate}">
+                                        <h:outputText value="#{ch.createdDate}">
+                                            <f:convertDateTime pattern="dd MMM yyyy"/>
+                                        </h:outputText>
+                                    </p:column>
+
+                                </p:dataTable>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{empty chapterBean.chapters}">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">&#128209;</div>
+                                    <h3>No chapters submitted yet</h3>
+                                    <p>Use the upload form above to submit your first chapter.</p>
+                                </div>
+                            </h:panelGroup>
+                        </p:outputPanel>
+
+                    </div>
+
+                </h:panelGroup>
+
+            </h:form>
+        </div>
+
+    </ui:define>
+</ui:composition>
+</h:body>
+</html>

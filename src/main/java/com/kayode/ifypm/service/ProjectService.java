@@ -4,6 +4,7 @@
 package com.kayode.ifypm.service;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,13 +58,22 @@ public class ProjectService {
 		return list;
 	}
 
-		public Number fetchProjectCount()
-			{
-		TypedQuery<Number> query = em.createQuery(
-				"select count(s.id) from Project s",
-				Number.class);
-		Number res = query.getSingleResult();
-		return res;
+	public Number fetchProjectCount() {
+		return em.createQuery("select count(s.id) from Project s", Number.class).getSingleResult();
+	}
+
+	public long countBySupervisorId(Long supervisorId) {
+		return em.createQuery(
+			"SELECT COUNT(p) FROM Project p WHERE p.supervisorId = :id", Long.class)
+			.setParameter("id", supervisorId)
+			.getSingleResult();
+	}
+
+	public List<Project> findBySupervisorId(Long supervisorId) {
+		return em.createQuery(
+			"SELECT p FROM Project p WHERE p.supervisorId = :id ORDER BY p.createdDate DESC", Project.class)
+			.setParameter("id", supervisorId)
+			.getResultList();
 	}
 
 }

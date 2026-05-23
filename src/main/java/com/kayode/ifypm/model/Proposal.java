@@ -49,7 +49,7 @@ private String submittedAt;
 @Convert(converter = VectorConverter.class)
 private float[] embedding;
 
-@ManyToOne(fetch = FetchType.LAZY)
+@ManyToOne(fetch = FetchType.EAGER)
 @JoinColumn(name = "student", referencedColumnName = "username")
 private User student; 
 

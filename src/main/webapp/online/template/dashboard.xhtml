@@ -370,6 +370,16 @@ body {
 	color: var(--success);
 }
 
+/* Uppercase enum variants */
+.badge-DRAFT        { background: var(--grey-light); color: var(--grey-dark); }
+.badge-SUBMITTED    { background: var(--navy-light); color: var(--navy-primary); }
+.badge-APPROVED     { background: #D4EDDA; color: var(--success); }
+.badge-REJECTED     { background: #FDECEA; color: var(--danger); }
+.badge-DISALLOWED   { background: #FDECEA; color: var(--danger); }
+.badge-NOT_STARTED  { background: var(--grey-light); color: var(--grey-dark); }
+.badge-IN_PROGRESS  { background: #FEF3CD; color: var(--warning); }
+.badge-PROPOSAL_PENDING { background: var(--navy-light); color: var(--navy-primary); }
+
 /* Similarity indicator */
 .similarity-score {
 	font-weight: 700;
@@ -596,7 +606,6 @@ body {
 </h:head>
 
 <h:body>
-	<h:form>
 
 		<!-- ===== NAVBAR ===== -->
 		<nav class="navbar">
@@ -642,12 +651,10 @@ body {
 							class="sidebar-item">
 							<span class="icon">&#128196;</span> My Proposal
                 </p:link></li>
-					<li><a href="#" class="sidebar-item"> <span class="icon">&#128193;</span>
-							My Project
-					</a></li>
-					<li><a href="#" class="sidebar-item"> <span class="icon">&#128209;</span>
-							Chapters
-					</a></li>
+					<li><p:link href="/fypms/online/student/chapters.xhtml"
+							class="sidebar-item">
+							<span class="icon">&#128209;</span> My Chapters
+                </p:link></li>
 				</ul>
 			</p:outputPanel>
 			<p:outputPanel rendered="#{loginBean.isSupervisor()}">
@@ -657,22 +664,50 @@ body {
 							class="sidebar-item active">
 							<span class="icon">&#9632;</span> Dashboard
                 </p:link></li>
-					<li><p:link href="/fypms//online/supervisor/proposals.xhtml"
+					<li><p:link href="/fypms/online/supervisor/proposals.xhtml"
 							class="sidebar-item">
 							<span class="icon">&#128196;</span> Proposals
                 </p:link></li>
-					<li><a href="#" class="sidebar-item"> <span class="icon">&#128193;</span>
-							Projects
-					</a></li>
-					<li><a href="#" class="sidebar-item"> <span class="icon">&#128209;</span>
-							Students
-					</a></li>
+					<li><p:link href="/fypms/online/supervisor/chapters.xhtml"
+							class="sidebar-item">
+							<span class="icon">&#128209;</span> Chapters
+                </p:link></li>
+				</ul>
+			</p:outputPanel>
+			<p:outputPanel rendered="#{loginBean.isAdmin()}">
+				<ul class="sidebar-nav">
+					<li><p:link href="/fypms/online/admin/dashboard.xhtml"
+							class="sidebar-item active">
+							<span class="icon">&#9632;</span> Dashboard
+                </p:link></li>
+					<li><p:link href="/fypms/online/admin/students.xhtml"
+							class="sidebar-item">
+							<span class="icon">&#127891;</span> Students
+                </p:link></li>
+					<li><p:link href="/fypms/online/admin/supervisors.xhtml"
+							class="sidebar-item">
+							<span class="icon">&#128104;&#8205;&#127979;</span> Supervisors
+                </p:link></li>
+					<li><p:link href="/fypms/online/admin/assign.xhtml"
+							class="sidebar-item">
+							<span class="icon">&#128101;</span> Assignment
+                </p:link></li>
+					<li><p:link href="/fypms/online/admin/proposals.xhtml"
+							class="sidebar-item">
+							<span class="icon">&#128196;</span> Proposals
+                </p:link></li>
+					<li><p:link href="/fypms/online/admin/projects.xhtml"
+							class="sidebar-item">
+							<span class="icon">&#128193;</span> Projects
+                </p:link></li>
 				</ul>
 			</p:outputPanel>
 			<div class="sidebar-bottom">
-				<p:commandLink class="sidebar-item" action="#{loginBean.logout}">
-					<span class="icon">&#10140;</span> Logout
-    </p:commandLink>
+				<h:form id="logoutForm" prependId="false" style="margin:0;padding:0;">
+					<p:commandLink styleClass="sidebar-item" action="#{loginBean.logout}">
+						<span class="icon">&#10140;</span> Logout
+					</p:commandLink>
+				</h:form>
 			</div>
 		</aside>
 
@@ -680,9 +715,8 @@ body {
 		<!-- ===== MAIN CONTENT ===== -->
 		<main class="main-content">
 			<ui:insert name="student_name">
-				<!-- Welcome Banner -->
 				<div class="welcome-banner">
-					<h1>Welcome back, #{dashboardBean.currentUser.getFullName()}</h1>
+					<h1>Welcome back, #{dashboardBean.currentUser.fullName}</h1>
 					<p>Here's an overview of your project status</p>
 				</div>
 			</ui:insert>
@@ -695,49 +729,75 @@ body {
 					<!-- Proposal Status -->
 					<div class="status-card">
 						<div class="status-card-header">
-							<span class="status-card-label">Proposal Status</span> <span
-								class="status-card-icon">&#128203;</span>
+							<span class="status-card-label">Proposal Status</span>
+							<span class="status-card-icon">&#128203;</span>
 						</div>
 						<div class="status-card-value">
-							<span class="badge badge-submitted">#{dashboardBean.currentUser.proposalStatus}</span>
+							<h:panelGroup rendered="#{dashboardBean.currentUser.proposalStatus != null}">
+								<span class="badge badge-#{dashboardBean.currentUser.proposalStatus}">
+									#{dashboardBean.currentUser.proposalStatus}
+								</span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{dashboardBean.currentUser.proposalStatus == null}">
+								<span class="badge badge-not-started">Not Started</span>
+							</h:panelGroup>
 						</div>
 					</div>
 
 					<!-- Supervisor -->
 					<div class="status-card">
 						<div class="status-card-header">
-							<span class="status-card-label">Supervisor</span> <span
-								class="status-card-icon">&#128104;&#8205;&#127891;</span>
+							<span class="status-card-label">Supervisor</span>
+							<span class="status-card-icon">&#128104;&#8205;&#127891;</span>
 						</div>
-						<div class="status-card-value">#{dashboardBean.currentUser.getSupervisor().getFullName()}</div>
-						<div style="font-size: 0.8rem; color: var(--grey-mid);">#{dashboardBean.currentUser.getSupervisor().department}</div>
+						<div class="status-card-value">
+							#{dashboardBean.supervisorName}
+						</div>
+						<h:panelGroup rendered="#{not empty dashboardBean.supervisorDepartment}">
+							<div style="font-size:0.8rem;color:var(--grey-mid);margin-top:0.2rem;">
+								#{dashboardBean.supervisorDepartment}
+							</div>
+						</h:panelGroup>
 					</div>
 
 					<!-- Project Status -->
 					<div class="status-card">
 						<div class="status-card-header">
-							<span class="status-card-label">Project Status</span> <span
-								class="status-card-icon">&#128193;</span>
+							<span class="status-card-label">Project Status</span>
+							<span class="status-card-icon">&#128193;</span>
 						</div>
 						<div class="status-card-value">
-							<span class="badge badge-in-progress">#{dashboardBean.currentUser.getProjectStatus()}</span>
+							<h:panelGroup rendered="#{dashboardBean.currentUser.projectStatus != null}">
+								<span class="badge badge-#{dashboardBean.currentUser.projectStatus}">
+									#{dashboardBean.currentUser.projectStatus}
+								</span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{dashboardBean.currentUser.projectStatus == null}">
+								<span class="badge badge-not-started">Not Started</span>
+							</h:panelGroup>
 						</div>
 					</div>
 
 					<!-- Similarity Score -->
 					<div class="status-card">
 						<div class="status-card-header">
-							<span class="status-card-label">Similarity Score</span> <span
-								class="status-card-icon">&#128270;</span>
+							<span class="status-card-label">Similarity Score</span>
+							<span class="status-card-icon">&#128270;</span>
 						</div>
 						<div class="status-card-value">
-							<span class="similarity-score similarity-low">0.42</span>
+							<span class="similarity-score similarity-#{dashboardBean.similarityClass}">
+								<h:outputText value="#{dashboardBean.similarityScore}">
+									<f:convertNumber maxFractionDigits="2"/>
+								</h:outputText>
+							</span>
 						</div>
-						<div class="similarity-bar">
-							<div class="similarity-bar-fill low" style="width: 42%;"></div>
-						</div>
-						<div class="similarity-hint">&#10003; Distinct topic — clear
-							to proceed</div>
+						<h:panelGroup rendered="#{dashboardBean.similarityScore > 0}">
+							<div class="similarity-bar">
+								<div class="similarity-bar-fill #{dashboardBean.similarityClass}"
+								     style="width:#{dashboardBean.similarityScore * 100}%;"></div>
+							</div>
+						</h:panelGroup>
+						<div class="similarity-hint">#{dashboardBean.similarityHint}</div>
 					</div>
 
 				</div>
@@ -747,102 +807,139 @@ body {
 
 					<!-- Chapter Progress -->
 					<div class="panel-card">
-						<div class="panel-card-header">Chapter Progress</div>
+						<div class="panel-card-header">
+							Chapter Progress
+							<h:panelGroup rendered="#{not empty dashboardBean.chapters}"
+							              style="float:right;font-size:0.8rem;font-weight:400;color:var(--grey-mid);">
+								#{dashboardBean.approvedChapterCount}/#{dashboardBean.chapters.size()} approved
+							</h:panelGroup>
+						</div>
 						<div class="panel-card-body">
-							<ul class="chapter-list">
-								<li class="chapter-row">
-									<div class="chapter-info">
-										<div class="chapter-number done">1</div>
-										<span class="chapter-title">Introduction</span>
-									</div> <span class="badge badge-approved">Approved</span>
-								</li>
-								<li class="chapter-row">
-									<div class="chapter-info">
-										<div class="chapter-number done">2</div>
-										<span class="chapter-title">Literature Review</span>
-									</div> <span class="badge badge-approved">Approved</span>
-								</li>
-								<li class="chapter-row">
-									<div class="chapter-info">
-										<div class="chapter-number">3</div>
-										<span class="chapter-title">Methodology</span>
-									</div> <span class="badge badge-submitted">Submitted</span>
-								</li>
-								<li class="chapter-row">
-									<div class="chapter-info">
-										<div class="chapter-number">4</div>
-										<span class="chapter-title">System Design &amp;
-											Implementation</span>
-									</div> <span class="badge badge-draft">Not Submitted</span>
-								</li>
-								<li class="chapter-row">
-									<div class="chapter-info">
-										<div class="chapter-number">5</div>
-										<span class="chapter-title">Testing &amp; Evaluation</span>
-									</div> <span class="badge badge-draft">Not Submitted</span>
-								</li>
-								<li class="chapter-row">
-									<div class="chapter-info">
-										<div class="chapter-number">6</div>
-										<span class="chapter-title">Conclusion &amp;
-											Recommendations</span>
-									</div> <span class="badge badge-draft">Not Submitted</span>
-								</li>
-							</ul>
+
+							<h:panelGroup rendered="#{not empty dashboardBean.chapters}">
+								<ul class="chapter-list">
+									<ui:repeat value="#{dashboardBean.chapters}" var="ch">
+										<li class="chapter-row">
+											<div class="chapter-info">
+												<div class="chapter-number #{ch.status == 'APPROVED' ? 'done' : ''}">
+													#{ch.chapterNumber}
+												</div>
+												<span class="chapter-title">#{ch.title}</span>
+											</div>
+											<span class="badge badge-#{ch.status}">#{ch.status}</span>
+										</li>
+									</ui:repeat>
+								</ul>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{empty dashboardBean.chapters}">
+								<div style="padding:1.5rem;text-align:center;color:var(--grey-mid);font-size:0.85rem;">
+									<h:panelGroup rendered="#{not dashboardBean.hasProject()}">
+										No active project yet.<br/>
+										<a href="#{request.contextPath}/online/proposal/proposals.xhtml"
+										   style="color:var(--navy-primary);font-weight:600;">
+											Submit a proposal &#8594;
+										</a>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{dashboardBean.hasProject()}">
+										No chapters submitted yet.<br/>
+										<a href="#{request.contextPath}/online/student/chapters.xhtml"
+										   style="color:var(--navy-primary);font-weight:600;">
+											Upload your first chapter &#8594;
+										</a>
+									</h:panelGroup>
+								</div>
+							</h:panelGroup>
+
 						</div>
 					</div>
 
-					<!-- Recent Activity -->
+					<!-- Recent Chapter Activity -->
 					<div class="panel-card">
 						<div class="panel-card-header">Recent Activity</div>
 						<div class="panel-card-body">
-							<ul class="activity-list">
-								<li class="activity-item">
-									<div class="activity-dot green"></div>
-									<div>
-										<div class="activity-text">
-											Supervisor approved <strong>Chapter 2</strong>
+
+							<h:panelGroup rendered="#{not empty dashboardBean.chapters}">
+								<ul class="activity-list">
+									<ui:repeat value="#{dashboardBean.chapters}" var="ch">
+										<li class="activity-item">
+											<div class="activity-dot #{ch.status == 'APPROVED' ? 'green' :
+											                           ch.status == 'REJECTED'  ? 'orange' : 'blue'}">
+											</div>
+											<div>
+												<div class="activity-text">
+													<h:panelGroup rendered="#{ch.status == 'APPROVED'}">
+														Supervisor approved
+														<strong>Chapter #{ch.chapterNumber} — #{ch.title}</strong>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{ch.status == 'REJECTED'}">
+														Supervisor returned
+														<strong>Chapter #{ch.chapterNumber}</strong> with feedback
+													</h:panelGroup>
+													<h:panelGroup rendered="#{ch.status == 'SUBMITTED'}">
+														You submitted
+														<strong>Chapter #{ch.chapterNumber} — #{ch.title}</strong>
+													</h:panelGroup>
+												</div>
+												<div class="activity-time">
+													<h:outputText value="#{ch.createdDate}">
+														<f:convertDateTime pattern="dd MMM yyyy"/>
+													</h:outputText>
+												</div>
+											</div>
+										</li>
+									</ui:repeat>
+
+									<h:panelGroup rendered="#{dashboardBean.latestProposal != null}">
+										<li class="activity-item">
+											<div class="activity-dot #{dashboardBean.latestProposal.status == 'APPROVED' ? 'green' :
+											                           dashboardBean.latestProposal.status == 'REJECTED'  ? 'orange' : 'blue'}">
+											</div>
+											<div>
+												<div class="activity-text">
+													Proposal
+													<strong>#{dashboardBean.latestProposal.status}</strong>
+													— #{dashboardBean.latestProposal.title}
+												</div>
+												<div class="activity-time">
+													<h:outputText value="#{dashboardBean.latestProposal.createdDate}">
+														<f:convertDateTime pattern="dd MMM yyyy"/>
+													</h:outputText>
+												</div>
+											</div>
+										</li>
+									</h:panelGroup>
+								</ul>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{empty dashboardBean.chapters and dashboardBean.latestProposal == null}">
+								<div style="padding:1.5rem;text-align:center;color:var(--grey-mid);font-size:0.85rem;">
+									No activity yet
+								</div>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{empty dashboardBean.chapters and dashboardBean.latestProposal != null}">
+								<ul class="activity-list">
+									<li class="activity-item">
+										<div class="activity-dot #{dashboardBean.latestProposal.status == 'APPROVED' ? 'green' :
+										                           dashboardBean.latestProposal.status == 'REJECTED'  ? 'orange' : 'blue'}">
 										</div>
-										<div class="activity-time">2 hours ago</div>
-									</div>
-								</li>
-								<li class="activity-item">
-									<div class="activity-dot blue"></div>
-									<div>
-										<div class="activity-text">
-											You submitted <strong>Chapter 3 — Methodology</strong>
+										<div>
+											<div class="activity-text">
+												Proposal
+												<strong>#{dashboardBean.latestProposal.status}</strong>
+												— #{dashboardBean.latestProposal.title}
+											</div>
+											<div class="activity-time">
+												<h:outputText value="#{dashboardBean.latestProposal.createdDate}">
+													<f:convertDateTime pattern="dd MMM yyyy"/>
+												</h:outputText>
+											</div>
 										</div>
-										<div class="activity-time">1 day ago</div>
-									</div>
-								</li>
-								<li class="activity-item">
-									<div class="activity-dot orange"></div>
-									<div>
-										<div class="activity-text">
-											Feedback received on <strong>Chapter 2</strong>
-										</div>
-										<div class="activity-time">3 days ago</div>
-									</div>
-								</li>
-								<li class="activity-item">
-									<div class="activity-dot green"></div>
-									<div>
-										<div class="activity-text">
-											Proposal <strong>approved</strong> by supervisor
-										</div>
-										<div class="activity-time">1 week ago</div>
-									</div>
-								</li>
-								<li class="activity-item">
-									<div class="activity-dot blue"></div>
-									<div>
-										<div class="activity-text">
-											Proposal submitted — similarity score: <strong>0.42</strong>
-										</div>
-										<div class="activity-time">2 weeks ago</div>
-									</div>
-								</li>
-							</ul>
+									</li>
+								</ul>
+							</h:panelGroup>
+
 						</div>
 					</div>
 
@@ -883,6 +980,5 @@ body {
 					closeSidebar();
 			});
 		</script>
-	</h:form>
 </h:body>
 </html>

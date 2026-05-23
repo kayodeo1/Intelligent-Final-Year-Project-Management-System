@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<h:head>
+    <h:outputStylesheet library="primefaces" name="theme.css"/>
+</h:head>
+
+<h:body>
+    <ui:composition template="/online/template/dashboard.xhtml">
+
+        <ui:define name="student_name">
+            <div class="welcome-banner">
+                <h1>Admin Dashboard</h1>
+                <p>System overview — manage students, supervisors, proposals and projects</p>
+            </div>
+        </ui:define>
+
+        <ui:define name="dashboard_body">
+
+            <style>
+                /* ===== ADMIN DASHBOARD ===== */
+                .adm-stats {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 1.15rem;
+                    margin-bottom: 1.75rem;
+                }
+                .adm-stat-card {
+                    background: #FFFFFF;
+                    border: 1px solid #E5E9F0;
+                    border-radius: 8px;
+                    padding: 1.25rem 1.35rem;
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 1rem;
+                    transition: box-shadow 0.2s;
+                }
+                .adm-stat-card:hover { box-shadow: 0 4px 16px rgba(27,58,107,0.07); }
+                .adm-stat-icon {
+                    width: 44px; height: 44px;
+                    border-radius: 10px;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 1.25rem; flex-shrink: 0;
+                }
+                .adm-stat-icon.blue  { background: #D6E4F7; color: #1B3A6B; }
+                .adm-stat-icon.gold  { background: #FDF3D7; color: #B45309; }
+                .adm-stat-icon.green { background: #D1FAE5; color: #2E7D52; }
+                .adm-stat-icon.info  { background: #E0E7FF; color: #2E5399; }
+                .adm-stat-body { flex: 1; }
+                .adm-stat-label {
+                    font-size: 0.78rem; font-weight: 500; color: #9AA3B2;
+                    text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 0.3rem;
+                }
+                .adm-stat-value {
+                    font-family: 'Georgia', 'Times New Roman', serif;
+                    font-size: 1.65rem; font-weight: 700; color: #1B3A6B; line-height: 1;
+                }
+                .adm-stat-hint { font-size: 0.75rem; color: #9AA3B2; margin-top: 0.3rem; }
+
+                /* TABLES ROW */
+                .adm-tables-row {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1.25rem;
+                }
+                .adm-panel {
+                    background: #FFFFFF;
+                    border: 1px solid #E5E9F0;
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+                .adm-panel-header {
+                    display: flex; align-items: center; justify-content: space-between;
+                    padding: 1rem 1.35rem;
+                    border-bottom: 1px solid #E5E9F0;
+                }
+                .adm-panel-header h3 {
+                    font-family: 'Georgia', 'Times New Roman', serif;
+                    font-size: 1rem; font-weight: 700; color: #1B3A6B;
+                }
+                .adm-count-pill {
+                    background: #D6E4F7; color: #1B3A6B;
+                    font-size: 0.75rem; font-weight: 700;
+                    padding: 0.2rem 0.65rem; border-radius: 20px;
+                }
+
+                /* PF DATATABLE OVERRIDES — scoped to dashboard */
+                .adm-panel .ui-datatable thead tr th {
+                    background: #1B3A6B !important;
+                    color: #fff !important;
+                    font-size: 0.72rem !important;
+                    font-weight: 600 !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.35px !important;
+                    padding: 0.7rem 1rem !important;
+                    border: none !important;
+                }
+                .adm-panel .ui-datatable tbody tr {
+                    border-bottom: 1px solid #F1F3F7;
+                    transition: background 0.14s;
+                }
+                .adm-panel .ui-datatable tbody tr:hover,
+                .adm-panel .ui-datatable tbody tr.ui-state-hover {
+                    background: #FAFBFE !important;
+                }
+                .adm-panel .ui-datatable tbody td {
+                    padding: 0.75rem 1rem !important;
+                    font-size: 0.84rem !important;
+                    color: #4A5568;
+                    border: none !important;
+                    vertical-align: middle !important;
+                }
+                .adm-panel .ui-datatable .ui-datatable-header { display: none; }
+                .adm-panel .ui-paginator {
+                    background: #F7F8FC !important;
+                    border-top: 1px solid #E5E9F0 !important;
+                    border-bottom: none !important;
+                    padding: 0.5rem 1rem !important;
+                    font-size: 0.75rem;
+                }
+                .adm-panel .ui-paginator .ui-paginator-page,
+                .adm-panel .ui-paginator .ui-paginator-first,
+                .adm-panel .ui-paginator .ui-paginator-prev,
+                .adm-panel .ui-paginator .ui-paginator-next,
+                .adm-panel .ui-paginator .ui-paginator-last {
+                    background: #fff !important;
+                    border: 1px solid #E5E9F0 !important;
+                    color: #1B3A6B !important;
+                    border-radius: 4px !important;
+                    margin: 0 2px !important;
+                    min-width: 26px; height: 26px;
+                    font-size: 0.75rem !important;
+                    font-weight: 600;
+                }
+                .adm-panel .ui-paginator .ui-state-active {
+                    background: #1B3A6B !important;
+                    color: #fff !important;
+                    border-color: #1B3A6B !important;
+                }
+                .adm-panel .ui-paginator .ui-paginator-current {
+                    color: #9AA3B2 !important;
+                    font-size: 0.75rem !important;
+                    padding: 0 0.5rem;
+                }
+
+                /* CELL HELPERS */
+                .adm-user-cell { display: flex; align-items: center; gap: 0.55rem; }
+                .adm-avatar {
+                    width: 30px; height: 30px;
+                    border-radius: 50%;
+                    background: #D6E4F7; color: #1B3A6B;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 0.68rem; font-weight: 700;
+                    flex-shrink: 0; text-transform: uppercase;
+                }
+                .adm-avatar.gold { background: #FDF3D7; color: #B45309; }
+                .adm-user-name { font-weight: 600; color: #1A202C; font-size: 0.84rem; }
+                .adm-user-sub  { font-size: 0.71rem; color: #9AA3B2; margin-top: 1px; }
+
+                .adm-badge {
+                    display: inline-block;
+                    padding: 0.16rem 0.5rem; border-radius: 4px;
+                    font-size: 0.69rem; font-weight: 600;
+                }
+                .adm-badge.enabled  { background: #D1FAE5; color: #2E7D52; }
+                .adm-badge.disabled { background: #FDECEA; color: #C0392B; }
+                .adm-badge.default  { background: #E5E9F0; color: #4A5568; }
+
+                .adm-empty {
+                    text-align: center; padding: 2.5rem 1rem;
+                    color: #9AA3B2; font-size: 0.85rem;
+                }
+
+                @media (max-width: 1100px) {
+                    .adm-stats { grid-template-columns: repeat(2, 1fr); }
+                    .adm-tables-row { grid-template-columns: 1fr; }
+                }
+                @media (max-width: 640px) {
+                    .adm-stats { grid-template-columns: 1fr; }
+                }
+            </style>
+
+            <!-- ===== ROW 1: STAT CARDS ===== -->
+            <div class="adm-stats">
+                <div class="adm-stat-card">
+                    <div class="adm-stat-icon blue">&#127891;</div>
+                    <div class="adm-stat-body">
+                        <div class="adm-stat-label">Total Students</div>
+                        <div class="adm-stat-value">#{adminBean.studentCount}</div>
+                        <div class="adm-stat-hint">Registered in system</div>
+                    </div>
+                </div>
+                <div class="adm-stat-card">
+                    <div class="adm-stat-icon gold">&#128104;&#8205;&#127979;</div>
+                    <div class="adm-stat-body">
+                        <div class="adm-stat-label">Total Supervisors</div>
+                        <div class="adm-stat-value">#{adminBean.supervisorCount}</div>
+                        <div class="adm-stat-hint">Active this session</div>
+                    </div>
+                </div>
+                <div class="adm-stat-card">
+                    <div class="adm-stat-icon green">&#128196;</div>
+                    <div class="adm-stat-body">
+                        <div class="adm-stat-label">Total Proposals</div>
+                        <div class="adm-stat-value">#{adminBean.proposalCount}</div>
+                        <div class="adm-stat-hint">Submitted to date</div>
+                    </div>
+                </div>
+                <div class="adm-stat-card">
+                    <div class="adm-stat-icon info">&#128193;</div>
+                    <div class="adm-stat-body">
+                        <div class="adm-stat-label">Total Projects</div>
+                        <div class="adm-stat-value">#{adminBean.projectCount}</div>
+                        <div class="adm-stat-hint">Created this session</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ROW 2: LAZY DATATABLES ===== -->
+            <h:form id="admDashForm" prependId="false">
+                <div class="adm-tables-row">
+
+                    <!-- Students -->
+                    <div class="adm-panel">
+                        <div class="adm-panel-header">
+                            <h3>&#127891; All Students</h3>
+                            <span class="adm-count-pill">#{adminBean.studentCount}</span>
+                        </div>
+                        <p:dataTable id="studentsTable" var="s"
+                                     value="#{adminBean.studentsModel}"
+                                     lazy="true"
+                                     paginator="true" rows="7"
+                                     paginatorPosition="bottom"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     currentPageReportTemplate="{startRecord}–{endRecord} / {totalRecords}"
+                                     rowKey="#{s.id}"
+                                     tableStyle="width:100%"
+                                     emptyMessage=" ">
+
+                            <p:column headerText="Name" style="min-width:160px;">
+                                <div class="adm-user-cell">
+                                    <div class="adm-avatar">
+                                        <h:outputText value="#{not empty s.firstname ? s.firstname.substring(0,1) : '?'}"/>
+                                        <h:outputText value="#{not empty s.lastname  ? s.lastname.substring(0,1)  : ''}"/>
+                                    </div>
+                                    <div>
+                                        <div class="adm-user-name">#{s.fullName}</div>
+                                        <div class="adm-user-sub">#{s.username}</div>
+                                    </div>
+                                </div>
+                            </p:column>
+
+                            <p:column headerText="Department" style="width:130px;">
+                                <h:outputText value="#{empty s.department ? '—' : s.department}"/>
+                            </p:column>
+
+                            <p:column headerText="Session" style="width:95px;">
+                                <h:outputText value="#{empty s.session ? '—' : s.session}"
+                                              style="font-size:0.78rem; color:#1B3A6B; font-weight:600;"/>
+                            </p:column>
+
+                            <p:column headerText="Status" style="width:85px;">
+                                <span class="adm-badge #{s.status != null and s.status.name() == 'ENABLED' ? 'enabled' : (s.status != null and s.status.name() == 'DISABLED' ? 'disabled' : 'default')}">
+                                    <h:outputText value="#{empty s.status ? 'N/A' : s.status}"/>
+                                </span>
+                            </p:column>
+
+                        </p:dataTable>
+                        <h:panelGroup rendered="#{adminBean.studentCount == 0}">
+                            <div class="adm-empty">No students registered yet.</div>
+                        </h:panelGroup>
+                    </div>
+
+                    <!-- Supervisors -->
+                    <div class="adm-panel">
+                        <div class="adm-panel-header">
+                            <h3>&#128104;&#8205;&#127979; All Supervisors</h3>
+                            <span class="adm-count-pill">#{adminBean.supervisorCount}</span>
+                        </div>
+                        <p:dataTable id="supervisorsTable" var="sv"
+                                     value="#{adminBean.supervisorsModel}"
+                                     lazy="true"
+                                     paginator="true" rows="7"
+                                     paginatorPosition="bottom"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     currentPageReportTemplate="{startRecord}–{endRecord} / {totalRecords}"
+                                     rowKey="#{sv.id}"
+                                     tableStyle="width:100%"
+                                     emptyMessage=" ">
+
+                            <p:column headerText="Name" style="min-width:160px;">
+                                <div class="adm-user-cell">
+                                    <div class="adm-avatar gold">
+                                        <h:outputText value="#{not empty sv.firstname ? sv.firstname.substring(0,1) : '?'}"/>
+                                        <h:outputText value="#{not empty sv.lastname  ? sv.lastname.substring(0,1)  : ''}"/>
+                                    </div>
+                                    <div>
+                                        <div class="adm-user-name">#{sv.fullName}</div>
+                                        <div class="adm-user-sub">#{sv.username}</div>
+                                    </div>
+                                </div>
+                            </p:column>
+
+                            <p:column headerText="Department" style="width:130px;">
+                                <h:outputText value="#{empty sv.department ? '—' : sv.department}"/>
+                            </p:column>
+
+                            <p:column headerText="Students" style="width:75px; text-align:center;">
+                                <h:outputText value="#{adminBean.getSupervisorStudentCount(sv.id)}"
+                                              style="font-weight:700; color:#1B3A6B;"/>
+                            </p:column>
+
+                            <p:column headerText="Status" style="width:85px;">
+                                <span class="adm-badge #{sv.status != null and sv.status.name() == 'ENABLED' ? 'enabled' : (sv.status != null and sv.status.name() == 'DISABLED' ? 'disabled' : 'default')}">
+                                    <h:outputText value="#{empty sv.status ? 'N/A' : sv.status}"/>
+                                </span>
+                            </p:column>
+
+                        </p:dataTable>
+                        <h:panelGroup rendered="#{adminBean.supervisorCount == 0}">
+                            <div class="adm-empty">No supervisors registered yet.</div>
+                        </h:panelGroup>
+                    </div>
+
+                </div>
+            </h:form>
+
+        </ui:define>
+
+    </ui:composition>
+</h:body>
+</html>
